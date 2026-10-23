@@ -1,6 +1,6 @@
 # AccessLife AI build phases
 
-Revision 1 · 24 October 2026 · Phase 0 in progress; application and infrastructure phases have not started
+Revision 1 · 24 October 2026 · Phase 0 complete; application and infrastructure phases have not started
 
 ## 1. How to use this plan
 
@@ -33,8 +33,8 @@ Exit checks:
 - [x] Local documentation links resolve; source references use primary sources without broken copied citation markers. Qloo account/API checks remain Phase 1 work.
 - [x] Git's explicit allowlist includes the six maintained specifications and excludes the three original reference files.
 - [x] The publication allowlist contains no secrets, state, datasets, model weights or credential history; the pattern scan passed.
-- [ ] GitHub repository is public, `main` is pushed, MIT is detected and local/remote heads agree.
-- [ ] README and memory distinguish completed foundation work from unimplemented features.
+- [x] GitHub repository is public, `main` is pushed, MIT is detected and local/remote heads agree.
+- [x] README and memory distinguish completed foundation work from unimplemented features.
 
 ## 3. Phase 1 — Coverage and shared contracts
 
