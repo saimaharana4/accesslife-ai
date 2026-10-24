@@ -85,7 +85,7 @@ test("five-city discovery, evidence, planning, replanning and collections", asyn
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.screenshot({
-    path: `.data/${testInfo.project.name}-application.png`,
+    path: testInfo.outputPath("application.png"),
     fullPage: true,
   });
   expect(errors).toEqual([]);
@@ -123,7 +123,7 @@ test("full-page accessibility, keyboard access, zoom and reduced motion", async 
     ),
   ).toBeTruthy();
   await page.screenshot({
-    path: `.data/${testInfo.project.name}-accessibility.png`,
+    path: testInfo.outputPath("accessibility.png"),
     fullPage: true,
   });
 });

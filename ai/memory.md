@@ -22,3 +22,5 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 - **2026-10-24 - Budget alerts:** Created the INR 6,507 subtotal alert with 50/75/90 percent thresholds after correcting account currency; the US$78.48 forecast includes a conservative 18% tax reserve.
 
 - **2026-10-24 - Publication checks:** The explicit index contains 90 source/document files and only the six maintained ai documents; three original reference hashes match. Pattern scanning and comparison against four actual Secret Manager payloads found no credential values in source or Terraform state; 42 local documentation links resolved.
+
+- **2026-10-24 - Remote checks:** Keyless GitHub-to-GCP authentication passed. Application CI passed backend/contracts/typecheck but exposed Linux screenshot permissions and enlarged-wordmark overflow; corrected test artifact paths and text wrapping without reducing accessibility assertions.

@@ -177,6 +177,10 @@ resource "google_cloud_run_v2_service" "backend" {
   labels   = local.labels
   location = var.region
   ingress  = "INGRESS_TRAFFIC_ALL"
+  scaling {
+    min_instance_count    = 0
+    manual_instance_count = 0
+  }
   template {
 
     service_account                  = google_service_account.app[each.key].email
@@ -325,6 +329,10 @@ resource "google_cloud_run_v2_service" "worker" {
   labels   = local.labels
   location = var.region
   ingress  = "INGRESS_TRAFFIC_ALL"
+  scaling {
+    min_instance_count    = 0
+    manual_instance_count = 0
+  }
   template {
 
     service_account                  = google_service_account.app["worker"].email
@@ -494,6 +502,10 @@ resource "google_cloud_run_v2_service" "web" {
   name     = "accesslife-web"
   labels   = local.labels
   location = var.region
+  scaling {
+    min_instance_count    = 0
+    manual_instance_count = 0
+  }
   template {
 
     service_account = google_service_account.app["web"].email

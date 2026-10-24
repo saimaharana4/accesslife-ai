@@ -1522,3 +1522,16 @@ h3,
     grid-column: auto;
   }
 }
+
+/* Keep the wordmark readable rather than clipping enlarged text on Linux fonts. */
+.brand {
+  min-width: 0;
+  max-width: 100%;
+}
+.brand-word {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.brand-mark {
+  flex-shrink: 0;
+}

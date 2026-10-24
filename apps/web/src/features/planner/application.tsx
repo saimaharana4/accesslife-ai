@@ -398,7 +398,11 @@ function ApplicationContent() {
           <span className="brand-mark">
             <Compass size={25} />
           </span>
-          accesslife<span className="brand-dot">.</span>
+          <span className="brand-word">
+            access
+            <wbr />
+            life<span className="brand-dot">.</span>
+          </span>
         </a>
         <nav aria-label="Main navigation">
           {[
@@ -458,15 +462,13 @@ function ApplicationContent() {
             <div className="hero-actions">
               <Button
                 onPress={() =>
-                  document
-                    .getElementById("planner-form")
-                    ?.scrollIntoView({
-                      behavior: window.matchMedia(
-                        "(prefers-reduced-motion: reduce)",
-                      ).matches
-                        ? "auto"
-                        : "smooth",
-                    })
+                  document.getElementById("planner-form")?.scrollIntoView({
+                    behavior: window.matchMedia(
+                      "(prefers-reduced-motion: reduce)",
+                    ).matches
+                      ? "auto"
+                      : "smooth",
+                  })
                 }
               >
                 Find your next outing <ArrowRight size={18} />
@@ -1180,7 +1182,11 @@ function ApplicationContent() {
       </main>
       <footer className="site-footer">
         <a className="brand" href="/">
-          accesslife.
+          <span className="brand-word">
+            access
+            <wbr />
+            life.
+          </span>
         </a>
         <p>
           Evidence-led planning with Qloo when available. Live journey
