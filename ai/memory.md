@@ -24,3 +24,6 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 - **2026-10-24 - Publication checks:** The explicit index contains 90 source/document files and only the six maintained ai documents; three original reference hashes match. Pattern scanning and comparison against four actual Secret Manager payloads found no credential values in source or Terraform state; 42 local documentation links resolved.
 
 - **2026-10-24 - Remote checks:** Keyless GitHub-to-GCP authentication passed. Application CI passed backend/contracts/typecheck but exposed Linux screenshot permissions and enlarged-wordmark overflow; corrected test artifact paths and text wrapping without reducing accessibility assertions.
+
+- **2026-10-24 - Verified CI:** Application pipeline 40070212258 passed all backend, generated-contract, TypeScript, container, desktop/mobile accessibility and Terraform validation steps after the Linux fixes. WIF-only workflow 40069708712 also passed; no deployment was requested by that workflow.
+- **2026-10-24 - Recovery:** Reconciliation is enabled and a scheduler-triggered cloud execution completed; a refreshed Terraform plan reports no changes. Final browser coverage now also tests retrying a response lost after server acceptance with the same key/plan ID.

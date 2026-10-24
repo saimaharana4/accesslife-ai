@@ -127,6 +127,9 @@ function ApplicationContent() {
     started = useRef(false),
     lastSequence = useRef(0),
     restoring = useRef(false);
+  const pendingSubmission = useRef<{ signature: string; key: string } | null>(
+    null,
+  );
   const {
     register,
     handleSubmit,
@@ -277,16 +280,20 @@ function ApplicationContent() {
     events.current?.close();
     try {
       const data = inputs(values);
-      const result = await api<{ plan_id: string; run_id: string }>(
-        plan ? `/plans/${plan.id}/replan` : "/plans",
-        {
-          method: "POST",
-          headers: { "Idempotency-Key": crypto.randomUUID() },
-          body: JSON.stringify(
-            plan ? { expected_version: plan.version, inputs: data } : data,
-          ),
-        },
+      const path = plan ? `/plans/${plan.id}/replan` : "/plans";
+      const body = JSON.stringify(
+        plan ? { expected_version: plan.version, inputs: data } : data,
       );
+      const signature = path + body;
+      if (pendingSubmission.current?.signature !== signature) {
+        pendingSubmission.current = { signature, key: crypto.randomUUID() };
+      }
+      const result = await api<{ plan_id: string; run_id: string }>(path, {
+        method: "POST",
+        headers: { "Idempotency-Key": pendingSubmission.current.key },
+        body,
+      });
+      pendingSubmission.current = null;
       watchRun(result);
     } catch (e) {
       setError((e as Error).message);

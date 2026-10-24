@@ -40,6 +40,40 @@ test("five-city discovery, evidence, planning, replanning and collections", asyn
   await page.getByRole("button", { name: "Gentle pace", exact: true }).click();
   await page.getByLabel("Per-leg limit (m)", { exact: true }).fill("5000");
   await page.getByLabel("Total limit (m)", { exact: true }).fill("10000");
+  let acceptedPlan = "";
+  let requestKey = "";
+  let loseResponse = true;
+  await page.route("**/api/v1/plans", async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.continue();
+      return;
+    }
+    const key = route.request().headers()["idempotency-key"];
+    const response = await route.fetch();
+    expect(response.status()).toBe(202);
+    const result = await response.json();
+    if (loseResponse) {
+      loseResponse = false;
+      acceptedPlan = result.plan_id;
+      requestKey = key;
+      await route.fulfill({
+        status: 503,
+        json: {
+          error: { message: "Connection lost after dispatch. Please retry." },
+        },
+      });
+    } else {
+      expect(key).toBe(requestKey);
+      expect(result.plan_id).toBe(acceptedPlan);
+      await route.fulfill({ response });
+    }
+  });
+  await page
+    .getByRole("button", { name: "Create my outing", exact: true })
+    .click();
+  await expect(
+    page.getByRole("region", { name: "Outing workspace" }).getByRole("alert"),
+  ).toContainText("Connection lost after dispatch");
   await page
     .getByRole("button", { name: "Create my outing", exact: true })
     .click();
