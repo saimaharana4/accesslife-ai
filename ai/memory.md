@@ -29,3 +29,8 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 - **2026-10-24 - Recovery:** Reconciliation is enabled and a scheduler-triggered cloud execution completed; a refreshed Terraform plan reports no changes. Final browser coverage now also tests retrying a response lost after server acceptance with the same key/plan ID.
 
 - **2026-10-24 - City isolation:** External checking exposed stale cards during fast city changes; discovery now derives from the selected query and isolates OSM previews by city. Four local desktop/mobile journeys passed with explicit city-venue assertions.
+
+- **2026-10-24 - Final rollout:** Revision with city-isolated discovery is live at https://accesslife-web-dfthmgvvaa-el.a.run.app; all four external desktop/mobile journeys passed, including response-loss retry, replanning, collections and full axe scans.
+- **2026-10-24 - Final CI:** [Run 40071609074](https://github.com/saimaharana4/accesslife-ai/actions/runs/40071609074) passed for application commit `f6236db`: 35 backend tests, contract drift, TypeScript, containers, four browser journeys and static Terraform validation.
+- **2026-10-24 - Final audit:** All four active credential payloads are absent from 90 tracked files and remote Terraform state; deployed services have no sensitive literal settings. Three original reference hashes match and 43 local documentation links resolve.
+- **2026-10-24 - Open acceptance:** Outings remain provisional; complete evidence-backed routes, Cloud SQL backup restore, real-user screen-reader review and hackathon qualification are pending. Optional earlier provider keys remain unconfigured; the reviewed US$78.48 forecast is not a spending cap.
