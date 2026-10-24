@@ -15,18 +15,23 @@ test("five-city discovery, evidence, planning, replanning and collections", asyn
       name: "Your kind of day. Thoughtfully planned.",
     }),
   ).toBeVisible();
-  for (const [id, name] of [
-    ["new-york", "New York"],
-    ["paris", "Paris"],
-    ["berlin", "Berlin"],
-    ["chicago", "Chicago"],
-    ["london", "London"],
+  for (const [id, name, venue] of [
+    ["new-york", "New York", "The Metropolitan Museum of Art"],
+    ["paris", "Paris", "Musée du Louvre"],
+    ["berlin", "Berlin", "Jewish Museum Berlin"],
+    ["chicago", "Chicago", "Art Institute of Chicago"],
+    ["london", "London", "British Museum"],
   ]) {
     await page.getByLabel("Where are we exploring?").selectOption(id);
     await expect(
       page.getByRole("heading", { name: `A little inspiration in ${name}` }),
     ).toBeVisible();
     await expect(page.locator(".place-card")).toHaveCount(3);
+    await expect(
+      page
+        .locator(".place-card")
+        .getByRole("heading", { name: venue, exact: true }),
+    ).toBeVisible();
   }
   await page.getByRole("button", { name: "View evidence" }).first().click();
   await expect(page.getByRole("dialog")).toBeVisible();

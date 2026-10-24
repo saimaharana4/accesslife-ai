@@ -100,7 +100,7 @@ const defaults: FormValues = {
 
 function ApplicationContent() {
   const [cities, setCities] = useState<City[]>([]),
-    [places, setPlaces] = useState<Place[]>([]),
+    [discoveryPreviews, setDiscoveryPreviews] = useState<Place[]>([]),
     [plan, setPlan] = useState<Plan | null>(null),
     [evidence, setEvidence] = useState<Evidence[]>([]);
   const [selected, setSelected] = useState<string | null>(null),
@@ -175,13 +175,16 @@ function ApplicationContent() {
       api<Place[]>(`/places?city_id=${cityId}`, { signal }),
     staleTime: 60000,
   });
-  useEffect(() => {
-    if (placeQuery.data) setPlaces(placeQuery.data);
-  }, [placeQuery.data]);
+  const places = [
+    ...(placeQuery.data ?? []),
+    ...discoveryPreviews.filter((place) => place.city_id === cityId),
+  ];
   useEffect(() => {
     if (!restoring.current) setPlan(null);
     restoring.current = false;
     setSelected(null);
+    setDetails(null);
+    setDiscoveryPreviews([]);
     setOsmState("");
   }, [cityId]);
   useEffect(() => {
@@ -848,10 +851,7 @@ function ApplicationContent() {
                             places: Place[];
                           }>(`/cities/${cityId}/discover`);
                           if (r.status === "live")
-                            setPlaces((old) => [
-                              ...old.filter((p) => !p.id.startsWith("osm-")),
-                              ...r.places,
-                            ]);
+                            setDiscoveryPreviews(r.places);
                           setOsmState(
                             r.status === "live"
                               ? `${r.places.length} OSM discovery previews found. Only the curated catalogue is used for planning.`

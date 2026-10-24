@@ -16,7 +16,7 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 - **2026-10-24 - Secrets:** Stored Qloo and generated database/worker credentials in Secret Manager; runtime readers use scoped identities and ADC. No payload was saved to source, examples or local credential files.
 - **2026-10-24 - Cloud:** User authorized provisioning; separate AccessLife SQL, private API/worker, public web, Cloud Tasks, jobs, scoped IAM, registry, private buckets and WIF were created. Cloud migration/ingestion succeeded; an external Qloo-backed provisional plan and private-service 403 checks passed.
 - **2026-10-24 - Cost:** INR billing required a corrected alert currency. Revised forecast is US$78.48 including an 18% tax reserve, with 35 cloud model calls/day; alert subtotal is INR 6,507 using the reviewed catalogue ratio. Alerts are not spending caps.
-- **2026-10-24 - In progress:** Final recovery-job checks, public source push and remote CI verification are still being completed. Cloud backup-restore acceptance, full city coverage, user screen-reader review and hackathon release qualification remain open.
+- **2026-10-24 - Delivery checkpoint:** Recovery-job, source publication and remote CI checks were pending at this checkpoint; later verified entries supersede that status. Cloud restore, full city coverage, screen-reader review and release qualification remain open.
 
 - **2026-10-24 - Cloud verification:** All five cloud city scenarios returned live Qloo scores and indexed guidance; Vertex generated two explanations and three calls degraded transparently to templates. Four desktop/mobile cloud journeys and axe/reflow checks passed; private services returned 403 without IAM.
 - **2026-10-24 - Budget alerts:** Created the INR 6,507 subtotal alert with 50/75/90 percent thresholds after correcting account currency; the US$78.48 forecast includes a conservative 18% tax reserve.
@@ -27,3 +27,5 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 
 - **2026-10-24 - Verified CI:** Application pipeline 40070212258 passed all backend, generated-contract, TypeScript, container, desktop/mobile accessibility and Terraform validation steps after the Linux fixes. WIF-only workflow 40069708712 also passed; no deployment was requested by that workflow.
 - **2026-10-24 - Recovery:** Reconciliation is enabled and a scheduler-triggered cloud execution completed; a refreshed Terraform plan reports no changes. Final browser coverage now also tests retrying a response lost after server acceptance with the same key/plan ID.
+
+- **2026-10-24 - City isolation:** External checking exposed stale cards during fast city changes; discovery now derives from the selected query and isolates OSM previews by city. Four local desktop/mobile journeys passed with explicit city-venue assertions.
