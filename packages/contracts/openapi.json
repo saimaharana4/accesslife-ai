@@ -1,0 +1,1854 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AccessLife API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/v1/sessions": {
+      "post": {
+        "summary": "Create Session",
+        "operationId": "create_session_v1_sessions_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sessions/current": {
+      "get": {
+        "summary": "Current Session",
+        "operationId": "current_session_v1_sessions_current_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Clear Session",
+        "operationId": "clear_session_v1_sessions_current_delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cities": {
+      "get": {
+        "summary": "Cities",
+        "operationId": "cities_v1_cities_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/City"
+                  },
+                  "type": "array",
+                  "title": "Response Cities V1 Cities Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/providers": {
+      "get": {
+        "summary": "Providers",
+        "operationId": "providers_v1_providers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/places": {
+      "get": {
+        "summary": "Places",
+        "operationId": "places_v1_places_get",
+        "parameters": [
+          {
+            "name": "city_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "City Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Place"
+                  },
+                  "title": "Response Places V1 Places Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cities/{city_id}/discover": {
+      "get": {
+        "summary": "Osm",
+        "operationId": "osm_v1_cities__city_id__discover_get",
+        "parameters": [
+          {
+            "name": "city_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "City Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evidence/{evidence_id}": {
+      "get": {
+        "summary": "Evidence",
+        "operationId": "evidence_v1_evidence__evidence_id__get",
+        "parameters": [
+          {
+            "name": "evidence_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Evidence Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Evidence"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/intent": {
+      "post": {
+        "summary": "Interpret",
+        "operationId": "interpret_v1_intent_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntentInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plans": {
+      "get": {
+        "summary": "List Plans",
+        "operationId": "list_plans_v1_plans_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "New Plan",
+        "operationId": "new_plan_v1_plans_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plans/{plan_id}/replan": {
+      "post": {
+        "summary": "Replan",
+        "operationId": "replan_v1_plans__plan_id__replan_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplanInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plans/{plan_id}": {
+      "get": {
+        "summary": "Get Plan",
+        "operationId": "get_plan_v1_plans__plan_id__get",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/PlanSnapshot"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PendingPlan"
+                    }
+                  ],
+                  "title": "Response Get Plan V1 Plans  Plan Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plans/{plan_id}/impact": {
+      "get": {
+        "summary": "Impact",
+        "operationId": "impact_v1_plans__plan_id__impact_get",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/runs/{run_id}/cancel": {
+      "post": {
+        "summary": "Cancel",
+        "operationId": "cancel_v1_runs__run_id__cancel_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/runs/{run_id}/events": {
+      "get": {
+        "summary": "Events",
+        "operationId": "events_v1_runs__run_id__events_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/trips": {
+      "get": {
+        "summary": "List Trips",
+        "operationId": "list_trips_v1_trips_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TripSnapshot"
+                  },
+                  "type": "array",
+                  "title": "Response List Trips V1 Trips Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Trip",
+        "operationId": "create_trip_v1_trips_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/trips/{trip_id}": {
+      "get": {
+        "summary": "Get Trip",
+        "operationId": "get_trip_v1_trips__trip_id__get",
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Trip Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripSnapshot"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Edit Trip",
+        "operationId": "edit_trip_v1_trips__trip_id__patch",
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Trip Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripSnapshot"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health/live": {
+      "get": {
+        "summary": "Live",
+        "operationId": "live_v1_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health/ready": {
+      "get": {
+        "summary": "Ready",
+        "operationId": "ready_v1_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "City": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "london",
+              "new-york",
+              "paris",
+              "berlin",
+              "chicago"
+            ],
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "time_zone": {
+            "type": "string",
+            "title": "Time Zone"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "coverage": {
+            "type": "string",
+            "title": "Coverage",
+            "default": "limited"
+          },
+          "limitation": {
+            "type": "string",
+            "title": "Limitation",
+            "default": "Curated venue evidence; door-to-door wheelchair routes are not verified."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "time_zone",
+          "latitude",
+          "longitude",
+          "district"
+        ],
+        "title": "City"
+      },
+      "EligiblePlace": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "city_id": {
+            "type": "string",
+            "enum": [
+              "london",
+              "new-york",
+              "paris",
+              "berlin",
+              "chicago"
+            ],
+            "title": "City Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "interests": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Interests"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/Fact"
+            },
+            "type": "array",
+            "title": "Facts"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "venue_eligible": {
+            "type": "boolean",
+            "title": "Venue Eligible"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "city_id",
+          "name",
+          "category",
+          "latitude",
+          "longitude",
+          "interests",
+          "description",
+          "facts",
+          "source_url",
+          "venue_eligible"
+        ],
+        "title": "EligiblePlace"
+      },
+      "EnvironmentResult": {
+        "properties": {
+          "weather": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Weather"
+          },
+          "transport": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Transport"
+          },
+          "knowledge": {
+            "$ref": "#/components/schemas/KnowledgeResult"
+          }
+        },
+        "type": "object",
+        "required": [
+          "weather",
+          "transport",
+          "knowledge"
+        ],
+        "title": "EnvironmentResult"
+      },
+      "Evidence": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "source_type": {
+            "type": "string",
+            "title": "Source Type",
+            "default": "official_venue"
+          },
+          "claim": {
+            "type": "string",
+            "title": "Claim"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "title": "Retrieved At"
+          },
+          "source_updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Updated At"
+          },
+          "rights": {
+            "type": "string",
+            "title": "Rights",
+            "default": "Original factual summary; linked source retains its own copyright."
+          },
+          "transformation_version": {
+            "type": "string",
+            "title": "Transformation Version",
+            "default": "manual-summary-v1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source_url",
+          "title",
+          "claim",
+          "retrieved_at"
+        ],
+        "title": "Evidence"
+      },
+      "ExplanationResult": {
+        "properties": {
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary",
+          "provider"
+        ],
+        "title": "ExplanationResult"
+      },
+      "Fact": {
+        "properties": {
+          "feature": {
+            "type": "string",
+            "title": "Feature"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "limited",
+              "inaccessible",
+              "unknown"
+            ],
+            "title": "Status",
+            "default": "unknown"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Ids"
+          },
+          "conflict": {
+            "type": "boolean",
+            "title": "Conflict",
+            "default": false
+          },
+          "stale": {
+            "type": "boolean",
+            "title": "Stale",
+            "default": false
+          },
+          "conditions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conditions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "feature"
+        ],
+        "title": "Fact"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "IntentInput": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "IntentInput"
+      },
+      "Interest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Kind",
+            "default": "culture"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "Interest"
+      },
+      "KnowledgeResult": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "passages": {
+            "items": {
+              "$ref": "#/components/schemas/Passage"
+            },
+            "type": "array",
+            "title": "Passages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "passages"
+        ],
+        "title": "KnowledgeResult"
+      },
+      "Leg": {
+        "properties": {
+          "from_id": {
+            "type": "string",
+            "title": "From Id"
+          },
+          "to_id": {
+            "type": "string",
+            "title": "To Id"
+          },
+          "status": {
+            "type": "string",
+            "const": "unknown",
+            "title": "Status"
+          },
+          "distance_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance M"
+          },
+          "distance_lower_bound_m": {
+            "type": "integer",
+            "title": "Distance Lower Bound M"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "from_id",
+          "to_id",
+          "status",
+          "distance_lower_bound_m",
+          "message"
+        ],
+        "title": "Leg"
+      },
+      "Mobility": {
+        "properties": {
+          "required_features": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "step_free_entrance",
+                "accessible_toilet",
+                "lift"
+              ]
+            },
+            "type": "array",
+            "title": "Required Features"
+          },
+          "accepted_limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Accepted Limitations"
+          },
+          "max_leg_distance_m": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Max Leg Distance M",
+            "default": 500
+          },
+          "max_total_distance_m": {
+            "type": "integer",
+            "maximum": 50000.0,
+            "minimum": 0.0,
+            "title": "Max Total Distance M",
+            "default": 2000
+          },
+          "rest_every_minutes": {
+            "type": "integer",
+            "maximum": 180.0,
+            "minimum": 10.0,
+            "title": "Rest Every Minutes",
+            "default": 45
+          },
+          "max_transfers": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Max Transfers",
+            "default": 1
+          }
+        },
+        "type": "object",
+        "title": "Mobility"
+      },
+      "Passage": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "source_title": {
+            "type": "string",
+            "title": "Source Title"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "text",
+          "source_title",
+          "source_url"
+        ],
+        "title": "Passage"
+      },
+      "PendingPlan": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "version": {
+            "type": "integer",
+            "const": 0,
+            "title": "Version"
+          },
+          "status": {
+            "type": "string",
+            "const": "pending",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "status"
+        ],
+        "title": "PendingPlan"
+      },
+      "Place": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "city_id": {
+            "type": "string",
+            "enum": [
+              "london",
+              "new-york",
+              "paris",
+              "berlin",
+              "chicago"
+            ],
+            "title": "City Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "interests": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Interests"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/Fact"
+            },
+            "type": "array",
+            "title": "Facts"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "city_id",
+          "name",
+          "category",
+          "latitude",
+          "longitude",
+          "interests",
+          "description",
+          "facts",
+          "source_url"
+        ],
+        "title": "Place"
+      },
+      "PlanDiff": {
+        "properties": {
+          "from_version": {
+            "type": "integer",
+            "title": "From Version"
+          },
+          "removed": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Removed"
+          },
+          "added": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Added"
+          }
+        },
+        "type": "object",
+        "required": [
+          "from_version",
+          "removed",
+          "added"
+        ],
+        "title": "PlanDiff"
+      },
+      "PlanInput": {
+        "properties": {
+          "city_id": {
+            "type": "string",
+            "enum": [
+              "london",
+              "new-york",
+              "paris",
+              "berlin",
+              "chicago"
+            ],
+            "title": "City Id"
+          },
+          "window": {
+            "$ref": "#/components/schemas/Window"
+          },
+          "mobility": {
+            "$ref": "#/components/schemas/Mobility"
+          },
+          "interests": {
+            "items": {
+              "$ref": "#/components/schemas/Interest"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Interests"
+          },
+          "intent": {
+            "type": "string",
+            "maxLength": 1200,
+            "title": "Intent",
+            "default": ""
+          },
+          "trip_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Id"
+          },
+          "segment_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Segment Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "city_id",
+          "window"
+        ],
+        "title": "PlanInput"
+      },
+      "PlanSnapshot": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "inputs": {
+            "$ref": "#/components/schemas/PlanInput"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/Stop"
+            },
+            "type": "array",
+            "title": "Stops"
+          },
+          "legs": {
+            "items": {
+              "$ref": "#/components/schemas/Leg"
+            },
+            "type": "array",
+            "title": "Legs"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/EligiblePlace"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "verification_needed": {
+            "items": {
+              "$ref": "#/components/schemas/EligiblePlace"
+            },
+            "type": "array",
+            "title": "Verification Needed"
+          },
+          "taste": {
+            "$ref": "#/components/schemas/TasteResult"
+          },
+          "baseline_order": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Baseline Order"
+          },
+          "environment": {
+            "$ref": "#/components/schemas/EnvironmentResult"
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/ExplanationResult"
+          },
+          "unresolved": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unresolved"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "distance_lower_bound_total_m": {
+            "type": "integer",
+            "title": "Distance Lower Bound Total M"
+          },
+          "diff": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanDiff"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "inputs",
+          "status",
+          "confirmed",
+          "stops",
+          "legs",
+          "candidates",
+          "verification_needed",
+          "taste",
+          "baseline_order",
+          "environment",
+          "explanation",
+          "unresolved",
+          "evidence",
+          "distance_lower_bound_total_m"
+        ],
+        "title": "PlanSnapshot"
+      },
+      "ReplanInput": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "inputs": {
+            "$ref": "#/components/schemas/PlanInput"
+          }
+        },
+        "type": "object",
+        "required": [
+          "expected_version",
+          "inputs"
+        ],
+        "title": "ReplanInput"
+      },
+      "Stop": {
+        "properties": {
+          "place": {
+            "$ref": "#/components/schemas/Place"
+          },
+          "status": {
+            "type": "string",
+            "const": "provisional",
+            "title": "Status"
+          },
+          "suggested_visit_minutes": {
+            "type": "integer",
+            "title": "Suggested Visit Minutes"
+          },
+          "rest_every_minutes": {
+            "type": "integer",
+            "title": "Rest Every Minutes"
+          },
+          "opening_hours_status": {
+            "type": "string",
+            "const": "unknown",
+            "title": "Opening Hours Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "place",
+          "status",
+          "suggested_visit_minutes",
+          "rest_every_minutes",
+          "opening_hours_status"
+        ],
+        "title": "Stop"
+      },
+      "TasteResult": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "order": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Order"
+          },
+          "matches": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Matches"
+          },
+          "warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning"
+          },
+          "live": {
+            "type": "boolean",
+            "title": "Live"
+          },
+          "scores": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Scores"
+          },
+          "unmapped": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unmapped"
+          },
+          "score_semantics": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Semantics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "label",
+          "order",
+          "live"
+        ],
+        "title": "TasteResult"
+      },
+      "TripInput": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Title",
+            "default": "My city collection"
+          },
+          "segments": {
+            "items": {
+              "$ref": "#/components/schemas/TripSegment"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Segments"
+          },
+          "expected_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Revision"
+          }
+        },
+        "type": "object",
+        "title": "TripInput"
+      },
+      "TripSegment": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "city_id": {
+            "type": "string",
+            "enum": [
+              "london",
+              "new-york",
+              "paris",
+              "berlin",
+              "chicago"
+            ],
+            "title": "City Id"
+          },
+          "date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "title": "Date"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "plan_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "city_id",
+          "date"
+        ],
+        "title": "TripSegment"
+      },
+      "TripSnapshot": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "segments": {
+            "items": {
+              "$ref": "#/components/schemas/TripSegment"
+            },
+            "type": "array",
+            "title": "Segments"
+          },
+          "transfer_status": {
+            "type": "string",
+            "const": "user_arranged_unverified",
+            "title": "Transfer Status"
+          },
+          "transfers": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Transfers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "revision",
+          "segments",
+          "transfer_status",
+          "transfers"
+        ],
+        "title": "TripSnapshot"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "Window": {
+        "properties": {
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ends At"
+          },
+          "time_zone": {
+            "type": "string",
+            "title": "Time Zone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "starts_at",
+          "ends_at",
+          "time_zone"
+        ],
+        "title": "Window"
+      }
+    }
+  }
+}

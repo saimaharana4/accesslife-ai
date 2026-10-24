@@ -1,6 +1,19 @@
 # AccessLife AI architecture
 
-Revision 1 · 24 October 2026 · Status: proposed implementation; no AccessLife runtime or cloud resources deployed
+Revision 2 - 24 October 2026 - Local architecture implemented; managed GCP rollout authorized
+
+## Current implementation
+
+- Server pages/layouts render the Next.js shell. An interactive client controller coordinates forms/workspace with separate place/evidence, trip and lazy MapLibre modules. Further controller decomposition is technical debt; optional charts, animation and agent graphs are deferred.
+- Pydantic owns request and snapshot contracts. OpenAPI export and generated frontend types include plans and trips. `composition.py` binds replaceable provider ports; raw provider responses never become React models.
+- A fixed LangGraph supervisor runs independent sources -> eligibility/ranking -> provisional construction -> constrained explanation. This is deterministic orchestration, not an autonomous conversational supervisor. Vertex uses ADC and Google Gen AI; Groq is a configured transient fallback. Facts survive language-service failure.
+- PostgreSQL stores sessions, runs, events, checkpoints, leases, immutable plan versions, trip revisions, quotas and permits. PostGIS stores venue coordinates; pgvector and lexical search retrieve a 12-summary original corpus with CPU ONNX MiniLM, 384 dimensions. This is a smoke corpus, not the held-out recall benchmark.
+- Local Compose has web, API, a separate PostgreSQL queue worker and PostgreSQL 16 with both extensions. Cloud Tasks uses the same durable claims. `_dispatch` checkpoints reserve task names before enqueue. Retries reuse reservations; reconciliation rotates stale names, recovers expired leases, bounds attempts and cleans expired records. SSE replays saved sequences; session discovery resumes an active browser run.
+- Current frontend features are `planner/`, `places/`, `trips/`, `map/`. Backend modules are `api/`, `domain/`, `application/`, `agents/`, `ports/`, `adapters/`, `persistence/`; the worker is `worker.py` and Alembic lives in `apps/api/migrations/`. The larger tree below is the target decomposition.
+
+Transport adapters expose capabilities and available line status, not complete accessible routing. OSM discoveries are unknown-access previews; the planning pool is curated. No current plan is fully validated. Private GCS buckets are reserved for permitted document/backup workflows; the tiny catalogue currently ships with the backend. The separate SQL instance currently uses one application database principal for migrations and runtime; splitting a restricted runtime DML role from the migration owner remains production hardening.
+
+Real credentials use server-side `*_API_KEY_SECRET` references and ADC/Secret Manager. SQL passwords and secret payloads use Terraform ephemeral variables/write-only fields, avoiding plaintext plans/state. Never publish payloads or proprietary Qloo responses. Secret readers cache values until restart; restart after rotation.
 
 ## 1. Architectural decisions
 
@@ -20,7 +33,7 @@ The product covers London, New York, Paris, Berlin and Chicago. A trip aggregate
 | Object storage | Private GCS documents and backups buckets | Bounded permitted data and recoverable manifests |
 | Deployment | Terraform and GitHub Actions using WIF | Reproducible resources without downloaded service-account keys |
 
-Use supported stable versions, pin exact package/model/image revisions during implementation and commit lockfiles. This documentation-only delivery does not invent an installed version inventory.
+Use supported stable versions, pin exact package/model/image revisions during implementation and commit lockfiles. Exact installed versions are in the dependency lockfiles.
 
 ## 2. Deployment and trust boundaries
 
@@ -50,7 +63,7 @@ The browser calls only same-origin `/api/v1/*` routes. Next.js forwards them to 
 
 Use IAM authentication for private Cloud Run services; “private” does not mean network-only ingress. Cloud Tasks must be able to reach its worker URL with the task invoker's OIDC token. Choose ingress settings compatible with that path and verify unauthorized requests are rejected. The web service identity can invoke API; it cannot invoke planning internals or read the database directly.
 
-Cloud SQL uses the Cloud SQL Python connector with IAM authorization to connect and a dedicated least-privilege application database user. Initial budget-conscious networking uses a public instance IP with no authorized external networks; connector-mediated encrypted connections only. This is not an unauthenticated database endpoint. If policy requires private IP, explicitly price and provision the required networking before replacing this default.
+Cloud Run uses its managed Cloud SQL socket attachment with IAM cloudsql.client authorization; psycopg connects through that socket using the application database credential from Secret Manager. Initial budget-conscious networking uses a public instance IP with no authorized external networks; managed-proxy encrypted connections only. This is not an unauthenticated database endpoint. If policy requires private IP, explicitly price and provision the required networking before replacing this default.
 
 ### GCP resource plan
 
@@ -66,13 +79,13 @@ Project: `project-bb13ecd8-9d67-408d-9a7`. Default deployment region: `asia-sout
 | SQL storage growth | Same instance | Autoresize capped at 40 GB; application quotas apply first |
 | Object buckets | `accesslife-docs-<project-id>`, `accesslife-backups-<project-id>` | Uniform access, public access prevention and lifecycle rules |
 | Images | `accesslife` Artifact Registry repository | Immutable revision tags/digests, bounded retained images |
-| Ingestion | `accesslife-ingest` Cloud Run job | One task, parallelism 1, 2 vCPU / 4 GiB, manually invoked initially |
+| Ingestion | `accesslife-ingest` Cloud Run job | One task, parallelism 1, 1 vCPU / 2 GiB, manually invoked initially |
 | Terraform state | Dedicated AccessLife GCS state bucket/prefix | Restricted access, versioning, never committed |
 | Identity and secrets | Resource-scoped AccessLife accounts/secrets | No Owner/Editor grants and no public secrets |
 
-These are starting allocations, not provisioned facts or a verified US$80 quote. Default min instances are zero; any temporary warm capacity during judging must be included in the estimate. Cold-start latency is measured separately from warm planning.
+These are initial allocations. The dated forecast is in [COST_REVIEW.md](../infra/COST_REVIEW.md); deployed results are in memory.md. Default min instances are zero; any temporary warm capacity during judging must be included in the estimate. Cold-start latency is measured separately from warm planning.
 
-Limit connection pools: API 5 per instance, worker 5 total and ingestion 2. With the initial instance maxima, this is 17 application connections; leave capacity for migrations, health checks and administration. Enable pre-ping, connection recycling and bounded pool checkout. Never hold database connections while awaiting external provider calls.
+Limit connection pools: API 5 per instance, worker 5 and each maintenance job 5. With initial instance maxima and one maintenance job, this is up to 20 application connections; leave capacity for migrations, health checks and administration. Enable pre-ping, connection recycling and bounded pool checkout. Never hold database connections while awaiting external provider calls.
 
 Service identities are separate for web, API, worker, task invocation, ingestion and CI deployment. API can enqueue tasks and use its database role. Worker can read only its required secrets/objects and call the selected model. The task invoker has only worker invocation rights. CI's WIF trust is restricted to this repository and intended branch/environment; it does not use a project-wide Owner role.
 
@@ -108,7 +121,7 @@ tests/retrieval/                     # Annotated questions and retrieval evaluat
 tests/e2e/                           # Browser journeys, failure states and accessibility
 ```
 
-This tree is a future layout, not a claim that application folders already exist. Within each frontend feature use `components/`, `hooks/`, `schemas/` and a public `index.ts` only as needed. Do not add empty abstractions simply to fill the tree.
+This is the target decomposition; current modules are listed in the checkpoint above. Within each frontend feature use `components/`, `hooks/`, `schemas/` and a public `index.ts` only as needed. Do not add empty abstractions simply to fill the tree.
 
 Dependency direction: HTTP/UI → application use cases → domain/ports. Adapters implement ports and are selected at the composition root. Domain code imports neither FastAPI nor provider SDKs. Graph nodes call use cases/ports; they do not read another provider's internal response. Provider swaps change configuration and adapter construction, not cards or validators.
 
@@ -179,7 +192,6 @@ Example intake shape (illustrative coordinates are omitted; the city area is cho
 ```json
 {
   "city_id": "london",
-  "area_id": "replace-with-validated-supported-district",
   "window": {
     "starts_at": "2026-10-29T10:00:00+00:00",
     "ends_at": "2026-10-29T15:00:00+00:00",
@@ -209,16 +221,23 @@ Session tokens, mobility inputs and precise user location stay out of logs, URLs
 
 ```mermaid
 flowchart TD
-    Intake[Validate city, dates, requirements and ownership] --> Gather[Parallel independent retrieval]
-    Gather --> Normalize[Normalize identities and enrich shortlist]
-    Normalize --> Gate{Mandatory facts and route checks pass?}
-    Gate -->|No| Unknown[Exclude from confirmed set; explain gaps]
-    Gate -->|Yes| Taste[Apply supported Qloo ranking]
-    Taste --> Construct[Construct times, legs and rest breaks]
-    Construct --> Verify{Deterministic and claim validation}
-    Verify -->|Fails| Incomplete[Return partial or no feasible plan]
-    Verify -->|Passes| Publish[Atomically publish immutable version and terminal event]
+    Intake[Validate city dates requirements and ownership] --> Gather[Retrieve independent sources]
+    Gather --> Normalize[Normalize candidates and source references]
+    Normalize --> Gate{Mandatory venue evidence compatible?}
+    Gate -->|Yes| Taste[Rank the same eligible pool with Qloo]
+    Gate -->|No| Unknown[Keep verification-needed alternatives separate]
+    Taste --> Construct[Construct provisional stops legs and rest suggestions]
+    Unknown -->|Explicit preview only| Construct
+    Construct --> Explain[Optional constrained explanation]
+    Explain --> Check{Deterministic bounds and claim checks}
+    Check -->|No feasible outline| Empty[Empty result with unmet constraints]
+    Check -->|Supported draft| Draft[Retain unresolved journey and opening checks]
+    Empty --> Publish[Publish immutable version and terminal event]
+    Draft --> Publish
 ```
+
+Current published drafts never receive confirmed journey status. Future confirmation requires compatible current evidence for every required stop and leg, actual route distances/times and opening/rest conditions; a successful task or generated explanation cannot establish it.
+
 
 The first fan-out includes places, taste-interest resolution, weather, transit capability/freshness and RAG guidance. Route calls and taste scoring follow identity resolution and shortlist selection. CPU embedding uses one bounded worker process and two model threads initially; it must not block the async request loop. Bulk ingestion is disabled during judge sessions.
 

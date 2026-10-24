@@ -1,0 +1,53 @@
+name: Local application checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GENERATION_PROVIDER: template
+      LIVE_PROVIDERS: "false"
+      PYTHONPATH: apps/api/src
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.2
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: 0.11.32
+      - run: uv sync --frozen --extra retrieval --group dev
+      - run: pnpm install --frozen-lockfile
+      - run: docker compose up -d --wait db
+      - run: docker compose exec -T db createdb -U accesslife accesslife_test
+      - run: uv run alembic -c apps/api/alembic.ini upgrade head
+        env:
+          DATABASE_URL: postgresql+psycopg://accesslife:accesslife_local@127.0.0.1:5432/accesslife_test
+      - run: uv run ruff check apps/api tests scripts
+      - run: uv run pytest -q
+      - run: uv run python scripts/export_contracts.py
+      - run: pnpm contracts
+      - run: git diff --exit-code packages/contracts/openapi.json apps/web/src/lib/api/schema.d.ts
+      - run: pnpm typecheck
+      - run: docker compose up -d --build api worker web
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - name: Validate deployment configuration without applying
+        run: |
+          docker run --rm -v "$PWD/infra/terraform:/work" -w /work hashicorp/terraform:1.13.3 init -backend=false -no-color
+          docker run --rm -v "$PWD/infra/terraform:/work" -w /work hashicorp/terraform:1.13.3 validate -no-color
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: application-failure-evidence
+          path: |
+            playwright-report/
+            test-results/
+      - if: always()
+        run: docker compose down

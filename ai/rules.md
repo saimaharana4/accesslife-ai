@@ -1,6 +1,18 @@
 # AccessLife AI engineering rules
 
-Revision 1 · 24 October 2026 · Applies to all future application, data and infrastructure work
+Revision 2 - 24 October 2026 - Applies to implemented and future work
+
+## Runtime decisions in force
+
+Use Node 24, Python 3.12, pnpm 10.28.2 and committed pnpm/uv/Terraform lockfiles. Version container images and deploy immutable digests. MiniLM weights are pinned and packaged with their Apache license/model card; never commit weights.
+
+Vertex uses Google Gen AI, ADC, global `gemini-3.8-flash` and LOW thinking; project access passed a live smoke. Only transient configured failures permit Groq fallback; authentication failures do not silently switch. Optional OpenAI uses Responses parsing; Ollama is opt-in. Deterministic explanations never add venue facts.
+
+Qloo uses the hackathon origin, `X-Api-Key`, GET `/search`, `/v2/tags`, `/v2/insights`. Search results are an array; Insights entities are nested. Resolve IDs first and enforce the place-parameter allowlist. Prefer exact place-category tags, then place/media genres or ambience. Explicit named seeds use `entity:`; never turn an unresolved generic word into an arbitrary artist/movie. Bound ranking to five interests/eight candidates; the current catalogue has three/city. Preserve ambiguous mappings and absent scores. Raw responses stay only in the private expiring lookup cache, never in RAG, Git or browser state.
+
+All real application credentials belong in Secret Manager. Local `.env` may contain nonsecret references and the public loopback development database default. Keep payloads out of source, examples, tests, logs, build contexts, Terraform files and CLI output. Vertex/CI use IAM/ADC/WIF, not downloaded service-account keys. Optional provider keys pasted earlier require rotation before enabling those adapters.
+
+Persist limits across processes: three active runs, twelve provider permits overall/five per run, 30-second execution deadlines, three execution attempts and bounded dispatch recovery. Daily planning capacity defaults to 200; model calls are 100 locally and 35 in reviewed cloud configuration. Per-session limits apply too. These are operational controls, not dollar spending caps.
 
 ## 1. Authority and current state
 
@@ -8,7 +20,7 @@ Follow explicit user decisions first. The maintained requirements are [prd.md](p
 
 Keep the six maintained specifications in `ai/`. Original reference files are preserved locally and ignored; never publish them through a broad `git add .` or use them as runtime dependencies. Record completed work in [memory.md](memory.md), one or two lines per dated entry. Do not mark planning targets as measured outcomes.
 
-Current delivery is documentation and repository setup. Application scaffolding, dependencies, migrations and cloud resources belong to later phases.
+Application implementation and managed GCP work are now authorized. Record local, live-provider and cloud outcomes separately in memory.md.
 
 ## 2. Approved stack and dependency policy
 
@@ -22,14 +34,14 @@ Current delivery is documentation and repository setup. Application scaffolding,
 | Maps | MapLibre GL JS, optionally its `react-map-gl/maplibre` binding | Assuming free/public tiles permit unlimited use; map-only navigation |
 | Charts/motion | Recharts, small custom SVG, Motion | Two chart libraries; mandatory animation; decorative confidence gauges |
 | Agent inspector | Lazy `@xyflow/react` | Loading a graph library on every landing page; exposing private reasoning |
-| API and DB | FastAPI, Pydantic, SQLAlchemy, Alembic, psycopg, Cloud SQL connector | SQL string interpolation; import-time network calls; schema creation instead of migrations |
+| API and DB | FastAPI, Pydantic, SQLAlchemy, Alembic, psycopg, Cloud Run Cloud SQL socket attachment | SQL string interpolation; import-time network calls; schema creation instead of migrations |
 | Agents | LangGraph and small explicit provider/tool interfaces | Multiple orchestration frameworks, autonomous unbounded loops or a service per agent |
 | Retrieval | MiniLM CPU, pgvector, PostgreSQL full-text search and PostGIS | Chroma/Qdrant/FAISS as additional production stores; GPU; an oversized corpus |
 | Generation | Configurable Vertex AI adapter | Local large LLM hosting; guessed model IDs or quota claims |
 | Jobs/deploy | Cloud Tasks, Cloud Run jobs, Terraform, GitHub Actions WIF | In-process post-response planning; downloaded CI service-account keys; Kubernetes |
 | Verification | pytest, Vitest, Testing Library, Playwright and axe | Skipping failing domain cases, weakening assertions or disabling full accessibility scans |
 
-These are approved implementation choices, not installed dependencies. At scaffolding time select current supported stable Node LTS/Python versions compatible with the chosen stack, pin them in runtime/toolchain files and commit pnpm/uv lockfiles. Use `pnpm` for JS and `uv` for Python. Avoid unpinned `latest` dependencies in repeatable builds and pin container/model revisions.
+The table contains installed and deferred choices. Exact installed versions are in the lockfiles; keep toolchain files and lockfiles aligned. Use `pnpm` for JS and `uv` for Python. Avoid unpinned `latest` dependencies in repeatable builds and pin container/model revisions.
 
 React Aria base is supported by the [shadcn CLI](https://ui.shadcn.com/docs/cli). Verify generation against the pinned CLI and review copied component code; a registry item is not automatically accessible or safe.
 

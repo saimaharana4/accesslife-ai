@@ -2,6 +2,21 @@
 
 Revision 1 · 24 October 2026 · Phase 0 complete; application and infrastructure phases have not started
 
+## Implementation progress - 24 October 2026
+
+| Phase | Actual state | Open gate |
+|---|---|---|
+| 0 | Complete: maintained documents, public MIT repository and preserved references | Keep publication checks on every push |
+| 1 | Five city configurations, domain/OpenAPI contracts, 15 sourced venues and live Qloo matching smoke | Complete source/transport permissions and evidence-backed local-route coverage; no city is complete |
+| 2 | Functional Next.js shell, tokens, React Aria controls, editable personas and forms | Further split the planner controller; real-user accessibility review |
+| 3 | Place cards, feature states, evidence dialog, optional map/list selection and OSM previews | Current route/last-mile evidence and broader catalogue |
+| 4 | Real Qloo and Vertex smoke passed; weather, retrieval and transport capability adapters exist | Optional provider credential/live tests, actual transit routing, held-out retrieval benchmark |
+| 5 | Durable queue/claims/checkpoints/events, cancellation, fencing, immutable replans and SSE replay | Exercise cloud-specific retry/restore paths after deployment |
+| 6 | Five usable provisional local flows and revisioned city collections | Validated local plans and verified inter-city routing remain open |
+| 7 | Containers built, local browser/restore checks passed; cost review passed and GCP rollout authorized | External checks and release evidence are recorded in memory as they complete |
+
+These states supersede the original foundation-only milestone. The completion gates below are retained as requirements; a successful draft is not a city-coverage pass. Prioritize the working Qloo journey over decorative charts or corpus expansion. Freeze features on 30 October; retain judging access through 5 November within the reviewed cost window.
+
 ## 1. How to use this plan
 
 Finish a phase's exit checks before calling it complete. Parallel work is appropriate only after shared contracts are stable; provider retrieval may run concurrently, while identity matching, eligibility and publication have dependencies. A phase is a unit of delivery, not a requirement to create one service or branch per component.

@@ -1,0 +1,86 @@
+name: accesslife
+x-api: &api
+  image: accesslife-api:local
+  build:
+    context: .
+    dockerfile: infra/containers/api.Dockerfile
+  env_file:
+    - path: .env
+      required: false
+  environment: &api-env
+    DATABASE_URL: postgresql+psycopg://accesslife:${POSTGRES_PASSWORD:-accesslife_local}@db:5432/accesslife
+    APP_PUBLIC_URL: http://localhost:3000
+    GOOGLE_APPLICATION_CREDENTIALS: /credentials/application_default_credentials.json
+    GENERATION_PROVIDER: ${GENERATION_PROVIDER:-vertex_ai}
+    GENERATION_FALLBACK: ${GENERATION_FALLBACK:-groq}
+    GCP_PROJECT_ID: ${GCP_PROJECT_ID:-project-bb13ecd8-9d67-408d-9a7}
+    VERTEX_AI_MODEL: ${VERTEX_AI_MODEL:-gemini-3.8-flash}
+    VERTEX_AI_LOCATION: ${VERTEX_AI_LOCATION:-global}
+    TASTE_PROVIDER: ${TASTE_PROVIDER:-development}
+    TASK_BACKEND: postgres
+    LIVE_PROVIDERS: ${LIVE_PROVIDERS:-true}
+  volumes:
+    - type: bind
+      source: ${GCP_ADC_DIRECTORY:-./.data/credentials}
+      target: /credentials
+      read_only: true
+    - model-cache:/data/models
+  depends_on:
+    migrate:
+      condition: service_completed_successfully
+  restart: unless-stopped
+services:
+  db:
+    build:
+      context: .
+      dockerfile: infra/containers/database.Dockerfile
+    environment:
+      POSTGRES_DB: accesslife
+      POSTGRES_USER: accesslife
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-accesslife_local}
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U accesslife -d accesslife"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+  migrate:
+    <<: *api
+    command: ["alembic", "-c", "apps/api/alembic.ini", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+  api:
+    <<: *api
+    ports: ["127.0.0.1:8000:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/v1/health/ready')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  worker:
+    <<: *api
+    command: ["python", "-m", "accesslife.worker"]
+  ingest:
+    <<: *api
+    profiles: ["tools"]
+    command: ["python", "-m", "accesslife.adapters.retrieval"]
+    restart: "no"
+  web:
+    build:
+      context: .
+      dockerfile: infra/containers/web.Dockerfile
+    environment:
+      API_INTERNAL_URL: http://api:8000
+      APP_PUBLIC_URL: http://localhost:3000
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  postgres-data:
+  model-cache:

@@ -1,0 +1,71 @@
+name: Keyless GCP release
+on:
+  workflow_dispatch:
+    inputs:
+      run_deployment:
+        description: Deploy this verified main commit (false checks WIF only)
+        type: boolean
+        default: false
+      cost_review_passed:
+        description: Confirm the dated incremental cost review still applies
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: accesslife-cloud-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PROJECT: project-bb13ecd8-9d67-408d-9a7
+      REGION: asia-south1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require main and a current cost gate for deployment
+        env:
+          DEPLOY: ${{ inputs.run_deployment }}
+          COST_REVIEWED: ${{ inputs.cost_review_passed }}
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          if [ "$DEPLOY" = true ]; then
+            test "$COST_REVIEWED" = true
+            python -c "from datetime import datetime,timezone,date; assert datetime.now(timezone.utc).date() < date(2026,11,6), 'Renew the cost review before extending judging access'"
+          fi
+      - uses: google-github-actions/auth@v3
+        with:
+          project_id: project-bb13ecd8-9d67-408d-9a7
+          workload_identity_provider: projects/902056825143/locations/global/workloadIdentityPools/accesslife-github/providers/github
+          service_account: accesslife-deploy@project-bb13ecd8-9d67-408d-9a7.iam.gserviceaccount.com
+      - uses: google-github-actions/setup-gcloud@v3
+      - name: Verify scoped service access without reading secrets
+        run: gcloud run services describe accesslife-web --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)'
+      - name: Build and publish this commit
+        if: inputs.run_deployment
+        run: |
+          gcloud auth configure-docker "$REGION-docker.pkg.dev" --quiet
+          registry="$REGION-docker.pkg.dev/$PROJECT/accesslife"
+          docker build -f infra/containers/api.Dockerfile -t "$registry/api:$GITHUB_SHA" .
+          docker build -f infra/containers/web.Dockerfile -t "$registry/web:$GITHUB_SHA" .
+          docker push --quiet "$registry/api:$GITHUB_SHA"
+          docker push --quiet "$registry/web:$GITHUB_SHA"
+      - name: Migrate before updating runtime revisions
+        if: inputs.run_deployment
+        run: |
+          image="$REGION-docker.pkg.dev/$PROJECT/accesslife/api:$GITHUB_SHA"
+          for job in migrate ingest reconcile; do
+            gcloud run jobs update "accesslife-$job" --project "$PROJECT" --region "$REGION" --image "$image" --quiet
+          done
+          gcloud run jobs execute accesslife-migrate --project "$PROJECT" --region "$REGION" --wait --quiet
+      - name: Deploy existing services and smoke readiness
+        if: inputs.run_deployment
+        run: |
+          registry="$REGION-docker.pkg.dev/$PROJECT/accesslife"
+          gcloud run services update accesslife-worker --project "$PROJECT" --region "$REGION" --image "$registry/api:$GITHUB_SHA" --quiet
+          gcloud run services update accesslife-api --project "$PROJECT" --region "$REGION" --image "$registry/api:$GITHUB_SHA" --quiet
+          gcloud run services update accesslife-web --project "$PROJECT" --region "$REGION" --image "$registry/web:$GITHUB_SHA" --quiet
+          url=$(gcloud run services describe accesslife-web --project "$PROJECT" --region "$REGION" --format='value(status.url)')
+          curl --fail --retry 3 "$url/api/v1/health/ready"

@@ -17,6 +17,7 @@ credentials*.json
 *service-account*.json
 *service_account*.json
 application_default_credentials.json
+gha-creds-*.json
 client_secret*.json
 *.pem
 *.key
@@ -82,3 +83,4 @@ Desktop.ini
 .vscode/
 *.swp
 *.tmp
+*.tsbuildinfo

@@ -1,6 +1,16 @@
 # AccessLife AI product requirements
 
-Revision 1 · 24 October 2026 · Status: specification, application not implemented
+Revision 2 - 24 October 2026 - Local provisional planner implemented; release gates remain open
+
+## Current implementation
+
+Five-city intake, editable personas, discovery/evidence, deterministic eligibility, provisional itineraries, rest suggestions, versioned replanning, SSE progress and revisioned multi-city collections work locally. Actual Qloo search/tags/Insights calls and Vertex structured generation have passed live smoke checks. Optional Groq/OpenAI/Ollama adapters are implemented but unconfigured.
+
+The sourced catalogue contains 15 real venues and 12 narrow feature summaries. Art/history Qloo matching smoke results: London 2/3, New York 1/3, Paris 2/3, Berlin 2/3, Chicago 3/3. Unmapped candidates have no fabricated scores. This measures matching, not recommendation uplift or accessible-route coverage.
+
+Every current outing remains **provisional**. Opening windows, route geometry, travel duration, door-to-door access and actual rest seating remain unverified. Straight-line distance can reject an impossible allowance; it cannot certify a feasible route. Mandatory unknown, conflicting and stale evidence never becomes eligible because of taste. No city is coverage-complete.
+
+The requirements below remain release targets wherever not verified in memory.md. GCP rollout was subsequently authorized; its actual results are recorded separately. Accounts, bookings, collaboration, verified inter-city routing, multilingual retrieval and live alerts remain later work.
 
 This maintained specification lives in `ai/`. The original local reference files remain unchanged and excluded from Git; only the six maintained specifications in this folder are published.
 

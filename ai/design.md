@@ -1,6 +1,16 @@
 # AccessLife AI design specification
 
-Revision 1 · 24 October 2026 · Status: intended design, no screens implemented
+Revision 2 - 24 October 2026 - Responsive workspace implemented; broader usability gates remain
+
+## Current implementation
+
+The app uses the specified canvas, opaque white reading surfaces, teal actions, violet taste, amber uncertainty, system typography, visible focus and 48px primary controls. The city illustration is original CSS. High contrast, reduced motion/transparency and map-free planning are supported.
+
+The current route is a workspace at `/` with Discover / Itinerary / City collection tabs. Future detailed routes below are not all shipped pages. Server pages/layouts wrap a client controller, separate place/evidence and trip components, and a lazy MapLibre panel. Maps are optional; comparisons use accessible ordered text. Qloo is marked live only for a successful real result; decorative chart/graph/motion libraries are deferred.
+
+Loading/retry/partial states distinguish catalogue failures, map failures, provider fallback, stale evidence and unverified journeys. The React Aria evidence dialog manages focus. Previous immutable versions are inspectable; replan from the latest version. City collections show local zones and explicit transfer gaps.
+
+Playwright checks desktop/mobile journeys, axe scans, keyboard skip links, high contrast, reduced motion and 200% text at 320px reflow. Screen-reader user testing and broader usability validation remain acceptance work. Private screenshots are local verification artifacts, not published user data.
 
 ## 1. Product experience
 
