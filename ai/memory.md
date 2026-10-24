@@ -2,6 +2,10 @@
 
 Keep each dated entry to one or two lines. Record completed work and verified outcomes; distinguish requirements, measurements and blockers. Never include secrets, personal profiles or unverified success claims.
 
+**Current direction - 24 October 2026:** Taste Duel. Prompt 1 preservation is complete; Prompt 2 has a partial capability gate with two raw cross-domain samples and unresolved MCP/same-domain checks. The current application and deployment remain AccessLife. Historical results below are not Taste Duel verification and were not rerun for this pivot.
+
+## Historical AccessLife milestones (recorded at the time)
+
 - **2026-10-24 — Location:** The six maintained documents belong in `ai/`, per the updated instruction; original reference files stay local and excluded from Git using an explicit documentation allowlist.
 - **2026-10-24 — Documentation:** Completed the six specifications plus README, MIT license, placeholder environment template and ignore policy; checked 35 local links, JSON/fence structure and 10 design contrast pairs, with no failures.
 - **2026-10-24 — Preservation:** SHA-256 checks confirm all three original reference files are unchanged; Git ignore checks exclude them, secrets/state/data/model paths, and retain the maintained documents and dependency lockfiles.
@@ -34,3 +38,17 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 - **2026-10-24 - Final CI:** [Run 40071609074](https://github.com/saimaharana4/accesslife-ai/actions/runs/40071609074) passed for application commit `f6236db`: 35 backend tests, contract drift, TypeScript, containers, four browser journeys and static Terraform validation.
 - **2026-10-24 - Final audit:** All four active credential payloads are absent from 90 tracked files and remote Terraform state; deployed services have no sensitive literal settings. Three original reference hashes match and 43 local documentation links resolve.
 - **2026-10-24 - Open acceptance:** Outings remain provisional; complete evidence-backed routes, Cloud SQL backup restore, real-user screen-reader review and hackathon qualification are pending. Optional earlier provider keys remain unconfigured; the reviewed US$78.48 forecast is not a spending cap.
+
+
+## Taste Duel pivot
+
+- **2026-10-24 - Baseline:** Prompt 1 started on clean tracked `main` at `86d4ef677ae7dba93bf0211e4348d7c29284a948` (90 tracked files); the existing `ai/prompts.md` was ignored. No physical AGENTS.md was found; supplied conversation instructions apply.
+- **2026-10-24 - Checkpoint:** Created local annotated tag `accesslife-before-taste-duel-2026-10-24` at that HEAD; it is not pushed. Original reference hashes match the preservation manifest in README; no second application copy was created.
+- **2026-10-24 - Prompt 1:** Rewrote the five Taste Duel specifications and README; retained all 36 historical memory lines, allowlisted prompts plus six specs, and reserved private provider/data/build-artifact exclusions. Source, dependencies, workflows and cloud resources remain AccessLife and unchanged.
+- **2026-10-24 - Verification:** Fifty local Markdown links, one synthetic JSON example, balanced fences, seven AI-file allowlists, 14 keep/28 ignore cases, three reference hashes, the annotated tag and changed-file scope passed. Named credential-pattern checks found no matches; index remains empty, with no secret payload reads or live provider calls.
+- **2026-10-24 - Review/next:** Independent source/preservation and cross-document reviews passed; recorded audit is `.data/prompt1-verification.json`. Prompt 1 is complete locally, uncommitted/unpushed; Prompt 2 must verify actual Qloo game coverage, harness/score semantics and source rights before live-game claims.
+
+- **2026-10-24 - Prompt 2 research:** Pinned kit `80a82b2`, docs `d4a0eb9` and harness `0.1.26`; ten-tool offline discovery used zero upstream calls. Advertised OpenAPI download is a pathless meta-schema; source/rights/retention decisions are in `qloo-capability-matrix.md`.
+- **2026-10-24 - Prompt 2 live:** Exactly 12/12 sequential Qloo HTTP requests, no retries; two raw artist/movie cross-domain samples each returned twenty unique ordered candidates, sufficient for five numeric disjoint comparisons. Canonical MCP Insights, same-domain cells and nested explanation semantics remain unverified; Vertex deferred, no infrastructure mutation.
+- **2026-10-24 - Prompt 2 review:** Independent score/rights review retained lower-bound/sample limitations and original-art fallback; no universal score scale, image licence, numerical quota or key-expiry claim. Synthetic tests/Ruff and preservation checks are recorded at final verification; next independent step is Prompt 3, with live gaps due before dependent integration.
+- **2026-10-24 - Prompt 2 verification:** 22 synthetic tests and Ruff passed; 70 local links, JSON/fences, 19 keep/21 ignore cases, original hashes and the checkpoint tag passed. Independent final review found no blocking inconsistency; the 14-file publication scope includes prior Prompt 1 docs plus this spike/contracts, with no live payloads or credential-pattern matches.

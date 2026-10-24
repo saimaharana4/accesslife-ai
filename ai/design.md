@@ -1,247 +1,153 @@
-# AccessLife AI design specification
+# Taste Duel design specification
 
-Revision 2 - 24 October 2026 - Responsive workspace implemented; broader usability gates remain
+Revision 1 · 24 October 2026 · Planned visual system; no Taste Duel UI implemented
 
-## Current implementation
+## Status and visual goal
 
-The app uses the specified canvas, opaque white reading surfaces, teal actions, violet taste, amber uncertainty, system typography, visible focus and 48px primary controls. The city illustration is original CSS. High contrast, reduced motion/transparency and map-free planning are supported.
+This is a fresh design brief, not a description of the current AccessLife UI. Prompt 1 changes specifications only. Application source and cloud deployment remain AccessLife; its planner screenshots and accessibility results cannot satisfy this game's gates. Preserve original reference files unchanged.
 
-The current route is a workspace at `/` with Discover / Itinerary / City collection tabs. Future detailed routes below are not all shipped pages. Server pages/layouts wrap a client controller, separate place/evidence and trip components, and a lazy MapLibre panel. Maps are optional; comparisons use accessible ordered text. Qloo is marked live only for a successful real result; decorative chart/graph/motion libraries are deferred.
+Follow [prompts.md](prompts.md), [prd.md](prd.md), [Architecture.md](Architecture.md) and [rules.md](rules.md); record real results in [memory.md](memory.md).
 
-Loading/retry/partial states distinguish catalogue failures, map failures, provider fallback, stale evidence and unverified journeys. The React Aria evidence dialog manages focus. Previous immutable versions are inspectable; replan from the latest version. City collections show local zones and explicit transfer gaps.
+Prompt 2 found image metadata in both cross-domain samples but established no asset display/mirroring/social rights. Original title-based artwork is sufficient for the upcoming synthetic prototype; no optional image provider is required. Use rank wording rather than automatically turning decimal affinity into a percentage. The [capability matrix](qloo-capability-matrix.md) records the partial live gate; no rendered Taste Duel UI exists yet.
 
-Playwright checks desktop/mobile journeys, axe scans, keyboard skip links, high contrast, reduced motion and 200% text at 320px reflow. Screen-reader user testing and broader usability validation remain acceptance work. Private screenshots are local verification artifacts, not published user data.
+The experience should feel like **a cultural fight-night editorial**: one favourite, two oversized opponents, a quick prediction and a revealing result. Type and artwork create impact. The game must be understandable before explaining infrastructure.
 
-## 1. Product experience
+## 1. Art direction and tokens
 
-Use a calm, readable map-and-itinerary workspace with welcoming travel imagery and explicit evidence. The core questions are: where could I go, does it meet my requirements, and why is it recommended? Structured cards and timelines carry decisions; conversational input is an optional way to describe intent.
+Use an original typographic wordmark, near-black canvas, warm paper text and electric chartreuse actions. A narrow DUEL seam between large choices is the signature composition. Five round pips create continuity; the result resembles a collectible printed ticket rather than dashboard statistics.
 
-The five cities are London, New York, Paris, Berlin and Chicago. The city selector is always discoverable, with time zone, supported area and coverage state. Changing a city must not silently preserve an incompatible plan. A multi-city trip has independent local plans and visible user-arranged, unverified transfer gaps.
+No enterprise sidebar, generic recommendation grid, statistics tiles, chat, decorative agent graph, gradient blobs, heavy glass, perpetual confetti or mandatory WebGL. Do not decorate the AccessLife planner. Inspiration does not license another product's trade dress or imagery.
 
-This specification lives with the other maintained files in `ai/`. Original reference files remain local, ignored and unchanged. Build one coherent design system rather than combining unrelated template styles.
-
-## 2. Color, typography and layout tokens
-
-### Light theme
-
-| Semantic token | Value | Use |
+| Token | Starting value | Use |
 |---|---|---|
-| `canvas` | `#F7F8FA` | Page background |
-| `surface` | `#FFFFFF` | Cards, dialogs and evidence panels |
-| `text` | `#172033` | Main reading text |
-| `text-muted` | `#475569` | Secondary text that still meets contrast |
-| `primary` | `#0F766E` | Main actions and selected navigation |
-| `primary-hover` | `#115E59` | Hover/pressed action surface |
-| `on-primary` | `#FFFFFF` | Text on primary buttons |
-| `taste` | `#6D28D9` | Cultural preference information |
-| `taste-surface` | `#F3E8FF` | Taste explanation panels |
-| `warning` | `#92400E` | Uncertainty and verification-needed text |
-| `warning-surface` | `#FEF3C7` | Warning panels |
-| `danger` | `#B91C1C` | Failed requirements, destructive actions |
-| `positive` | `#166534` | Supported success state, always text-labeled |
-| `focus` | `#1D4ED8` | Visible keyboard focus |
-| `control-border` | `#64748B` | Necessary control boundaries |
-| `divider` | `#CBD5E1` | Decorative separators only |
+| `canvas` | `#101014` | Full-page ink background |
+| `surface` | `#1B1B23` | Opaque reading/reveal/control surfaces |
+| `text` | `#F4F1EA` | Main warm paper text |
+| `text-muted` | `#B9B7C3` | Secondary readable labels |
+| `primary` | `#DBFF5E` | Main action/selected emphasis |
+| `on-primary` | `#101014` | Text on chartreuse |
+| `secondary` | `#B9A9FF` | Restrained supporting accent |
+| `incorrect` | `#FF9A9A` | Incorrect outcome with icon/text |
+| `focus` | `#DBFF5E` | Focus ring, with dark offset where necessary |
+| `control-border` | `#858191` | Necessary dark-surface boundaries |
 
-Teal marks actions, not a blanket accessibility guarantee. Violet marks taste, not eligibility. Every status includes text and an icon; color is supplemental. Verify contrast in the final rendered compositions, including overlays, disabled states and chart labels. Target at least 4.5:1 normal text and 3:1 large text/necessary nontext boundaries under applicable WCAG criteria.
+Verify actual rendered combinations: ≥4.5:1 normal text and ≥3:1 large text/necessary nontext boundaries. This table is not a blanket contrast pass. Essential text sits on a readable surface, not an uncertain artwork gradient. Colour never solely communicates correctness, selection or failure.
 
-### Themes and preferences
+Typography: locally hosted licensed **Barlow Condensed** display plus **Manrope** reading/control type, or verified equivalents with system fallbacks. Use at most two families and three necessary weights, retaining licence notices. Inspect screenshots after fonts load. Short fluid display approximately 48–112px; body 18px; useful metadata 14–16px. Relative units, comfortable line heights, tabular score numerals; no tiny long-name truncation or condensed paragraph text.
 
-Light is the default. High-contrast mode uses white surfaces, `#000000` primary text, `#334155` secondary text, `#115E59` primary actions, `#000000` control borders and `#1D4ED8` focus. Remove glass/blur and decorative shadows in that mode. Do not invert map tiles as an accidental dark theme.
+Spacing scale: 4/8/12/16/24/32/48/64px. Large arena cards: roughly 20–28px radius; compact controls: 10–14px. Result ticket perforation may use original SVG/CSS without complicating pointer/reading order. Primary actions have ≥48px hit areas; visible focus is unclipped and distinct from selection.
 
-Respect system reduced-motion and forced-colors settings. Add user controls for reduced motion and reduced transparency without disabling essential state feedback. Store only these nonsensitive display preferences locally. A separate dark theme is deferred until its entire state matrix can be checked.
+Dark is the deliberate default. Respect forced colours and reduced motion; do not promise an unimplemented light theme. Original subtle grain is optional and nonessential.
 
-### Typography
-
-Use the system sans-serif stack initially: `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`. No external font request is needed. Use tabular numerals for times and distance comparisons. Avoid all-caps passages and thin/light body text.
-
-| Role | Size / line height | Weight |
-|---|---|---|
-| Page heading | 40/48 px desktop, 30/38 px mobile | 700 |
-| Section heading | 28/36 px | 700 |
-| Card title | 22/30 px | 600 |
-| Body | 18/28 px | 400 |
-| Controls | 18/26 px | 600 for actions |
-| Secondary body | 16/24 px | 400 |
-| Metadata | 14/22 px minimum; prefer 16/24 for important facts | 400 |
-
-Use relative CSS units so browser zoom works. Font sizes are product defaults, not a claim that WCAG mandates 18 px. Long prose stays around 65–75 characters per line and aligns left.
-
-### Space, shape and interaction
-
-- Base spacing: 4 px, then 8, 12, 16, 24, 32, 48 and 64 px.
-- Primary control target: at least 48 × 48 CSS px; clear spacing between adjacent actions.
-- Card radii: 16 px standard and 24 px large; input/control radius 12 px.
-- Focus: visible 3 px outline with 2 px offset; never hidden by sticky panels.
-- Cards: subtle border and restrained shadow; evidence remains opaque.
-- Motion: 150–250 ms for drawer/card/rank state transitions; instant or simple opacity change in reduced-motion mode.
-- Glass: navigation/short controls only, roughly 85–95% opacity over imagery, with an opaque fallback. Avoid blur on large scrolling reading surfaces.
-
-## 3. Routes and responsive screens
-
-| Route | Primary job | Core components |
-|---|---|---|
-| `/` | Explain value and launch a useful flow | Hero, honest planner preview, PersonaLauncher, primary CTA and data/Qloo explanation |
-| `/plan/new` | Collect inputs | CitySelector, LocalDateTimeField, RequirementPicker, DistanceLimitFields, TasteSeedPicker and review |
-| `/plan/[id]` | Discover and understand a local plan | PlannerShell, PlaceResults, MapPanel, ItineraryPanel and ContextPanel |
-| `/trip/new` | Create ordered city/date segments | TripBuilder and CitySegmentEditor |
-| `/trip/[id]` | View/edit the multi-city aggregate | CitySegmentList, TransferGapNotice, local statuses and attached plan versions |
-
-Evidence and Impact Lab open as routed/dialog context inside the planner, with keyboard/deep-link state preserved. Agent details are optional and lazy. Do not add separate dashboards, profile/account pages or a live-journey screen to the MVP simply because earlier research lists them.
-
-### Desktop at 1280 px and above
-
-Use a stable header with city/trip context and help/settings. The local planner has an approximately 320 px itinerary/results rail, a flexible map/workspace and an optional 360 px detail panel. The map shrinks or collapses before text becomes unreadable. Keep the primary Generate/Replan action and coverage summary visible without obscuring content.
-
-### Tablet from 768 to 1279 px
-
-Use two visible panes at most. Evidence/details replace the secondary pane or open an accessible sheet. The same data model drives list/map selection. Keep input fields and source dates readable without horizontal page scrolling.
-
-### Mobile below 768 px
-
-Use list/map/plan tabs with the list as the default. Open place details in a bottom sheet or full-screen dialog; complex filters use a full-screen sheet. Trip segments stack vertically with explicit reorder buttons. Keep selected place and scroll position when switching views, without forcing a map fly-to animation.
-
-### Server and client boundaries
-
-Server-render page shell, route metadata and initial nonsensitive catalogue data. Isolate interactive forms, map, planner edits, SSE subscription and optional visualizations in client components. Session-specific output must not enter public shared caches. Dynamic map loading with SSR disabled belongs inside an appropriate client boundary, not a Server Component using a browser-only API.
-
-## 4. Component hierarchy and responsibilities
+## 2. Routes and hierarchy
 
 ```text
-AppShell (server layout)
-  AppHeader / SkipLink / DisplayPreferences
-  SetupPage
-    PersonaLauncher
-    PlanSetupForm
-      CitySelector / CoverageNotice / LocalDateTimeField
-      MobilityRequirements
-        AccessFeaturePicker / LimitationConsent
-        MaxLegDistanceField / TotalDistanceField / RestIntervalField
-      TasteSeedPicker / InputReview
-  PlannerShell (interactive region)
-    PlannerToolbar / ProviderStatus / CoverageNotice
-    PlaceResults
-      PlaceCard
-        PlaceHeader / AccessFeatureList / TravelSummary
-        TasteReason / FreshnessLabel / AddToPlanButton
-    MapPanel (lazy)
-      MapCanvas / PlaceMarker / RouteLayer / MapLegend
-    ItineraryPanel
-      ItineraryTimeline / ItineraryStop / TravelLeg / RestBreak
-      ValidationSummary / ConstraintEditor / PlanDiff
-    ContextPanel
-      PlaceDetails / EvidenceDrawer / ImpactLab
-    AgentProgressRail
-      AgentStep / RetryRun / AgentInspector (lazy)
-  TripWorkspace
-    CitySegmentList
-      CitySegmentCard / SegmentDateEditor / SegmentActions
-      TransferGapNotice
-    TripValidationSummary
+AppShell (Server Component)
+  SkipLink / Wordmark / HowItWorks / optional SoundOff
+  / LandingSeedStage
+      EditorialHeadline / GamePreview
+      SeedCombobox -> SeedResults / SeedIdentity
+      ExampleSeeds / StartDuel / PreparingState
+  /g/[gameId] DuelArena (narrow client boundary)
+      SeedChip / RoundPips / Question
+      ChoicePair -> ChoiceCard x2 / DuelSeam
+      PendingAnswer / RoundFeedback / ExplicitNext
+      SaveDiscovery / SafeRetryNotice
+  /results/[gameId] ResultTicket
+      ActualScore / Discoveries / ChallengeCTA / PlayAgain
+  /c/[slug] ChallengeInvitation
+      SeedContext / CreatorScore / Expiry / GuestPlay
+      same DuelArena in fixed mode
+  /how-it-works
+      RankingMeaning / SourcesAndAttribution / PrivacyAndExpiry
 ```
 
-### Shared primitives
+Use the same arena renderer for solo/fixed challenge. Props come from normalized generated contracts; raw Qloo envelopes never reach React. Server-render the shell/public metadata; narrow client boundaries contain active forms/gameplay. Private session/round data never enters shared page caches.
 
-Build Button/IconButton, labeled fields, Input/NumberField, Checkbox/RadioGroup, Combobox/Select, Tabs, Dialog/Sheet, Alert, Card, Badge, Skeleton, EmptyState and StatusAnnouncement. Use shadcn/React Aria semantics and test the actual compositions. An icon-only action always has an accessible name and adequate target area.
+### Landing and seed selection
 
-### Domain component contracts
+Suggested headline: **“One favourite. Five duels.”** Supporting line: “Can you predict what ranks higher in Qloo's taste graph?” The initial viewport provides wordmark, game promise, search and an intentional visual example. Label synthetic previews clearly. Example seeds are “Try a favourite,” not unsupported “Trending.”
 
-| Component | Receives | Responsible for |
-|---|---|---|
-| `CitySelector` | Registry cities and selected ID | City/time zone/coverage choice; never claims untested readiness |
-| `PlaceCard` | Normalized `CandidateEvidence` view model | Name, feature facts, travel effort, taste rationale and actions |
-| `AccessFeatureList` | Feature facts and requirements | Required/optional distinction, status, conflict and evidence links |
-| `EvidenceDrawer` | Evidence record and exact claim | Source type/rights, retrieval/update dates and permitted excerpt |
-| `TravelLeg` | Normalized leg and validation | Duration/distance, mode, boarding/vehicle/walk links and unknowns |
-| `ItineraryTimeline` | Published plan version | Stops, arrival windows, rests and overall local validation state |
-| `PlanDiff` | Prior/new immutable versions | Changed stops, time, travel effort and constraint results |
-| `ImpactLab` | Same-snapshot baseline/Qloo result | Honest rank comparison, mapped inputs, missing scores and provider state |
-| `AgentProgressRail` | Ordered public run events | Concise stage/status feedback, cancellation and retry |
-| `TransferGapNotice` | Neighboring trip segments | User-arranged, unverified transfer status; no guessed feasibility |
+Accessible combobox: visible label, arrows/Enter/Escape, stable loading/empty state, real type/identity metadata and explicit selection. A typed string alone is not a confirmed entity; director/person results cannot silently become films.
 
-Components do not receive raw OSM, Qloo, GTFS or weather payloads. Normalize at backend boundaries and map generated API types into small rendering props. Keep source/eligibility calculations outside JSX.
+### Duel arena
 
-## 5. Information hierarchy and copy
+Order: seed context → round number → question → two choices → accepted feedback → Next. Specify the target domain; both contestants are identifiable without artwork. Persistent title/type/useful date sit on a readable surface.
 
-Place cards prioritize: place name → mandatory access features → unresolved conditions → journey effort → taste reason → source freshness → actions. Use real, properly licensed imagery only when it does not delay important facts. No decorative star ratings or “open now” label without source support.
+Each complete choice is one named button. Do not nest save/link buttons inside it. Hover/focus communicates interactivity; selected/pending communicates submission, not correctness. Disable competing submissions while pending. Server acceptance determines the reveal, with only supported authorized answered-round ranks/values.
 
-| State | Example wording | Action |
-|---|---|---|
-| Confirmed fact | “Step-free entrance: supported by venue information” | View source |
-| Limited | “Entrance access has conditions” | Read conditions and explicitly accept if compatible |
-| Inaccessible | “This entrance does not meet your step-free requirement” | View alternatives |
-| Unknown | “Accessible toilet information is missing” | View available sources; keep out of confirmed plan if required |
-| Conflict | “Sources disagree about entrance access” | Compare the statements and dates |
-| Generic fallback | “Development taste engine — Qloo is unavailable” | Retry live ranking; no Qloo-powered claim |
-| Transfer gap | “Travel between London and Paris is yours to arrange” | Show dates and unverified status |
-| Replan failure | “The new limits could not be met. Your previous plan is still available.” | Edit requirements or view prior plan |
+Explicit Next gives time to read. No automatic advance, forced timer, speed points or meaning hidden in animation. Announce accepted result once; after Next focus predictably moves to the new question/first choice. Provider status must not steal focus.
 
-These are copy examples, not live venue assertions. Use plain terms with short definitions where needed: “Per-leg distance is the maximum walking or rolling distance between travel steps.” Do not expose environment variables, stack traces, Terraform or internal provider codes in normal user flows.
+### Reveal and result
 
-Show separate access, travel, weather and taste information instead of one opaque overall percentage. A source date is labeled “Retrieved” unless it really describes an observation/update. Avoid “safe route,” “guaranteed accessible,” “94% chance you'll love it” and “verified today” without the corresponding evidence.
+Copy: “Correct prediction” or “Not this round,” then “Qloo ranked [winner] higher for [seed] in this query.” Never call the losing work bad or the player's taste wrong. Richer copy needs returned supporting evidence; otherwise the factual template is complete.
 
-## 6. Interaction and state matrix
+Result ticket prioritizes actual **n / 5**, discoveries and Challenge friends. A playful achievement name is an explicit score-derived game reward. No invented percentile, “taste IQ,” audience count, diagnosis or testimonial. Saves are optional session-owned user choices, not inferred enjoyment; explain their expiry where relevant.
 
-Every applicable component designs these states before implementation:
+### Challenge and sharing
 
-| State | Required rendering and behavior |
+Invitation shows seed, actual creator score, expiry and one-tap guest play. Replay uses fixed creator rounds/order/sides/context/scoring; no fresh adaptation. Expired/revoked links offer a new solo game without changing the old challenge.
+
+Social image uses original branding/title art and authorized score. External imagery requires separate social-reuse rights. HTML/metadata/OG never contain answers, future choices, raw rankings, personal identifiers or session data. Copy-link fallback gives accessible feedback. Use the verified canonical origin, not an assumed purchased domain.
+
+## 3. Responsive composition
+
+| Viewport | Intended composition |
 |---|---|
-| Initial | Clear purpose, visible input labels and next action |
-| Loading | Skeleton/progress with stable layout and accessible state; no fake output |
-| Queued | Explain that the run is waiting; allow cancellation; do not show it as tool execution |
-| Partial | Preserve useful facts, list missing checks and suppress unsupported confirmation |
-| Success | Display the published version and validation/evidence summary |
-| Empty | Explain no results versus no eligible results; offer relevant explicit edits |
-| Error | Safe action-oriented message, retained user input and appropriate retry |
-| Stale | Show source freshness limitation and refresh option; do not hide previously published history |
-| Cancelled | Stop live progress and preserve the last published plan |
-| Reconnecting | Keep current content; replay new events without duplicated cards or announcements |
+| 1440×1000 desktop | Central arena, two substantial artwork cards, narrow seam, readable question/pips/feedback; no dashboard rails. |
+| 390×844 mobile | Compact header, large choices; two columns only if titles and 48px targets stay readable; Next never obscures content. |
+| 320 CSS px/reflow | Stack where necessary, preserve comparison/question, no horizontal page scroll or required landscape. |
+| High zoom/long names | Natural wrap/vertical scroll, no clipped title or fixed arena height hiding controls. |
 
-Generation and replan buttons prevent accidental duplicate submission while preserving explicit idempotent retry. SSE updates do not move keyboard focus. Ignore events for obsolete run generations. Replace a plan only after server publication; preview/failed results cannot silently replace the confirmed itinerary.
+Sticky controls cannot obscure feedback or focus. Reserve artwork aspect ratios to avoid layout shifts. Permitted responsive images fall back to intentional branded title cards on slow/failure paths, never broken-image gaps. Displaying an image URL does not establish its licence.
 
-Map marker/card selection shares a stable selected-place ID. A selected marker opens details without making the map the only interaction path. Draw only provider-supported geometry, and label unverified segments; never style a straight line as an assured accessible route.
+## 4. State and interaction matrix
 
-Reorder actions have Move up/Move down buttons in addition to any drag behavior. Dialogs manage focus and return it to the launcher. Prefer native/primitive keyboard conventions rather than custom shortcuts that interfere with assistive tools.
+| State | Required behavior |
+|---|---|
+| Initial | Clear task, seed input and next action |
+| Search loading/empty/ambiguous | Stable space, preserved query, useful identity/refine action |
+| Preparing | Truthful stages or neutral wait; no invented percentage/agent activity |
+| Unanswered | Two identifiable choices; no delivered winner/rank/affinity |
+| Submitting | Immediate pressed state, safe pending lock and retained round |
+| Revealed | Accepted outcome/evidence, optional save, explicit Next |
+| Recovering | Retained content and same request identity, reconcile with server state |
+| Insufficient coverage | Explain unavailable five-round set, choose another seed; no fake result |
+| Provider unavailable | Useful retry/new-seed action; preserve accepted progress where valid |
+| Expired/revoked | Explain what expired and offer fresh play; no silent answer refresh |
+| Image failure | Intentional original title-card fallback with full identity |
+| Fixture/deterministic mode | Visible honest mode, no claim of live agent execution |
 
-## 7. Visualizations and agent activity
+Use a discriminated state machine. Lost creation response keeps the same idempotency key. Lost answer/Next responses cannot duplicate animations or points. Refresh restores the accepted reveal via an authorized reveal DTO; pre-answer DTO never contains hidden answers. Winner-independent choice ordering and opaque IDs are backend requirements, not something visual randomness alone proves.
 
-- `RankDeltaChart`: baseline rank → Qloo rank over identical candidate IDs, with an equivalent table. No fabricated movement or similarity graph.
-- `RouteEffortChart`: each walking/rolling distance against the explicit per-leg cap; also show the total separately in text.
-- `EvidenceCoverageBar`: known/limited/unknown counts with exact labels; conflict and stale state are not reduced to a percentage of safety.
-- `AgentProgressRail`: public action, status, elapsed time and evidence count. Show “Checking venue sources,” not hidden chain-of-thought.
-- Optional `AgentGraph`: lazy tool dependency/status view, sanitized and available on demand. Detailed operational errors remain protected.
+## 5. Motion, sound and accessibility
 
-Provide plain textual summaries and tables so graphs are optional. Prefer short state transitions rather than continuous pulsing, automatic carousels or background motion. Disable nonessential effects when motion/transparency preferences require it.
+Selection: 120–180ms; reveal ≤450ms; short route fade roughly 150–220ms. Prefer opacity/transform and measure frame stability. Motion cannot delay acceptance or make the result understandable only while watching.
 
-## 8. Infrastructure behavior visible to users
+Reduced motion removes flips, parallax, confetti and count-up dependency while preserving all meaning. Sound is optional, off by default, deliberate to enable and controllable through a named persistent mute button. Omit it if unnecessary; audio never gates play.
 
-The browser uses same-origin Next.js forwarding to the private API. It never receives Qloo/Vertex secrets. Session-specific screens and event streams are not cached publicly. A visible provider state distinguishes live, cached, replay, development, unavailable and stale where applicable.
+Use React Aria or suitable native semantics, real buttons and labelled fields. Dialogs manage/restore focus. Artwork alternative text adds information; use empty alt when the adjacent full title makes it redundant. Live announcements report an outcome once, not every score tick. Verify forced colours, keyboard-only flow, touch, zoom, browser Back and manual screen-reader behavior separately from axe.
 
-Cold starts and queue waits have honest waiting states; do not invent progress percentages. On reconnect, resume from durable event sequence. If the session expires, explain it and offer a fresh persona; never restore another user's data. Clear-session controls cancel pending work and remove active personal records according to the documented retention policy.
+## 6. Frontend and performance boundaries
 
-Readiness/operations failure produces a usable error page with retry/help, not an endless spinner. The main UI should explain what the user can do; deployment revision IDs, IAM settings and database connection details belong in protected operations tools.
+Next.js App Router/strict TypeScript, Tailwind tokens, accessible React Aria and restrained Motion. Primitives: Button, IconButton, Combobox, Dialog, Alert, Skeleton, StatusAnnouncement. Domain folders: seed, duel, reveal, results, challenges, discoveries. JSX does not decide winners or eligibility.
 
-## 9. Design acceptance and references
+Lazy-load optional animation; do not ship old maps, graphs or model/planner assets. A score out of five needs no chart library. Answer/Next access persisted state without Qloo/LLM calls. Bound/allowlist any server-side image fetching; no unrestricted proxy or asset URL carrying answer semantics.
 
-Check every main route with keyboard only, screen-reader-oriented semantics/live announcements, 200% zoom, 320 CSS px reflow, reduced motion/transparency and forced-colors behavior. Test long names, no images, no map, slow providers, partial access evidence, unknown routes, Qloo outage, stale events and expired sessions. Run automated axe checks on complete target pages and inspect mobile/desktop screenshots manually.
+Targets until measured: initial-route JS about ≤180KB gzip, gameplay addition ≤100KB, pressed state <100ms, lab LCP ≤2.5s/CLS ≤0.1. Backend warm answer p95 ≤500ms is separate from network/cold start. Report actual sizes/sample conditions; Lighthouse does not establish field INP or enjoyment.
 
-Initial body/metadata/button contrast should be checked numerically, then rechecked in rendered components. An automated pass alone does not establish accessibility or correctness of venue information. Performance budgets and city acceptance targets are in the PRD.
+## 7. Infrastructure-facing UI
 
-### Implementation documentation
+Browser uses canonical same-origin `/api/v1` forwarding to private API. No Qloo/database/Vertex credentials reach client code. Terraform, MCP commands, service-account details and stack traces belong in protected operations records, not gameplay.
 
-- [Next.js Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components)
-- [Tailwind theme variables](https://tailwindcss.com/docs/theme)
-- [shadcn CLI and primitive base](https://ui.shadcn.com/docs/cli)
-- [React Aria accessibility primitives](https://react-spectrum.adobe.com/react-aria/)
-- [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/)
-- [Motion for React](https://motion.dev/docs/react)
-- [Recharts](https://recharts.github.io/)
-- [React Flow](https://reactflow.dev/)
-- [Playwright accessibility testing](https://playwright.dev/docs/accessibility-testing)
-- [WCAG 2.2](https://www.w3.org/TR/WCAG22/)
+Differentiate genuine agent-curated Qloo, deterministic Qloo curator and fixture mode. Show concise redacted action summaries only when useful, not private chain-of-thought. An expired cookie cannot resume another guest's state. Candidate origins/old AccessLife URLs must disappear from canonical metadata/share links at cutover.
 
-### Visual inspiration
+## 8. Design delivery and acceptance
 
-Use the welcoming destination imagery and structured presentation of [Wix travel templates](https://www.wix.com/website-template/view/html/wh-1061), [Framer Wayfare](https://www.framer.com/marketplace/templates/wayfare/) and [Airbnb](https://www.airbnb.com/) as inspiration for original compositions. Use [Linear](https://linear.app/) as a reference for compact activity presentation. These links are inspiration, not endorsements, asset licenses or instructions to copy templates. No Wix/Framer subscription or external hosted-site dependency is part of the architecture.
+Prompt 3 creates runnable landing/unanswered/reveal/result/invitation prototypes using owned labelled synthetic content. Prompt 4 extracts primitives and completes five fixture rounds with keyboard/reduced-motion/error states. Prompts 10–12 integrate genuine gameplay/sharing without losing the composition. Prompt 13 audits the complete product; Prompts 18–19 repeat relevant external checks.
 
-Related documents: [PRD](prd.md), [Architecture](Architecture.md), [rules](rules.md), [phases](phases.md), [memory](memory.md).
+Capture and inspect 390×844, 1440×1000 and 320px renders including long names, failed/slow images, empty/error, expiry, reveal and result. Inspect loaded fonts and actual contrast; refine composition rather than declaring “premium” from build success. Private screenshots stay ignored; CI artifact paths must be writable on Linux.
+
+Run full axe without weakened coverage, complete keyboard journey, 200% zoom/reflow, reduced motion and computed contrast checks. Report actual screen-reader checks independently; automation is not user testing. Serious/critical accessibility defects block release. Attractive fixtures do not prove live Qloo, and a polished API does not prove a usable UI.
+
+References to recheck during implementation: [Next.js Server/Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components), [React Aria](https://react-spectrum.adobe.com/react-aria/components.html), [Motion accessibility](https://motion.dev/docs/react-accessibility), [Playwright accessibility](https://playwright.dev/docs/accessibility-testing), [WCAG 2.2](https://www.w3.org/TR/WCAG22/) and the dated [Qloo/source capability matrix](qloo-capability-matrix.md). Original title-card artwork is the complete baseline while external-image rights remain unestablished; image-field presence is not licence evidence. Links and source checks do not establish a passed UI/rendered-design gate.

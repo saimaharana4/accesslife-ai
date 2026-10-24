@@ -1,129 +1,123 @@
-# AccessLife AI
+# Taste Duel
 
-Evidence-led cultural outings for London, New York, Paris, Berlin and Chicago.
+One favourite. Five duels. Predict Qloo's ranking, discover something surprising, then challenge a friend to the same five rounds.
 
-A working local Next.js/FastAPI application with sourced venue cards, feature evidence, mobility constraints, provisional itineraries, immutable replanning, progress replay and multi-city collections. Actual Qloo and Vertex integrations have passed live smoke checks. **[Open the live GCP application](https://accesslife-web-dfthmgvvaa-el.a.run.app).** Verified deployment results are recorded in [project memory](ai/memory.md).
+**Status - 24 October 2026: Prompt 1 preservation is complete; Prompt 2 has a partial capability gate. Taste Duel application development has not started.** Two genuine cross-domain samples prove a five-round numeric pool is feasible for tested artist/movie seeds, using an explicit raw diagnostic. Canonical MCP Insights and same-domain rankings remain unverified. Application code, containers, deployment configuration and the existing deployment still belong to AccessLife AI; the new isolated probe/tests do not replace them. No cloud provisioning, deployment or repository rename occurred.
 
-**All current outings are provisional.** Door-to-door routes, opening windows, travel durations, last-mile access and rest seating remain unverified. Venue facts cannot establish a safe entire journey. Inter-city transfers are user-arranged and unverified.
+## What the new product will do
 
-## Run locally
+1. Play as a guest and select an unambiguous movie or music-artist seed.
+2. Predict which of two same-type entities ranks higher for that seed in one frozen Qloo request context.
+3. Complete five solo rounds, with deterministic difficulty adaptation and one point per correct prediction.
+4. See a result ticket and save discoveries within the guest session.
+5. Share the **actual five rounds played**, with their order, sides, answer key and scoring version frozen. A friend's replay does not adapt or refresh Qloo rankings.
 
-Docker Desktop must be running. The Windows preflight checks it, validates Compose, mounts existing ADC read-only when present, migrates the database and starts services:
+Qloo supplies the ranking for a request; it does not decide whether someone's personal taste is correct. No enjoyment probabilities, invented global percentiles, speed-based scores or unverified claims about individual fans. Book/person support is a later capability gate, not a current promise. The AccessLife five-city requirement does not apply to this new product.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1
-# Application: http://localhost:3000
-# API documentation: http://localhost:8000/docs
-```
+The target interface is a mobile-first cultural game: oversized artwork, distinctive typography, a central DUEL seam and a shareable result ticket. Prototype screenshots and actual accessibility checks precede backend polish. The [design specification](ai/design.md) makes that direction concrete.
 
-Or use Compose directly:
+## Planned versus implemented
 
-```powershell
-Copy-Item .env.example .env  # Once; keep your existing local configuration.
-docker compose up --build
-```
+| Item | Actual status |
+|---|---|
+| Taste Duel requirements, architecture, rules, design and sequence | Rewritten for the pivot in Prompt 1 |
+| Existing AccessLife source | Preserved unchanged at the checkpoint below; no new active copy added |
+| Taste Duel UI, API, game engine, database and RoundCuratorAgent | Planned; not implemented or tested |
+| Qloo feasibility and rights | Pinned harness `0.1.26`; offline discovery and two raw cross-domain samples passed within **12/12** requests. Canonical MCP Insights, same-domain cells, nested explanation semantics and broad coverage remain unverified; [full matrix](ai/qloo-capability-matrix.md) |
+| Prompt 2 synthetic verification | 22 tests passed; Ruff passed. No production game, accessibility, restart or cloud readiness claim |
+| Taste Duel images and fonts | Proposed sources; usage/licence and rendered checks remain pending |
+| Taste Duel live URL, repository rename and GCP cutover | Not performed; reserved for later migration prompts |
+| Historical AccessLife verification | Recorded in [memory](ai/memory.md); not rerun or relabelled as Taste Duel verification |
 
-The default clone runs with a clearly labelled development taste provider. Language-service failure preserves deterministic facts and a factual explanation template. No provider key is needed for that provisional flow. Images contain a pinned CPU MiniLM model; build needs access to its public model repository.
+There is no Taste Duel production URL yet. The previously recorded [AccessLife endpoint](https://accesslife-web-dfthmgvvaa-el.a.run.app) is a legacy deployment reference, not the new game; its current health was not rechecked in this documentation-only iteration.
 
-To index the 12 original guidance summaries:
+## Execute one iteration at a time
 
-```powershell
-docker compose --profile tools run --rm ingest
-```
+The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next independent step: Prompt 3 - original visual prototype with labelled synthetic data.** Resolve the recorded Prompt 2 MCP/coverage gaps under a separate small budget before dependent provider/game integration. The current iteration used exactly twelve Qloo requests and zero Vertex calls; do not restart its exhausted budget on resume or in a clean clone.
 
-Stop services without erasing the database volume:
-
-```powershell
-docker compose down
-```
-
-Do not add `-v` unless you intend to delete local application data. Anonymous sessions expire after 24 hours; clearing a session deletes its active records. Cloud backups follow their separate retention policy.
-
-## Real providers and credentials
-
-Vertex uses Google Gen AI with ADC, global `gemini-3.8-flash` and LOW thinking. Project/model access was verified by an actual structured-output request. New developers can authenticate using `gcloud.cmd auth application-default login`; `scripts/dev.ps1` mounts that original credential directory read-only. Do not copy ADC into the repository or images.
-
-All real application credentials belong in Secret Manager. `.env` should contain **resource references**, not payloads. For the authorized project, local Qloo configuration is:
-
-```dotenv
-TASTE_PROVIDER=qloo
-QLOO_API_KEY_SECRET=projects/project-bb13ecd8-9d67-408d-9a7/secrets/accesslife-qloo-api-key
-```
-
-The operator needs access to that secret; the browser never receives the key. Runtime cloud identities receive access only to their required secrets. Vertex and GitHub Actions use IAM rather than static API/service-account keys. Database and worker credentials are also in Secret Manager. Optional Groq/OpenAI/Ollama credentials remain unconfigured; use rotated values before enabling them through their `*_API_KEY_SECRET` references.
-
-Qloo resolves place tags and explicit named seeds (`entity:Radiohead`), matches eligible venues, then calls Insights. Real results enable the Qloo Impact Lab. A failed/unmapped integration remains visibly a development fallback. Scores are comparable only within the same request and are not enjoyment probabilities. Raw responses remain in a private expiring server cache, never in Git or a public dataset.
-
-## Coverage and limitations
-
-| City | Curated venues | Live Qloo-scored venues in art/history smoke |
-|---|---:|---:|
-| London | 3 | 2 |
-| New York | 3 | 1 |
-| Paris | 3 | 2 |
-| Berlin | 3 | 2 |
-| Chicago | 3 | 3 |
-
-Twelve narrow feature summaries link to official venue sources and record retrieval/rights information. Unverified or conflicting mandatory facts cannot pass eligibility. Some lift statements are limited, not blanket confirmation. No city is coverage-complete. Additional OSM results are discovery previews outside the curated planning pool. Weather is optional; transport adapters expose capabilities/available line status, not verified accessible routing.
-
-Distance values are explicitly straight-line lower bounds. The planner rejects outlines that already exceed those bounds; a draft within the bounds still needs actual route verification. Visit durations and rest suggestions are planning placeholders. The small retrieval smoke is not a held-out recall benchmark or multilingual corpus.
-
-## Architecture and verification
-
-Server-rendered Next.js shell and an accessible interactive workspace; FastAPI/Pydantic contracts; replaceable provider ports; a bounded LangGraph planning graph; PostgreSQL 16 with PostGIS/pgvector, durable execution leases/checkpoints/events and immutable plan versions. Local dispatch uses committed database rows and a separate worker. Cloud Tasks dispatch uses persisted reservations, IAM, idempotency and bounded reconciliation.
-
-Install Node 24, Python 3.12 and uv for development checks. Dependency lockfiles are committed:
-
-```powershell
-uv sync --frozen --extra retrieval --group dev
-npx.cmd --yes pnpm@10.28.2 install --frozen-lockfile
-$env:PYTHONPATH='apps/api/src'
-# One-time isolated test database, after the local DB is running:
-docker compose exec -T db createdb -U accesslife accesslife_test
-$env:DATABASE_URL='postgresql+psycopg://accesslife:accesslife_local@127.0.0.1:5432/accesslife_test'
-uv run alembic -c apps/api/alembic.ini upgrade head
-Remove-Item Env:DATABASE_URL
-uv run pytest -q
-uv run python scripts/export_contracts.py
-npx.cmd --yes pnpm@10.28.2 contracts
-npx.cmd --yes pnpm@10.28.2 typecheck
-npx.cmd --yes pnpm@10.28.2 exec playwright install chromium
-npx.cmd --yes pnpm@10.28.2 test:e2e
-```
-
-Use the existing test database on later runs; do not recreate or drop application data. Override `ACCESSLIFE_TEST_DATABASE_URL` if required. Tests default to deterministic providers and never use the live key. Live checks are explicit:
-
-```powershell
-uv run python scripts/qloo_smoke.py
-uv run python scripts/provider_smoke.py
-uv run python scripts/retrieval_smoke.py
-uv run python scripts/runtime_smoke.py  # Restarts the actual local worker.
-uv run python scripts/restore_smoke.py  # Restores a snapshot into a disposable local DB.
-```
-
-35 backend contracts/scenarios, desktop/mobile browser journeys locally and on GCP, axe scans, keyboard/reflow/reduced-motion checks, worker restart and a real local backup/restore have passed. Check [memory](ai/memory.md) for final counts and cloud-specific outcomes. Screen-reader user testing, complete city coverage, deeper retrieval evaluation and broader load testing remain release work.
-
-## GCP operations
-
-The agreed project is `project-bb13ecd8-9d67-408d-9a7`, region `asia-south1`. AccessLife has its own Cloud SQL instance and runtime identities, independent of existing workloads. Terraform prepares public web, private API/worker, Cloud Tasks, maintenance jobs, private buckets, Secret Manager integration, registry, WIF and monitoring.
-
-The dated [cost review](infra/COST_REVIEW.md) forecasts US$78.48 including an 18% tax reserve through 5 November against the US$80 envelope. It assumes bounded demo use and requires daily review. Alerts and instance limits are not spending caps. Extending the window or load requires another estimate. [Operations instructions](infra/README.md) distinguish local validation, actual rollout, rollback and teardown.
-
-## Implementation documents
+Read its shared requirements, then paste the complete numbered prompt. Do not run all prompts as a single implementation request. Independent synthetic visual work can proceed during a provider outage, but it cannot pass the genuine integration gate.
 
 | Document | Purpose |
 |---|---|
-| [prd.md](ai/prd.md) | Product requirements, current limits and future features |
-| [Architecture.md](ai/Architecture.md) | Modules, contracts, planning flow and deployment |
-| [rules.md](ai/rules.md) | Stack, evidence, security and error handling |
-| [phases.md](ai/phases.md) | Build sequence and honest completion gates |
-| [design.md](ai/design.md) | Visual system, components and interaction states |
-| [memory.md](ai/memory.md) | Short dated outcomes and outstanding gates |
+| [prd.md](ai/prd.md) | Audience, game journeys, MVP requirements, acceptance and later scope |
+| [Architecture.md](ai/Architecture.md) | Fresh modules, contracts, agent/data boundaries and GCP migration target |
+| [rules.md](ai/rules.md) | Stack, winner authority, secrecy, source rights, failures and testing |
+| [phases.md](ai/phases.md) | All 21 iterations, dependencies, gates and legacy-removal schedule |
+| [design.md](ai/design.md) | Visual tokens, screen hierarchy, interactions and accessibility |
+| [memory.md](ai/memory.md) | Historical AccessLife outcomes and dated Taste Duel progress |
+| [prompts.md](ai/prompts.md) | Copy/paste execution instructions from scratch through production |
+| [qloo-capability-matrix.md](ai/qloo-capability-matrix.md) | Dated provider/source pins, bounded capability evidence and rights/retention policy |
 
-Only the six maintained documents in `/ai` are published. The three original local references remain unchanged and ignored; runtime never depends on them.
+Only these eight `/ai` Markdown files are eligible for publication. Original references, environment values, private provider responses, state, datasets and artifacts remain ignored. Keep dependency lockfiles. Do not force-add ignored credential or capture files.
 
-## Hackathon and license
+## Target implementation
 
-Target feature freeze: 30 October. Submission deadline: **31 October 2026, 9:15 AM IST**. Preserve judging access through 5 November and required follow-up. A live Qloo adapter alone does not establish release qualification: external app access, validated coverage and submission evidence still need their gates. See the [official guide](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide), [overview](https://qloo.devpost.com/) and [rules](https://qloo.devpost.com/rules).
+Next.js App Router, strict TypeScript, Tailwind, React Aria and Motion; FastAPI/Pydantic, SQLAlchemy/Alembic and ordinary PostgreSQL 16. One bounded Vertex-powered `RoundCuratorAgent` will use the official Qloo harness through a normalized provider port. Deterministic validators, the game engine and database transactions own eligibility, winners and score. Motion is not installed; harness `0.1.26` was inspected only in an ignored isolated spike directory, not added to the application runtime. Vertex model access is deferred to Prompt 8.
 
-Source and documentation: [MIT](LICENSE). Model, map, venue and provider rights remain separate; see [third-party notices](third_party/README.md). Never publish real Qloo payloads, personal plans or credentials as test data.
+The target GCP deployment is public Cloud Run web -> same-origin forwarding -> private Cloud Run API -> Cloud SQL, Qloo and Vertex. Qloo/database secrets stay in Secret Manager; Vertex and GitHub Actions use IAM/WIF. A bounded game-generation request completes before returning a ready game; retries use durable reservations/leases. No post-response in-memory worker assumption.
+
+Pre-answer DTOs contain only playable choices. After a server-accepted answer, a separate reveal DTO can disclose that answered round only. Neither public invitations nor HTML/RSC/JavaScript/social previews expose future winners, rankings or private pools. Answer/Next/replay use stored evidence and make no new Qloo/LLM calls.
+
+The new game needs no RAG, ingestion/chunking, embeddings, vector database, maps, transport or separate planning worker. Existing dependencies and runtime files remain until their replacement gates pass; the exact [removal plan](ai/phases.md) prevents breaking the preserved app halfway through the pivot.
+
+## Data and artwork boundaries
+
+Qloo is the sole ranking authority. Its entity images and optional explanations are used only when available and permitted. An image URL alone does not license redistribution, mirroring or social-card reuse. Original SVG/CSS/typographic covers are the baseline fallback; TMDB, Wikidata or selected Commons assets are optional after permission and attribution checks. No arbitrary image scraping or fake posters representing named films.
+
+Retention and challenge expiry must follow applicable source/event terms. Store only needed private evidence with expiry; do not rebuild Qloo's catalogue or publish real responses. Expired evidence expires the challenge rather than silently changing its answer key. See [rules](ai/rules.md) and the source matrix in [architecture](ai/Architecture.md).
+
+## AccessLife checkpoint and source recovery
+
+| Baseline | Value |
+|---|---|
+| Branch / origin | `main` / `https://github.com/saimaharana4/accesslife-ai.git` |
+| Preserved HEAD | `86d4ef677ae7dba93bf0211e4348d7c29284a948` |
+| Local annotated tag | `accesslife-before-taste-duel-2026-10-24` |
+| Last application-code commit | `f6236dbc12d75e4c549ec65059ebcb8e8a014c30` |
+| Prior application CI evidence | [Run 40071609074](https://github.com/saimaharana4/accesslife-ai/actions/runs/40071609074), historical result; not rerun here |
+| Initial tracked working tree | Clean, 90 tracked files; existing `ai/prompts.md` was ignored and is now allowlisted |
+
+The checkpoint tag is local and has not been pushed in Prompt 1. Git history contains the old implementation; no parallel active copy or extra application build context was created. Inspect its original README without changing the checkout:
+
+```powershell
+git show accesslife-before-taste-duel-2026-10-24:README.md
+git rev-parse 'accesslife-before-taste-duel-2026-10-24^{commit}'
+```
+
+The existing startup script still launches **AccessLife**, not Taste Duel:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1
+# Existing AccessLife web: http://localhost:3000
+# Existing AccessLife API docs: http://localhost:8000/docs
+docker compose down
+# Preserve the database volume; do not add -v.
+```
+
+These commands were inspected, not executed as Taste Duel verification. For a later source rollback, inspect the tag or use an explicitly isolated worktree outside the new build context; do not hard-reset user work or roll back a live database automatically. [Legacy operations](infra/README.md) and [legacy cost review](infra/COST_REVIEW.md) remain AccessLife baseline documents until their migration stages.
+
+Original local reference preservation manifest (SHA-256):
+
+| Ignored reference under `ai/` | SHA-256 |
+|---|---|
+| `AccessLife_AI_Design_Document_v4.docx` | `e61c32f86982a7ba9c6e435c2bf79c2aaac1d302153c2e5fdb5cde0222698a2a` |
+| `deep-research-report.md` | `5f930e822f27902129f797e69155a40196ba956428895f5cc023f5562105b52b` |
+| `qloo_rules.md` | `335c8f41138f01dca034376855fec08ece3d603b4d295018beeba7dbd95b5a33` |
+
+They remain local and byte-for-byte preserved. Runtime must not depend on these ignored files.
+
+## GCP migration boundaries
+
+The recorded project is `project-bb13ecd8-9d67-408d-9a7`, region `asia-south1`. Prompt 1 does not query or change cloud resources, secret values, traffic, repository identity or IAM.
+
+Later prompts inventory the dedicated AccessLife resources and plan new `tasteduel-web`/`tasteduel-api` services plus a new logical database on the existing dedicated SQL instance. Retain immutable-name exceptions and Terraform ownership explicitly. A SQL instance, bucket or secret ID cannot be renamed by changing a display label. Do not create another continuously billed SQL instance for cosmetic naming, destroy the old database during a resource rename, or touch unrelated PharmaGuard workloads.
+
+The historical US$78.48 estimate through 5 November is **not** a current estimate or a fresh pivot allowance. The US$80 incremental envelope includes prior incurred AccessLife spend, remaining shared infrastructure, overlap and Taste Duel. Refresh it through at least **6 November 2026, 10:15 IST**, plus required follow-up. Stop provisioning if that total does not fit; budget alerts are notifications, not caps.
+
+Repository rename/WIF and cloud foundation are Prompt 17; candidate release is Prompt 18; public cutover is Prompt 19; legacy retirement follows its preservation gate in Prompt 20. No new GCP migration is complete today.
+
+## Licence and release
+
+Project source/docs use [MIT](LICENSE). Provider output, artwork, fonts and existing [third-party notices](third_party/README.md) have separate terms. A source licence does not grant rights to external media or Qloo data.
+
+Hackathon dates and submission requirements are rechecked before release. The plan targets 31 October 2026, 09:15 IST submission and judging access through 6 November 2026, 10:15 IST, subject to the official rules and required follow-up. Functional public Taste Duel, real Qloo integration, licensed source and factual release evidence remain future gates.

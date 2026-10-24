@@ -1,323 +1,288 @@
-# AccessLife AI architecture
+# Taste Duel architecture
 
-Revision 2 - 24 October 2026 - Local architecture implemented; managed GCP rollout authorized
+Revision 3 — 24 October 2026 — Prompt 1 specification reset. **This is a target architecture; Taste Duel has not been implemented or deployed.**
 
-## Current implementation
+Current application code, containers and recorded deployment remain AccessLife AI. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate Taste Duel gameplay, its agent, data rights or cloud migration. Prompt 1 changes specifications/preservation only. [prompts.md](prompts.md) controls later iterations.
 
-- Server pages/layouts render the Next.js shell. An interactive client controller coordinates forms/workspace with separate place/evidence, trip and lazy MapLibre modules. Further controller decomposition is technical debt; optional charts, animation and agent graphs are deferred.
-- Pydantic owns request and snapshot contracts. OpenAPI export and generated frontend types include plans and trips. `composition.py` binds replaceable provider ports; raw provider responses never become React models.
-- A fixed LangGraph supervisor runs independent sources -> eligibility/ranking -> provisional construction -> constrained explanation. This is deterministic orchestration, not an autonomous conversational supervisor. Vertex uses ADC and Google Gen AI; Groq is a configured transient fallback. Facts survive language-service failure.
-- PostgreSQL stores sessions, runs, events, checkpoints, leases, immutable plan versions, trip revisions, quotas and permits. PostGIS stores venue coordinates; pgvector and lexical search retrieve a 12-summary original corpus with CPU ONNX MiniLM, 384 dimensions. This is a smoke corpus, not the held-out recall benchmark.
-- Local Compose has web, API, a separate PostgreSQL queue worker and PostgreSQL 16 with both extensions. Cloud Tasks uses the same durable claims. `_dispatch` checkpoints reserve task names before enqueue. Retries reuse reservations; reconciliation rotates stale names, recovers expired leases, bounds attempts and cleans expired records. SSE replays saved sequences; session discovery resumes an active browser run.
-- Current frontend features are `planner/`, `places/`, `trips/`, `map/`. Backend modules are `api/`, `domain/`, `application/`, `agents/`, `ports/`, `adapters/`, `persistence/`; the worker is `worker.py` and Alembic lives in `apps/api/migrations/`. The larger tree below is the target decomposition.
+**Prompt 2 evidence:** the [dated source/capability matrix](qloo-capability-matrix.md) pins harness `0.1.26` and official source commits. Twelve counted requests proved two raw cross-domain samples with five-pair numeric feasibility; canonical MCP Insights and same-domain cells remain unverified. No live payload or generated API client is committed. The advertised OpenAPI file is a meta-schema without endpoint paths and is rejected for code generation. This is a partial feasibility gate, not an implemented provider or game.
 
-Transport adapters expose capabilities and available line status, not complete accessible routing. OSM discoveries are unknown-access previews; the planning pool is curated. No current plan is fully validated. Private GCS buckets are reserved for permitted document/backup workflows; the tiny catalogue currently ships with the backend. The separate SQL instance currently uses one application database principal for migrations and runtime; splitting a restricted runtime DML role from the migration owner remains production hardening.
+## 1. Product flow and decisions
 
-Real credentials use server-side `*_API_KEY_SECRET` references and ADC/Secret Manager. SQL passwords and secret payloads use Terraform ephemeral variables/write-only fields, avoiding plaintext plans/state. Never publish payloads or proprietary Qloo responses. Secret readers cache values until restart; restart after rotation.
+A guest selects one favourite cultural entity, predicts five Qloo comparisons, receives a score out of five, saves discoveries and challenges a friend to the same five rounds. Initial seed/target domains are music artists and movies, subject to Prompt 2's live coverage and rights gates. Book/person support is later; a director's name must not silently resolve as a movie.
 
-## 1. Architectural decisions
+The question is **“Which ranks higher for this seed in Qloo's taste graph?”** Qloo supplies a query-specific aggregate ranking, not universal truth, an individual's preferences or a probability of enjoyment. Contestants in one duel share a target type and frozen query context. Different target domains can supply separate rounds; their scores are never compared.
 
-Build a modular application with replaceable provider adapters, a Next.js frontend and a FastAPI/LangGraph backend. Deploy logical modules together unless they need a different lifecycle: web, API, planning worker and batch ingestion. Do not create a microservice for each specialist tool.
+```mermaid
+flowchart TD
+    Open[Open as guest] --> Search[Search and confirm typed seed]
+    Search --> Prepare[Generate and validate private pool]
+    Prepare -->|Valid five-round path| Round[Deliver one unanswered round]
+    Prepare -->|Insufficient coverage| Retry[Explain and choose another seed]
+    Round --> Answer[Accept guess once on server]
+    Answer --> Reveal[Reveal accepted round and actual score]
+    Reveal --> Next{Five answered?}
+    Next -->|No; player selects Next| Select[Choose unused stored pair]
+    Select --> Round
+    Next -->|Yes| Result[Result ticket and discoveries]
+    Result --> Freeze[Freeze actual five delivered rounds]
+    Freeze --> Friend[Friend plays identical fixed sequence]
+```
 
-The product covers London, New York, Paris, Berlin and Chicago. A trip aggregates city plans; it does not verify transport between cities. The managed GCP architecture supersedes the reference's single-VM deployment. Keep the original reference files local; the six maintained documents in `ai/` are the published specification.
-
-| Decision | Default | Reason and boundary |
+| Layer | Target | Boundary |
 |---|---|---|
-| Web | Next.js App Router and strict TypeScript | Server-rendered shell; narrow client islands |
-| API | FastAPI, Pydantic, SQLAlchemy, Alembic | Typed contracts, explicit transactions and migrations |
-| Orchestration | LangGraph Supervisor with deterministic tools | Parallel independent IO; dependent checks remain ordered |
-| Database | Separate PostgreSQL 16 Cloud SQL instance | PostGIS facts, pgvector retrieval, durable runs/events and plan versions |
-| Generation | Configurable Vertex AI model adapter | Verify available model, location, quota and price before deployment |
-| Embeddings | CPU `sentence-transformers/all-MiniLM-L6-v2`, 384 dimensions | Small curated English corpus; no GPU or locally hosted large LLM |
-| Async work | Cloud Tasks to an IAM-protected worker | Planning continues independently of the browser connection |
-| Object storage | Private GCS documents and backups buckets | Bounded permitted data and recoverable manifests |
-| Deployment | Terraform and GitHub Actions using WIF | Reproducible resources without downloaded service-account keys |
+| Web | Next.js App Router, strict TypeScript, Tailwind, React Aria, Motion | Server shell, narrow search/game/reveal client boundaries; original UI |
+| API | FastAPI, Pydantic, SQLAlchemy, Alembic | Modular application, not a deployed service per tool |
+| Agent | One bounded RoundCuratorAgent through Google Gen AI/Vertex | Genuine tool decisions; never model-written winners/scores |
+| Culture | Official pinned Qloo harness through local stdio MCP | Trusted backend only, normalized QlooPort |
+| Rules | Deterministic validators, DuelPoolBuilder, GameEngine, ChallengeService | Server-authoritative eligibility, scoring, adaptation and replay |
+| Storage | PostgreSQL 16 ordinary relational tables | No RAG, embeddings, spatial/vector requirement or Redis |
+| Execution | Bounded awaited request plus persisted reservation/lease | No unowned post-response generation or required queue worker |
+| Runtime | Node 24, Python 3.12, exact compatible dependencies/lockfiles | Backend image also includes tested Node/harness; no runtime npx |
+| Cloud | Cloud Run web/private API, reused dedicated SQL, migration job | Terraform and GitHub Actions WIF; optional storage only if needed |
 
-Use supported stable versions, pin exact package/model/image revisions during implementation and commit lockfiles. Exact installed versions are in the dependency lockfiles.
+LangGraph, Cloud Tasks and extra services require a measured missing capability. They are not inherited because AccessLife already used them.
 
 ## 2. Deployment and trust boundaries
 
 ```mermaid
 flowchart LR
-    Browser[Browser] -->|HTTPS and session cookie| Web[Public Cloud Run web]
-    Web -->|ID token and session context| API[Private Cloud Run API]
-    API --> SQL[(AccessLife Cloud SQL)]
-    API -->|Authenticated task| Queue[Cloud Tasks]
-    Queue -->|OIDC| Worker[Private Cloud Run worker]
-    Worker --> SQL
-    Worker --> Providers[Qloo / places / transport / weather]
-    Worker --> Vertex[Vertex AI generation]
-    Worker --> GCS[(Private GCS)]
-    Job[Cloud Run ingestion job] --> GCS
-    Job --> SQL
+    Browser[Mobile or desktop browser] -->|HTTPS host cookie| Web[Public tasteduel-web]
+    Web -->|Forwarding and API-audience ID token| API[Private tasteduel-api]
+    API --> DB[(Cloud SQL tasteduel database)]
+    API --> Curator[RoundCuratorAgent]
+    Curator --> Vertex[Vertex via IAM]
+    Curator --> Port[Normalized QlooPort]
+    Port --> MCP[Managed local qloo mcp process]
+    MCP --> Qloo[Qloo hackathon API]
     Secrets[Secret Manager] --> API
-    Secrets --> Worker
-    Secrets --> Job
-    CI[GitHub Actions via WIF] --> Registry[Artifact Registry]
+    Migration[Scoped migration job] --> DB
+    CI[GitHub Actions WIF] --> Registry[Immutable Artifact Registry images]
     Registry --> Web
     Registry --> API
-    Registry --> Worker
 ```
 
-The browser calls only same-origin `/api/v1/*` routes. Next.js forwards them to private FastAPI `/v1/*`, adding an ID token for the API audience and trusted anonymous-session context. The forwarding layer performs transport/session duties, not recommendation logic. Stream SSE without buffering or caching. Cloud Run's generated HTTPS web URL is sufficient for the first release; a custom domain is optional.
+Browser requests use same-origin `/api/v1/*`; Next.js forwards allowed paths to private FastAPI `/v1/*`. Validate mutation origins, strip untrusted internal identity headers and add an IAM ID token. Its audience stays the API service URL even for revision-tag testing. IAM-private is not network-only ingress; unauthenticated direct requests must fail.
 
-Use IAM authentication for private Cloud Run services; “private” does not mean network-only ingress. Cloud Tasks must be able to reach its worker URL with the task invoker's OIDC token. Choose ingress settings compatible with that path and verify unauthorized requests are rejected. The web service identity can invoke API; it cannot invoke planning internals or read the database directly.
+Guests have cryptographically random host-scoped Secure/HttpOnly/SameSite=Lax cookies in production; only token hashes are stored. API checks ownership independently of the browser. No shared parent `.run.app` cookie or old/new-origin guest migration is assumed. Private game/session/answer/discovery responses are `no-store` and cannot enter shared RSC/CDN caches. Public challenge invitations grant no creator-session/game access.
 
-Cloud Run uses its managed Cloud SQL socket attachment with IAM cloudsql.client authorization; psycopg connects through that socket using the application database credential from Secret Manager. Initial budget-conscious networking uses a public instance IP with no authorized external networks; managed-proxy encrypted connections only. This is not an unauthenticated database endpoint. If policy requires private IP, explicitly price and provision the required networking before replacing this default.
+Web gets API invocation, not database/secret access. API gets minimum required Qloo/database secrets, Cloud SQL and Vertex permissions. Migration owner and runtime DML principal are separate. Local genuine-provider mode uses ADC plus Secret Manager references; CI uses synthetic contracts. Keys never enter browser bundles, public MCP config, Terraform plaintext state, command arguments or model prompts.
 
-### GCP resource plan
+The official `qloo mcp` is a local stdio process managed once per API instance through the Python MCP client. Pin Node/harness; discover `listTools()` schemas; allowlist necessary workflows; bound concurrency/startup/restarts; sanitize stderr; preserve stdout protocol framing; close on shutdown. Forward only required child environment variables. Docs MCP is development reference only. Raw HTTP may be a separately tested explicit adapter for a documented harness limitation, never a silent transport switch.
 
-Project: `project-bb13ecd8-9d67-408d-9a7`. Default deployment region: `asia-south1`. Use explicit project/region arguments rather than changing workstation-wide defaults. Existing PharmaGuard resources are unrelated and must not be modified or imported into AccessLife Terraform state.
-
-| Resource | Proposed name or allocation | Initial control |
-|---|---|---|
-| Web Cloud Run | `accesslife-web` | 1 vCPU, 1 GiB, min 0, max 2 instances |
-| API Cloud Run | `accesslife-api` | 1 vCPU, 1 GiB, min 0, max 2, request concurrency 20 |
-| Worker Cloud Run | `accesslife-worker` | 2 vCPU, 4 GiB, min 0, max 1, request concurrency 3 |
-| Planning queue | `accesslife-planning` | At most 3 concurrent dispatches; bounded rate and attempts |
-| Cloud SQL | `accesslife-db` | PostgreSQL 16 Enterprise, single zone, `db-custom-1-3840`, 20 GB SSD; quote before creation |
-| SQL storage growth | Same instance | Autoresize capped at 40 GB; application quotas apply first |
-| Object buckets | `accesslife-docs-<project-id>`, `accesslife-backups-<project-id>` | Uniform access, public access prevention and lifecycle rules |
-| Images | `accesslife` Artifact Registry repository | Immutable revision tags/digests, bounded retained images |
-| Ingestion | `accesslife-ingest` Cloud Run job | One task, parallelism 1, 1 vCPU / 2 GiB, manually invoked initially |
-| Terraform state | Dedicated AccessLife GCS state bucket/prefix | Restricted access, versioning, never committed |
-| Identity and secrets | Resource-scoped AccessLife accounts/secrets | No Owner/Editor grants and no public secrets |
-
-These are initial allocations. The dated forecast is in [COST_REVIEW.md](../infra/COST_REVIEW.md); deployed results are in memory.md. Default min instances are zero; any temporary warm capacity during judging must be included in the estimate. Cold-start latency is measured separately from warm planning.
-
-Limit connection pools: API 5 per instance, worker 5 and each maintenance job 5. With initial instance maxima and one maintenance job, this is up to 20 application connections; leave capacity for migrations, health checks and administration. Enable pre-ping, connection recycling and bounded pool checkout. Never hold database connections while awaiting external provider calls.
-
-Service identities are separate for web, API, worker, task invocation, ingestion and CI deployment. API can enqueue tasks and use its database role. Worker can read only its required secrets/objects and call the selected model. The task invoker has only worker invocation rights. CI's WIF trust is restricted to this repository and intended branch/environment; it does not use a project-wide Owner role.
-
-## 3. Component boundaries and repository structure
+## 3. Modules, ports and folder structure
 
 ```text
-ai/                                  # Six maintained specifications; originals ignored
 apps/
   web/src/
-    app/                             # Server pages/layouts and thin API forwarding
-    components/ui/                   # Shared accessible primitives
-    components/layout/               # Shell/navigation/responsive panels
+    app/                         # Server pages/layouts and /api/v1 forwarding
+    components/ui/               # Accessible primitives and shared tokens
     features/
-      cities/ discovery/ accessibility/ itinerary/
-      trips/ taste/ evidence/ agents/ map/ transport/ weather/
-    lib/api/                         # Generated contract client and SSE transport
-  api/src/accesslife/
-    api/                             # FastAPI routers, auth/context, HTTP mapping
-    domain/                          # Facts, requirements, eligibility, plan/trip models
-    application/                     # Use cases and transaction boundaries
-    agents/                          # Graph state, nodes, orchestration
-    ports/                           # Provider and repository interfaces
-    adapters/                        # Qloo, OSM, city transit, weather, Vertex, GCS
-    persistence/                     # SQLAlchemy repositories and Alembic migrations
-    worker/                          # Authenticated task handler, leases and cancellation
-packages/contracts/                  # Exported OpenAPI and generated TypeScript
-ingestion/                           # Source manifests, parsing, chunking and admission
-infra/terraform/                     # AccessLife resources and resource-scoped IAM
-infra/containers/                    # Web, API/worker and ingestion image definitions
-tests/contracts/                     # Provider/schema contract tests
-tests/scenarios/                     # Eligibility, local plans and multi-city cases
-tests/retrieval/                     # Annotated questions and retrieval evaluation
-tests/e2e/                           # Browser journeys, failure states and accessibility
+      seed/                      # Search, typed results and confirmation
+      duel/                      # Arena, choices, progress and state
+      reveal/                    # Accepted feedback and explicit Next
+      results/                   # Score ticket and replay actions
+      challenges/                # Invitation and fixed replay
+      discoveries/               # Guest save/unsave list
+    lib/{api,assets,telemetry}/
+  api/
+    src/tasteduel/
+      api/                       # HTTP/session boundaries and public DTOs
+      domain/                    # Pure entities and rules
+      application/               # Use cases, claims and transactions
+      agents/                    # Bounded RoundCurator tool loop
+      ports/                     # Provider, persistence, clock and RNG
+      adapters/                  # Qloo MCP, Vertex and licensed assets
+      persistence/               # SQLAlchemy repositories/composition
+    migrations/                  # New Taste Duel Alembic lineage
+packages/contracts/              # Application OpenAPI -> generated web types
+tests/{unit,contracts,integration,e2e,security}/
+infra/{containers,terraform}/
+scripts/
+ai/                              # Six maintained specifications + prompts.md
 ```
 
-This is the target decomposition; current modules are listed in the checkpoint above. Within each frontend feature use `components/`, `hooks/`, `schemas/` and a public `index.ts` only as needed. Do not add empty abstractions simply to fill the tree.
+This is the planned replacement tree. Existing `apps/api/src/accesslife` and planner/place/trip/map features remain legacy code until replacement stages pass. Do not create empty modules simply to fill this tree.
 
-Dependency direction: HTTP/UI → application use cases → domain/ports. Adapters implement ports and are selected at the composition root. Domain code imports neither FastAPI nor provider SDKs. Graph nodes call use cases/ports; they do not read another provider's internal response. Provider swaps change configuration and adapter construction, not cards or validators.
+Dependency direction: API/UI → application → domain/ports. Adapters implement ports and are selected at a composition root. Domain code imports no FastAPI/provider SDK/React or raw Qloo JSON. Construction/import must not call networks, migrate data or mutate infrastructure. Pydantic owns application wire schemas; generate frontend TypeScript from actual exported FastAPI OpenAPI. Inspect upstream advertised specs before use: a generic OpenAPI meta-schema without endpoint paths is not a Qloo client contract.
 
-### Replaceable ports
-
-| Port | Minimum methods | Normalized result |
+| Port/service | Responsibility | Output |
 |---|---|---|
-| `PlacesProvider` | `search(city, area, categories)` | Candidate identity, coordinates and source references |
-| `AccessEvidenceProvider` | `lookup(place_ids, required_features)` | Feature facts, conflicts, provenance and unresolved requirements |
-| `TasteProvider` | `resolve_interests(seeds)`, `rank_candidates(context, candidates)` | Matched seed/entities, raw scores, semantics, comparability group and unmapped IDs |
-| `TransitProvider` | `capabilities(city)`, `plan_leg(origin, destination, time, constraints)` | Legs, geometry where supported, distances, schedules, access facts and unknowns |
-| `WeatherProvider` | `forecast(coordinates, local_window)` | Forecast values, issue time and supported horizon |
-| `KnowledgeRetriever` | `retrieve(query, city, corpus_version)` | Passages, source/section/page, evidence IDs and retrieval metadata |
-| `GenerationProvider` | `interpret(text, schema)`, `explain(validated_plan, evidence)` | Schema-validated intent or evidence-referenced explanation |
-| Persistence ports | Transactional run/event, plan, trip and evidence operations | Domain models with ownership and version checks |
-| `TaskDispatcher` | `enqueue(run_id, dispatch_generation)` | Stable task reference and accepted/duplicate/error state |
+| QlooPort | Typed seed resolution; same-context ranked retrieval | Normalized status, IDs/types, ordering/score semantics, warnings, attribution/time |
+| CuratorModelPort | Typed bounded tool decisions and optional grounded wording | Known tool/ID references or explicit unavailability |
+| ArtworkPort | Permitted asset or owned fallback | Source/licence/attribution, allowed uses and fallback status |
+| CandidateValidator | Identity/type/order/score/rights/duplicate checks | Accepted candidates and reason-coded rejection |
+| DuelPoolBuilder | Diverse pairs/bands, feasible no-repeat continuation | Versioned private pool and snapshot references |
+| GameEngine | Delivery, answer acceptance, score and deterministic selection | Transactional changes with expected revisions |
+| ChallengeService | Freeze completed path and fixed replay | Immutable five-round definition and guest-owned replay |
+| Persistence ports | Session/reservation/game/snapshot/cache/usage transactions | Owned domain records, expiry and concurrency guarantees |
 
-Every provider returns explicit status and freshness, not an empty list that hides an outage. Contract tests run against each adapter and against recorded sanitized fixtures. Live smoke tests are separate and never rewrite fixtures automatically.
+## 4. Data ownership and retention
 
-## 4. Domain data and ownership
-
-Pydantic domain/API schemas are the canonical wire contract. Export FastAPI OpenAPI and generate TypeScript into `packages/contracts/`; validate runtime user input with Zod without inventing a second incompatible wire model. IDs are opaque UUIDs except stable city slugs. Distances use metres, durations seconds and timestamps RFC 3339 with offsets; store instants in UTC plus the city's IANA time zone.
-
-| Entity | Fields and invariants |
+| Record | Important fields/invariants |
 |---|---|
-| `City` | ID, display name, time zone, supported geometry, coverage state, capabilities and source references |
-| `MobilityRequirements` | Required features, accepted limitations, per-leg/total distance, rest interval and transfer limits; zero is distinct from missing |
-| `Evidence` | ID, source URL/type, provider object ID, retrieved/updated timestamps, rights, transformation version and supported claim |
-| `AccessFeatureFact` | Feature, value, status, evidence references, freshness classification and independent conflict flag |
-| `CandidateEvidence` | Place/provider identities, access facts, transport, weather, taste evidence, eligibility and unresolved conditions |
-| `PlanRun` | Session, request snapshot, state, deadlines, lease owner/expiry, attempt, graph/checkpoint version and cancellation generation |
-| `RunEvent` | Run ID, strictly increasing sequence, timestamp, stage, status, elapsed time, evidence count and public summary |
-| `PlanVersion` | Plan ID/version, run, inputs, stops/legs/rests, evidence snapshot, validation and provider states; immutable |
-| `Trip` | Session, revision and ordered city segments; each references an exact local plan version |
-| `TransferGap` | Neighboring segment IDs and `user_arranged_unverified`; user notes never become provider evidence |
-| `CorpusVersion` | Source/model/tokenizer/chunker revisions, admitted quantities and promoted/retired state |
+| GuestSession | Token hash, expiry, revocation; no account requirement |
+| GenerationReservation | Session/idempotency key, body hash, stable game ID, status, fenced lease/expiry, attempts and usage |
+| EntityMetadata | Minimal used Qloo ID/type, title, approved artwork and source policy |
+| RankingSnapshot | Seed/signals, target/filter context/hash, retrieval time, provider/harness version, verified order, permitted scores, expiry |
+| PrivatePool | Pair references, private answers, bands, validator version and feasible five-round path |
+| Game | Owner, solo/fixed mode, phase, revision, delivered rounds, scoring version and expiry |
+| DeliveredRound | Opaque ID, ordinal, immutable pair/context, stored sides and private winner; no repeated contestant |
+| AcceptedAnswer | Unique game/round acceptance, selected choice, time and saved reveal |
+| Challenge | High-entropy slug; actual five/order/sides/context/answers, creator score, versions, expiry/revocation; no public creator identity |
+| ChallengePlay | New guest-owned fixed game and independent score |
+| Discovery | Explicit guest save/unsave of an allowed encountered entity |
+| ProviderCache/UsageCounter | Minimal private scope, rights/version/expiry and shared per-key admission counters |
 
-Store normalized place/access data in PostGIS-backed tables; documents/chunks and full-text vectors in PostgreSQL/pgvector; run events and plan versions durably in relational tables. Provider cache entries include key scope, provider, retention policy, expiry and rights. Private GCS stores admitted raw documents and bounded backups, not the canonical plan state.
+Opaque IDs do not replace authorization. Store instants in UTC; transmit RFC 3339 timestamps. Answer-defining versions are immutable. Foreign keys/unique constraints together with transactional ownership and expected-revision checks enforce ownership relationships, one answer per round and sequential delivery. No DB transaction/connection stays open during provider/model IO.
 
-Conflicting facts retain both sources. An LLM cannot resolve conflict by preferring the more optimistic statement. Freshness rules are source-specific and versioned; the initial coverage phase must define them before a city's `ready` gate. Historical plan snapshots preserve what was known then but display that historical status on later viewing.
+Prompt 2 must record the applicable event/API policy for raw responses, metadata, ranking evidence, assets, games/challenges, logs and backups. Minimal-cache guidance is not a universal numerical retention licence. Use bounded product defaults only where permitted. A challenge expires no later than its evidence; expiry never silently refreshes an answer key. Clear-session revokes private access and owned live challenges; active cleanup and backup expiry remain separate documented operations.
 
-## 5. Public API contract
+Qloo is the sole ranking source. Original title-based SVG/CSS cards are an always-available fallback. Optional TMDB/Wikidata/a small Commons asset set may enrich metadata/artwork after exact matching and rights checks, never determine winners. An image URL is not permission to mirror/transform/use it in social cards. Record per-asset provenance/uses. Raw live captures stay private/ignored; no corpus ingestion or embeddings are needed.
 
-Browser prefix: `/api/v1`. Internal FastAPI prefix: `/v1`. The following table omits the prefix. Require anonymous-session ownership for every nonpublic resource. Health and city catalogue responses expose no personal data.
+## 5. Public API and disclosure contracts
 
-| Method and path | Request | Response and behavior |
+These are target contracts for Prompt 5, not existing endpoints. Browser prefix `/api/v1`, private FastAPI `/v1`. Private records require session ownership. Creation/mutation requests use `Idempotency-Key` scoped to session, operation and canonical body; changed input under the same key returns `409`.
+
+| Method/path without prefix | Request | Successful behavior |
 |---|---|---|
-| `POST /sessions` | Empty body | Establish secure HttpOnly anonymous-session cookie through web; session expires in 24 h |
-| `DELETE /sessions/current` | Current session | Clear cookie; revoke session, cancel runs and delete active personal records |
-| `GET /cities` | None | City IDs/time zones, coverage state, supported areas and capabilities |
-| `POST /trips` | Title and ordered city/date segments | `201`, trip ID, revision and unverified transfer placeholders |
-| `GET /trips/{trip_id}` | Session | Trip, segment statuses and exact plan-version references |
-| `PATCH /trips/{trip_id}` | Expected revision and segment edits | New revision; conflicting revision returns `409` |
-| `POST /plans` | City, area, local window/time zone, requirements, interests; optional trip segment; `Idempotency-Key` | `202`, plan ID, run ID and progress URL after durable dispatch acceptance |
-| `GET /plans/{plan_id}` | Optional `version` query | Latest published or explicitly requested version; pending state if none published |
-| `POST /plans/{plan_id}/replan` | Expected version, changed inputs, `Idempotency-Key` | `202`, new run ID; stale expected version returns `409` |
-| `POST /runs/{run_id}/cancel` | Session | Idempotent cancellation request; worker checks before publication |
-| `GET /runs/{run_id}/events` | `Last-Event-ID` on reconnect | SSE replay and live progress until terminal state |
-| `GET /evidence/{evidence_id}` | Session/visibility context | Permitted excerpt, exact claim, attribution and timestamps; never unrestricted document download |
-| `GET /plans/{plan_id}/impact` | Exact plan version | Same eligible snapshot, baseline/Qloo orders, score semantics and provider state |
-| `GET /health/live` | None | Minimal process liveness |
-| `GET /health/ready` | None | Sanitized readiness, `503` on required dependency failure |
+| POST /sessions | Empty object | 201, host cookie and safe expiry |
+| GET /sessions/current | Cookie | Safe state and owned resumable game references |
+| DELETE /sessions/current | Cookie/allowed Origin | 204, revoke session/outstanding publication/owned live shares; clear cookie |
+| GET /entities/search | q, allowed seed type, bounded limit | Typed candidates/ambiguity/status and permitted artwork |
+| POST /games | Confirmed seed_entity_id/seed_type, mode=solo, idempotency key | 201 after pool commit; 200 for same ready request; reservation behavior below |
+| GET /games/{id} | Owner cookie | Safe phase/revision/ordinal/score; current accepted reveal only after answer; no future pool |
+| GET /games/{id}/round | Owner cookie | Current unanswered DTO; answered-but-unadvanced gives 409 ROUND_AWAITING_ADVANCE |
+| POST /games/{id}/answer | round_id, choice_id, expected_revision, idempotency key | Stable accepted reveal/score; conflicting answer 409 |
+| POST /games/{id}/advance | answered_round_id, expected_revision, idempotency key | Next public round or completed state exactly once; no provider IO |
+| GET /games/{id}/results | Owner cookie | Completed score/discoveries/challenge action; incomplete 409 |
+| POST /discoveries | Allowed encountered entity_id, idempotency key | 201/200 owned save |
+| GET /discoveries | Owner cookie | Owned unexpired permitted entries |
+| DELETE /discoveries/{entity_id} | Owner cookie | 204 idempotent unsave |
+| POST /challenges | Completed owned game_id, idempotency key | 201/200 exact frozen five, canonical share URL and expiry |
+| GET /challenges/{slug} | Public slug | Seed/creator score/five-round count/expiry; no choices/keys/creator identity |
+| POST /challenges/{slug}/plays | Guest cookie, idempotency key | 201/200 owned fixed game, no Qloo/model calls |
+| GET /health/live and /health/ready | None | Minimal sanitized status; detailed diagnostics protected |
 
-The worker endpoint `/internal/runs/{run_id}:execute` is not browser-proxied. It requires the queue's IAM identity and validates task/run metadata. Schema-invalid requests return `422`; denied or unknown session resources return a uniform `404` where revealing existence would leak ownership.
-
-Example intake shape (illustrative coordinates are omitted; the city area is chosen from its registry):
+Illustrative synthetic unanswered DTO:
 
 ```json
 {
-  "city_id": "london",
-  "window": {
-    "starts_at": "2026-10-29T10:00:00+00:00",
-    "ends_at": "2026-10-29T15:00:00+00:00",
-    "time_zone": "Europe/London"
-  },
-  "mobility": {
-    "required_features": ["step_free_entrance", "accessible_toilet"],
-    "accepted_limitations": [],
-    "max_leg_distance_m": 200,
-    "max_total_distance_m": 1000,
-    "rest_every_minutes": 45,
-    "max_transfers": 1
-  },
-  "interests": [{"name": "jazz", "kind": "music"}]
+  "game_id": "opaque-game-id",
+  "round_id": "opaque-round-id",
+  "ordinal": 2,
+  "total": 5,
+  "revision": 4,
+  "seed": {"id": "opaque-seed-id", "name": "Example seed", "type": "artist"},
+  "target_type": "movie",
+  "question": "Which movie ranks higher for this seed in Qloo's taste graph?",
+  "choices": [
+    {"id": "opaque-left-choice", "name": "Synthetic Film A", "artwork": {"kind": "owned_fallback", "asset_id": "cover-a"}},
+    {"id": "opaque-right-choice", "name": "Synthetic Film B", "artwork": {"kind": "owned_fallback", "asset_id": "cover-b"}}
+  ]
 }
 ```
 
-Errors use a stable envelope: `error.code`, safe `error.message`, `error.retryable`, `error.request_id` and optional field errors. Do not expose tracebacks, raw provider payloads or secrets. Validation errors identify a correction; `429` includes retry guidance; transient dependency failures map to a retryable `503` or explicit partial result as appropriate.
+No ordering, ID, URL, accessibility label or metadata encodes upstream rank/winner. Sides are independently assigned and persisted. Separate public schemas describe unanswered and accepted-reveal states. After acceptance only that round may expose selected_choice_id, winning_choice_id, correct, cumulative score and supported evidence wording. Raw score display requires verified units/permission. Reload resumes saved accepted feedback via owned game state; completed results show answered rounds only. Unused pairs/future answers never serialize.
 
-### Sessions and ownership
+Errors contain `error.code`, safe `message`, `retryable`, `request_id`, optional field errors/retry guidance. Codes include INVALID_INPUT, SEED_AMBIGUOUS, INSUFFICIENT_COVERAGE, PROVIDER_UNAVAILABLE, GENERATION_IN_PROGRESS, VERSION_CONFLICT, ANSWER_CONFLICT, GAME_EXPIRED and CHALLENGE_EXPIRED. Use 422 invalid fields, uniform 404 inaccessible private IDs, 409 state conflicts, 410 publicly known expired challenges, 429 admission limits and eligible retryable 503 dependency failures. No raw provider payload/header/exception.
 
-Generate an opaque cryptographically random session token; store only its hash. The web layer strips browser-supplied internal identity headers and forwards session context only after validation. Check ownership in the API, not solely in the browser. Use Secure, HttpOnly and SameSite=Lax cookies in production, strict Origin checks for mutations and no permissive credentialed CORS.
-
-Session tokens, mobility inputs and precise user location stay out of logs, URLs and public cache keys. Return `Cache-Control: no-store` for plans, trips, session responses and SSE. “Clear session” deletes active personal rows and marks backup retention explicitly; backups expire under their documented policy rather than being silently rewritten.
-
-## 6. Planning, ranking and durable execution
+## 6. Curator and generation flow
 
 ```mermaid
 flowchart TD
-    Intake[Validate city dates requirements and ownership] --> Gather[Retrieve independent sources]
-    Gather --> Normalize[Normalize candidates and source references]
-    Normalize --> Gate{Mandatory venue evidence compatible?}
-    Gate -->|Yes| Taste[Rank the same eligible pool with Qloo]
-    Gate -->|No| Unknown[Keep verification-needed alternatives separate]
-    Taste --> Construct[Construct provisional stops legs and rest suggestions]
-    Unknown -->|Explicit preview only| Construct
-    Construct --> Explain[Optional constrained explanation]
-    Explain --> Check{Deterministic bounds and claim checks}
-    Check -->|No feasible outline| Empty[Empty result with unmet constraints]
-    Check -->|Supported draft| Draft[Retain unresolved journey and opening checks]
-    Empty --> Publish[Publish immutable version and terminal event]
-    Draft --> Publish
+    Reserve[Reserve request and fenced claim] --> Seed[Validate confirmed seed and domains]
+    Seed --> Decide[RoundCurator chooses allowed tool]
+    Decide --> Fetch[QlooPort obtains bounded ranking]
+    Fetch --> Normalize[Normalize identity order and permitted metadata]
+    Normalize --> Validate[Deterministic candidate and rights validation]
+    Validate --> Pool[Build diverse feasible pair pool]
+    Pool --> Gate{Five-round quality gate?}
+    Gate -->|Not yet; budget remains| Decide
+    Gate -->|No budget or coverage| Fail[Record useful failure]
+    Gate -->|Yes| Copy[Grounded reveal copy or factual templates]
+    Copy --> Commit[Recheck lease session expiry and atomically publish]
+    Commit --> Public[Return first unanswered round only]
 ```
 
-Current published drafts never receive confirmed journey status. Future confirmation requires compatible current evidence for every required stop and leg, actual route distances/times and opening/rest conditions; a successful task or generated explanation cannot establish it.
+Application tools include inspect_seed, fetch_ranked_candidates, validate_candidates, propose_pairs, evaluate_pool and finish_pool. Actual Qloo names/arguments come from pinned discovered schemas; these application functions are not Qloo-owned agents. The model chooses allowed domains/a useful correction; validators veto invalid selections. Generate reveal copy before play from returned evidence or use a factual template. Aggregate correlations do not support psychological/causal stories.
 
+Initial budgets to validate: about 20 seconds total generation, six upstream Qloo calls including retries/internal lookups, normally two and at most four Vertex requests, finite tokens/tool steps and repetition limits. Coordinate per-key usage across scale-out and overlapping old readers. Read quota metadata; simulate 429/timeouts instead of exhausting access. Exhaustion yields retry/coverage failure, never an unbounded loop. Label deterministic Qloo curation when Vertex fails; it is resilience, not proof of live agent tool use.
 
-The first fan-out includes places, taste-interest resolution, weather, transit capability/freshness and RAG guidance. Route calls and taste scoring follow identity resolution and shortlist selection. CPU embedding uses one bounded worker process and two model threads initially; it must not block the async request loop. Bulk ingestion is disabled during judge sessions.
+Reject ambiguous identity, self/duplicate/wrong-domain contestants, unverifiable ordering, contradictory metadata, ties/near-ties and missing/nonfinite required scores. Artwork failure selects an approved fallback. Build roughly 10–15 potential pairs where feasible and prove a five-round no-repeat continuation. Difficulty bands are versioned within-context heuristics, not calibrated confidence/cross-query quantities. Adaptive choice must preserve a remaining path; scarce-band fallback is explicit. Balance sides without leaking winners.
 
-### Idempotency and dispatch
+## 7. Request ownership, concurrency and replay
 
-1. In a transaction, reserve the session/idempotency key and canonical input hash, create the run and record pending dispatch. Reusing a key with different input returns `409`.
-2. Dispatch a deterministic task name based on run ID and dispatch generation. A known `AlreadyExists` for that name is a successful duplicate dispatch, not a second run.
-3. Return `202` only after queue acceptance. On an uncertain or failed enqueue, retain pending state and return a safe retryable response; the same key reconciles and retries rather than creating a new run.
-4. A periodic authenticated reconciliation job checks pending-dispatch records and expired leases. Implement this before public release so abandoned clients cannot leave runs permanently stranded. Schedule with a scoped Cloud Scheduler identity; terminal/exhausted records are never re-enqueued indefinitely.
-5. Worker acquires a database lease atomically and persists checkpoints. Duplicate delivery observes the live lease/terminal state and produces no duplicate plan. An expired lease can be reclaimed with bounded attempts. Cloud Tasks retries and database lease rules must agree.
+1. Reserve session/operation/idempotency key and body hash in a short transaction, assigning a stable game ID. Changed bodies conflict.
+2. Acquire a bounded expiring request-owned execution lease/fencing token atomically. Release the transaction before IO. Persist usage reservations so retries/restarts cannot evade budgets.
+3. Active HTTP generation awaits bounded work. Return ready only after private pool/first-round publication commits. A ready duplicate returns its saved game. A live duplicate may receive 202 GENERATION_IN_PROGRESS and observation/retry guidance, not a promise of queued completion.
+4. If the handler dies or cancellation stops it, the reservation survives. Explicit retry may reclaim an expired claim under bounded attempts. No background task is assumed to survive after a response.
+5. Publication rechecks session, deadline, evidence expiry and current fence; a stale claimant cannot publish after replacement or session clear.
 
-Use a maximum of three execution attempts per run, with transient provider retry once inside an attempt only if time remains. A logical planning attempt has a 30-second deadline; configure the task handler deadline at 60 seconds to allow safe cleanup. Cancellation and a superseding generation are checked between tools and immediately before the publication transaction. A crash after publication but before queue acknowledgement replays as a no-op.
+Measure lease/attempt/connection/admission limits during implementation. Release permits on success/failure/cancellation. If generation cannot reliably fit a request, design durable dispatch explicitly before adding it; do not silently resurrect AccessLife's worker.
 
-Persist checkpoint state and event sequence allocation in PostgreSQL. Do not keep the authoritative graph checkpoint only in worker RAM. Publish plan version, trip-segment attachment if still current, and terminal event in one transaction with an expected-version comparison. A losing concurrent replan does not overwrite the winning plan.
+Answer/advance use short transactions, unique acceptance and expected revisions. Identical retries return saved outcomes even after revision advancement; contradictory retries conflict. Score is recomputed from accepted answers, one point each, maximum five. Persist selected next round before returning; retries cannot reshuffle. No Qloo/model call occurs on answer, Next or shared replay.
 
-### Concurrency and SSE
+Solo mode adapts among valid unused stored pairs. Shared mode freezes the creator's actual five/order/sides/query contexts/answers/scoring and validator versions. Each replay is guest-owned and fixed. Compare scores only within that definition, not unrelated adaptive games. This is casual play, not cheat-proof competition: external research/repeat play exist. Later provider/policy changes never rewrite active challenge answers.
 
-Queue concurrency is 3; database leases enforce at most three active local runs across instances. Each run has at most five provider calls in flight, with an additional cross-run limit of 12 using expiring database-backed permits. All limits release on success, error, timeout or cancellation. Ingestion uses a separate bounded path.
+## 8. GCP and repository migration
 
-SSE event IDs equal a monotonically increasing per-run sequence. Persist events before emitting them. Each event contains `run_id`, `sequence`, `plan_version` when assigned, stage/agent, status, elapsed time, evidence count and a short public action. Heartbeats keep idle streams observable but do not allocate domain events.
+This is a documented baseline to re-inventory in Prompt 16, not a Prompt 1 live inventory/mutation. Project `project-bb13ecd8-9d67-408d-9a7`, default region `asia-south1`; PharmaGuard resources are unrelated/out of scope.
 
-Replay events strictly after `Last-Event-ID`; ignore duplicates in the client. Streams read durable state, so reconnection may reach another API instance. Cap each stream below Cloud Run/proxy request timeouts and reconnect with backoff. Close on terminal state; reconnecting to a completed run replays the terminal result. Unknown/expired run histories return a documented safe error and fetchable plan state rather than hanging.
+| Historical resource | Target/action | Preservation requirement |
+|---|---|---|
+| saimaharana4/accesslife-ai | Rename to saimaharana4/taste-duel in Prompt 17 if available | Preserve history/tag/licence and coordinate WIF trust first |
+| accesslife-web/api | New tasteduel-web/api | Candidate verification before service cutover, no random cross-product traffic |
+| Dedicated accesslife-db SQL instance | Reuse same billed PostgreSQL instance | Keep legacy physical name; no second instance for branding |
+| accesslife logical DB/user | New tasteduel DB; migration-owner/runtime-DML split | Old resources stay at stable/moved Terraform addresses until deliberate retirement |
+| accesslife Artifact Registry | Reuse compatible registry or reviewed migration | Digest releases, priced retention and documented name exception |
+| accesslife-qloo-api-key | Scoped retained reference or deliberate name migration | Copying key is not rotation; preserve required old readers |
+| DB/password/worker-token secrets | Fresh new DB credentials where needed; retire old worker token later | Direct Secret Manager handling, reader/rollback checks before disable |
+| Docs/backups buckets | No RAG docs needed; retain authorized backups/state | Lifecycle/rights checks, no cosmetic data deletion |
+| Worker/tasks/reconcile/ingest/scheduler | Drain/retire in Prompt 20 | No accepted old work abandoned or inherited old jobs |
+| SAs/WIF/monitoring/labels | New scoped identities, repo trust and Taste Duel operations | Both-label cost coverage and verified trust/readers |
+| gs://accesslife-tfstate-project-bb13ecd8-9d67-408d-9a7/accesslife/state | Preserve existing bucket/prefix/ownership | Reviewed moved/import handling; no empty-state recreation |
 
-### Ranking policy
+SQL instance/bucket/secret IDs are not all renameable in place. Document immutable-name exceptions. Never change old logical DB/user resource names into destructive replacement or remove deletion protection for branding. Keep state migration separate from app identity changes.
 
-First enforce all mandatory conditions. Baseline ordering is travel duration ascending, explicit category preference descending, then stable place ID. Qloo ordering sorts mapped eligible candidates by comparable returned affinity descending, then uses the same baseline tie-break. Unmapped candidates follow in baseline order with “Taste match unavailable.” This ordering policy is a product heuristic, not calibrated enjoyment prediction.
+Prompt 16 inventories/plans; Prompt 17 applies a saved foundation plan; Prompt 18 reviews image-dependent release changes. A new Cloud Run service's first revision cannot be assumed to receive zero-percent allocation. Bootstrap controlled maintenance/IAM or document the actual restricted initial allocation, then deploy tagged no-production-traffic candidates. Tags remain directly reachable; zero-percent is not access control. Candidate origins are exact/temporary and removed after release.
 
-Only compare raw scores within the provider's declared comparability group. If an adapter cannot supply comparable scores for the same snapshot, mark the Impact Lab unavailable for that run instead of comparing unrelated requests. Both columns retain identical candidate IDs, evidence snapshot and timestamp. Never force a rank change or fabricate explainability links.
+Use restricted GitHub OIDC/WIF with verified repository identity and intended branch/environment, no downloaded keys. Deploy permissions cover new services/jobs, required registry writes and service-account use, not project-wide administration. Rehearse compatible revisions/config/schema rollback before retiring old runtime. Recovery history/data is not an active second product.
 
-## 7. Evidence ingestion and retrieval
+## 9. Budget, operations and evidence
 
-Admit only allowlisted sources with recorded rights, city/language scope and provenance. The initial small English corpus supplements structured facts. Do not bulk ingest Qloo responses or private session profiles.
+The **US$80 envelope is cumulative**: incurred AccessLife cost plus remaining shared SQL/storage/backups, Taste Duel runtime/models/API traffic, temporary overlap, builds, restore checks, currency and tax. The historical US$78.48 forecast through 5 November is not spare funding and omits part of judging in IST. Reprice through at least **6 November 2026, 10:15 IST**, plus required follow-up. Stop extra provisioning if the total fails. Alerts notify; they do not cap spending. Reconcile old/new labels, unlabeled usage and request/token ledgers.
 
-| Budget | Initial policy |
-|---|---|
-| Sources | Begin with 100–500 useful documents across five cities; hard ceiling 2,000 |
-| Raw source bytes | Target at most 10 GB; hard cap 20 GB including retained revisions and staging |
-| Retained clean text | Maximum 500 MB UTF-8 |
-| Active chunks | Start 5,000–50,000; hard cap 100,000 |
-| RAG relations/indexes | 5 GB operational allowance; pause admission at 80%, reject at 100% |
-| Whole application DB | 15 GB logical allowance with separate WAL/storage monitoring |
-| Each document | At most 50 MB, 500 pages and 120-second parsing budget |
+Bound instances/concurrency, global provider/token admission, connection pools including migration/operations, image/cache/storage growth and log retention. Measure cold/warm timing separately. Logs contain safe correlation/game IDs, action/status/timing and rejection counts, never token/raw taste payload/hidden-answer dumps or chain-of-thought. Show truthful preparation stages.
 
-Use bounded download → checksum deduplication → parsing in a restricted process → boilerplate/near-duplicate removal → model-token counting → transactional quota reservation → embedding/staging → validation → corpus promotion. Release reservations on failure. Keep current and at most one prior corpus revision inside the shared budget. GCS capacity is not an automatic 20 GB cap; reconcile a quota ledger against actual object generations and staging.
+Verify permitted-data backup retention and actual restore into a priced disposable target, never over live data. Logical export/restore does not prove managed Cloud SQL backup restore; record each result separately. Pin image digests, preserve compatible rollback targets and remove only verified disposable targets. Teardown remains deliberate, not automatic after submission.
 
-MiniLM chunks use 180–220 model word pieces with 30–40 overlap and at most 256 including heading context and special tokens. Record tokenizer, model commit and chunker revision; do not count characters as tokens. Normalize 384-dimensional vectors and use cosine search. A model change rebuilds the corpus under a new version even if dimensionality is unchanged.
+Target freeze: 30 October. Submission target: 31 October 2026, 09:15 IST, subject to rules recheck. Maintain judging access through at least 6 November 10:15 IST and required follow-up within a reviewed cost window.
 
-Retrieval applies city, language and corpus-version filters, gathers 20 dense and 20 lexical candidates, combines by reciprocal rank fusion, removes duplicates and sends four to six permitted passages within the model context budget. Start with exact filtered search; add HNSW only after measuring latency and Recall@5. No default cross-encoder or second vector database.
+## 10. Replacement and verification gates
 
-OSM place-cache starting TTL is 24 hours; weather starting TTL 30 minutes, within forecast horizon. Transport follows operator feed validity and live update cadence. Access-source and Qloo retention/freshness rules require explicit source/account validation in Phase 1; until configured, they cannot establish a ready city. Cache keys include city, outing time, requirements/version as appropriate, and provider/model revision.
+| Stage | Remove from active product when replacement passes | Required evidence |
+|---|---|---|
+| Prompts 3–4 | Planner/map/trip UI, unused MapLibre/chart/agent-graph imports | Original five-round fixture UI, visual/accessibility gate |
+| Prompts 5–9 | AccessLife domain/schema/route/transport/weather/planning imports | New DB/contracts/engine/agent, concurrency and ownership checks |
+| Prompts 6–10 | Place-specific Qloo and old generation composition | Typed MCP and genuine Taste Duel flow |
+| Prompt 14 | MiniLM/ONNX/retrieval/ingestion assets, spatial/vector image requirement, old Compose worker | Reproducible new containers/CI, no remaining product imports/jobs |
+| Prompts 16–19 | Old release commands and active branding | Cost/plan/WIF/candidate/public-release gates |
+| Prompt 20 | Old worker/jobs/queue/scheduler/IAM and unused billed resources | Drain/readers/retention/rollback verified; shared SQL/state/secrets preserved |
 
-## 8. Multi-city consistency
+Never delete original references, Git history, user data, installed reused-instance extensions or unrelated workloads for tidiness. Active product eventually stops importing accesslife; recovery stays in checkpoint/history and reviewed cloud policy.
 
-Trips are aggregate records, not a new routing engine. Each segment references an immutable local plan version; independent city runs can execute concurrently within the global limits. Capture start/end instants plus each city's local time zone. Reject overlapping segment windows; require explicit resolution of nonexistent or ambiguous local times. Do not assume identical offsets in different cities.
+Acceptance includes same-context winners/ties, no-repeat path feasibility, provider envelopes/auth/timeouts, agent veto/injection limits, pre-answer secrecy/post-answer recovery, duplicate requests/fencing/restart/session clear, exact replay/expiry, keyboard/mobile/reduced motion, rights, clean local runtime, real remote CI and actual cloud connectivity/recovery. Fixtures/provider spikes do not establish full integration; technical success does not establish popularity. Human fun/clarity claims need real consenting playtest observations.
 
-A trip exposes local-plan status separately from transfer status. All inter-city gaps remain `user_arranged_unverified` in the MVP, even if local plans pass. Notes and external links supplied by a user do not establish confirmed travel duration or accessibility. Reordering/deleting segments updates transfer placeholders and invalidates affected references atomically; it never silently changes the local plan snapshot.
+## References and related specifications
 
-## 9. Operations, budget and recovery
+### Prompt 2 source, capability and rights record
 
-Before provisioning, price the proposed resources in the selected region through at least 5 November, extending for required follow-up. Forecast includes SQL runtime/storage/backups, Cloud Run and build time, Cloud Tasks/Scheduler, model tokens, GCS, networking, registry and logs. Compare incremental AccessLife spend against **US$80**; if the forecast is higher, stop provisioning and present the priced adjustment. Do not claim existing billing credit has been verified by this specification.
+The dated [Qloo capability matrix](qloo-capability-matrix.md) pins the official kit/documentation commits and harness package, separates offline tool discovery from bounded live evidence, and records score, artwork, cache and challenge-policy limits. Its explicit result/status cells control feasibility claims; none establishes that the Taste Duel game, production adapter or agent has been implemented. In particular, strict MCP tool arguments are not interchangeable with raw Insights parameters, and the advertised documentation meta-schema is not a client API specification.
 
-Use labels `app=accesslife`, `environment=hackathon` and an explicit owner/lifecycle inventory where supported. In a shared project, project budgets also see unrelated spend; configure resource attribution where supported and otherwise reconcile labeled usage plus an application request/token ledger. Budget alerts at 25%, 50%, 75% and 90% are not hard caps. Bound instances, admitted runs, daily model tokens, ingestion and log retention; public rate limits must not rely on IP alone.
+These references were collected in prompts.md for later recheck; Prompt 1 makes no fresh capability/licence/price/access claim.
 
-Default application logs exclude user content and retain for 7 days where platform policy allows; verify bucket retention settings explicitly. Metrics include queue age, run latency, provider errors, stale evidence, SQL connection/storage use, token usage and remaining envelope. Keep operational detail in protected tools rather than the public agent inspector.
+- [Official Qloo kit](https://github.com/qloo/qloo-hackathon-kit), [MCP starter](https://github.com/qloo/qloo-hackathon-kit/blob/main/starter/mcp-client/README.md), [API access](https://github.com/qloo/qloo-hackathon-kit/blob/main/docs/API_ACCESS.md), [safe use](https://github.com/qloo/qloo-hackathon-kit/blob/main/docs/SAFE_USE.md).
+- [Search](https://github.com/qloo/docs-public/blob/main/reference/get-search.md), [Insights](https://github.com/qloo/docs-public/blob/main/reference/insights-api-deep-dive.md), [affinity interpretation](https://github.com/qloo/docs-public/blob/main/docs/interpreting-affinity-scores.md), [Qloo terms](https://www.qloo.com/legal/terms).
+- [Next.js components](https://nextjs.org/docs/app/getting-started/server-and-client-components), [Cloud Run authentication](https://docs.cloud.google.com/run/docs/authenticating/service-to-service), [traffic/rollback](https://docs.cloud.google.com/run/docs/rollouts-rollbacks-traffic-migration), [WIF pipelines](https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines).
 
-Keep daily managed SQL backups for 7 days and bounded encrypted logical exports to the private backups bucket for 7 days; include both costs. No HA replica is assumed for this budget. Enable deletion protection and test restore into an isolated target before release. Pin images by digest; roll back Cloud Run revisions without destructive schema changes. Migrations use expand/contract compatibility and a backup before any destructive operation.
-
-Before final teardown, export permitted data/manifests/configuration, verify restoration, then inventory only AccessLife-owned resources. Remove services/jobs/queues/schedules, SQL and retained backups when authorized, objects/versions, image revisions, secrets and IAM/WIF bindings that are no longer needed. Never disable project APIs or delete shared project resources to clean up this application. Keep the working app through judging and required follow-up; 3 November is a review checkpoint, not automatic destruction.
-
-## 10. References and validation boundaries
-
-- [Next.js Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components)
-- [Cloud Run and Cloud Tasks](https://docs.cloud.google.com/run/docs/triggering/using-tasks)
-- [Cloud Run streaming/reconnection considerations](https://docs.cloud.google.com/run/docs/triggering/websockets)
-- [Cloud SQL supported extensions](https://docs.cloud.google.com/sql/docs/postgres/extensions)
-- [Cloud SQL Python connector](https://github.com/GoogleCloudPlatform/cloud-sql-python-connector)
-- [pgvector](https://github.com/pgvector/pgvector)
-- [MiniLM model card](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
-- [Workload Identity Federation for deployment pipelines](https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines)
-
-Qloo endpoint/authentication details, account permissions, provider field semantics, city coverage, Vertex model availability and regional costs must be verified during implementation. The organizer-linked Qloo guide could not be retrieved in the planning review; do not turn guessed endpoint shapes into production contracts.
-
-Related documents: [PRD](prd.md), [rules](rules.md), [phases](phases.md), [design](design.md), [memory](memory.md).
+Related: [PRD](prd.md), [rules](rules.md), [phases](phases.md), [design](design.md), [memory](memory.md), [iteration prompts](prompts.md).

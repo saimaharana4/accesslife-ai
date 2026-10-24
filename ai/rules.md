@@ -1,146 +1,142 @@
-# AccessLife AI engineering rules
+# Taste Duel engineering rules
 
-Revision 2 - 24 October 2026 - Applies to implemented and future work
+Revision 3 — 24 October 2026 — Prompt 1 specification reset. **These rules describe the Taste Duel target. Existing code/runtime remains AccessLife AI.** Rewriting specifications does not complete game development, provider verification or a GCP migration.
 
-## Runtime decisions in force
+## 1. Authority, scope and preservation
 
-Use Node 24, Python 3.12, pnpm 10.28.2 and committed pnpm/uv/Terraform lockfiles. Version container images and deploy immutable digests. MiniLM weights are pinned and packaged with their Apache license/model card; never commit weights.
+Follow the user's explicit Taste Duel pivot, [prompts.md](prompts.md) and the maintained [PRD](prd.md), [Architecture](Architecture.md), [phases](phases.md) and [design](design.md). Execute only the selected numbered prompt. Complete its checks or report the specific blocker; do not skip into later implementation/deployment. Routine reversible decisions do not require repeated approval. Prompt 1 authorizes documentation/preservation, not cloud mutations or application replacement.
 
-Vertex uses Google Gen AI, ADC, global `gemini-3.8-flash` and LOW thinking; project access passed a live smoke. Only transient configured failures permit Groq fallback; authentication failures do not silently switch. Optional OpenAI uses Responses parsing; Ollama is opt-in. Deterministic explanations never add venue facts.
+Build a guest web game: seed search, five Qloo-backed comparisons, honest score, discoveries and exact friend challenge. Initial artist/movie coverage is a live gate; book/person support is later. Remove the old five-city/planner requirement. Native apps, accounts, global leaderboards, maps, transport, multi-city travel and extra domains are outside this MVP.
 
-Qloo uses the hackathon origin, `X-Api-Key`, GET `/search`, `/v2/tags`, `/v2/insights`. Search results are an array; Insights entities are nested. Resolve IDs first and enforce the place-parameter allowlist. Prefer exact place-category tags, then place/media genres or ambience. Explicit named seeds use `entity:`; never turn an unresolved generic word into an arbitrary artist/movie. Bound ranking to five interests/eight candidates; the current catalogue has three/city. Preserve ambiguous mappings and absent scores. Raw responses stay only in the private expiring lookup cache, never in RAG, Git or browser state.
+Use available Codex agents with explicit independent file ownership, coordinated contracts and an independent reviewer. Those build roles are not deployed agents. The application starts with one bounded RoundCuratorAgent; extra frameworks/agents/services are not evidence of quality.
 
-All real application credentials belong in Secret Manager. Local `.env` may contain nonsecret references and the public loopback development database default. Keep payloads out of source, examples, tests, logs, build contexts, Terraform files and CLI output. Vertex/CI use IAM/ADC/WIF, not downloaded service-account keys. Optional provider keys pasted earlier require rotation before enabling those adapters.
+Preserve original `/ai` reference bytes and a recoverable AccessLife source checkpoint/history. Publish only specifically allowlisted AI documents: the six maintained specs, ai/prompts.md and the dated [Qloo capability matrix](qloo-capability-matrix.md); originals remain local/ignored. Never broad-stage credential history, private captures, state or original references. Keep dated short factual [memory.md](memory.md) entries and mark historical AccessLife evidence clearly. Do not edit external user memory without a direct request.
 
-Persist limits across processes: three active runs, twelve provider permits overall/five per run, 30-second execution deadlines, three execution attempts and bounded dispatch recovery. Daily planning capacity defaults to 200; model calls are 100 locally and 35 in reviewed cloud configuration. Per-session limits apply too. These are operational controls, not dollar spending caps.
-
-## 1. Authority and current state
-
-Follow explicit user decisions first. The maintained requirements are [prd.md](prd.md), [Architecture.md](Architecture.md), [phases.md](phases.md) and [design.md](design.md). Resolve contradictions before implementing a different product. London, New York, Paris, Berlin and Chicago are required; deployment uses managed GCP services and a separate AccessLife database instance.
-
-Keep the six maintained specifications in `ai/`. Original reference files are preserved locally and ignored; never publish them through a broad `git add .` or use them as runtime dependencies. Record completed work in [memory.md](memory.md), one or two lines per dated entry. Do not mark planning targets as measured outcomes.
-
-Application implementation and managed GCP work are now authorized. Record local, live-provider and cloud outcomes separately in memory.md.
-
-## 2. Approved stack and dependency policy
+## 2. Approved stack and dependencies
 
 | Layer | Use | Avoid or defer |
 |---|---|---|
-| Frontend | Next.js App Router, strict TypeScript, React Server Components | Pages Router for new features; making the entire app a client component |
-| Styling | Tailwind and semantic CSS variables | Multiple styling systems, scattered status colors and blanket glass panels |
-| Primitives | shadcn/ui with React Aria base, Lucide | Mixing primitive bases casually; rebuilding focus/keyboard behavior from scratch |
-| Forms | React Hook Form and Zod | Placeholder-only labels; manually duplicating incompatible API schemas |
-| Server state | Server Components for initial data; TanStack Query for live browser data | Putting all data in a global client store; storing sensitive plans in shared caches |
-| Maps | MapLibre GL JS, optionally its `react-map-gl/maplibre` binding | Assuming free/public tiles permit unlimited use; map-only navigation |
-| Charts/motion | Recharts, small custom SVG, Motion | Two chart libraries; mandatory animation; decorative confidence gauges |
-| Agent inspector | Lazy `@xyflow/react` | Loading a graph library on every landing page; exposing private reasoning |
-| API and DB | FastAPI, Pydantic, SQLAlchemy, Alembic, psycopg, Cloud Run Cloud SQL socket attachment | SQL string interpolation; import-time network calls; schema creation instead of migrations |
-| Agents | LangGraph and small explicit provider/tool interfaces | Multiple orchestration frameworks, autonomous unbounded loops or a service per agent |
-| Retrieval | MiniLM CPU, pgvector, PostgreSQL full-text search and PostGIS | Chroma/Qdrant/FAISS as additional production stores; GPU; an oversized corpus |
-| Generation | Configurable Vertex AI adapter | Local large LLM hosting; guessed model IDs or quota claims |
-| Jobs/deploy | Cloud Tasks, Cloud Run jobs, Terraform, GitHub Actions WIF | In-process post-response planning; downloaded CI service-account keys; Kubernetes |
-| Verification | pytest, Vitest, Testing Library, Playwright and axe | Skipping failing domain cases, weakening assertions or disabling full accessibility scans |
+| Web | Next.js App Router, strict TypeScript, Server Components for shell/layout | Whole-app client rendering, old planner reskin, new Pages Router flow |
+| Style/controls | Tailwind, semantic tokens, React Aria primitives, Lucide where useful | Mixed UI bases, copied trade dress, improvised focus/combobox behavior |
+| Interaction | Motion for focused choice/reveal; explicit frontend state machine | Forced animation/audio, GSAP/WebGL without a measured need |
+| Contracts | Generated application OpenAPI types and compatible Zod forms | Conflicting handwritten wire schemas, private payloads in public global stores |
+| API | FastAPI, Pydantic, SQLAlchemy, Alembic, psycopg | SQL interpolation, import-time requests, create_all instead of migrations |
+| Qloo | Pinned official harness/Python stdio MCP client behind QlooPort | Browser keys/calls, docs MCP as production API, guessed tool arguments |
+| Agent/model | One Google Gen AI Vertex tool loop and typed model port | Inherited RAG supervisor/swarm, unbounded loops, guessed model IDs |
+| Storage | PostgreSQL 16 ordinary relational tables | RAG/PDF ingestion/chunking/embeddings/MiniLM/vector/spatial requirements, Redis by default |
+| Runtime/release | Node 24, Python 3.12, Docker, Terraform, GitHub Actions WIF | Runtime npx installs, unpinned latest, Kubernetes, CI service-account key files |
+| Checks | pytest, meaningful frontend checks, real DB integration, Playwright/axe | Weakened assertions/scans, fixture success presented as live evidence |
 
-The table contains installed and deferred choices. Exact installed versions are in the lockfiles; keep toolchain files and lockfiles aligned. Use `pnpm` for JS and `uv` for Python. Avoid unpinned `latest` dependencies in repeatable builds and pin container/model revisions.
+Use pnpm/uv, compatible exact dependencies/images and committed lockfiles. Verify harness/runtime versions in Prompt 2; the Python backend image also needs the tested Node runtime. Do not retain unused retrieval/map/chart packages because they already exist. Remove dependencies only after replacement stages pass and imports/build/runtime checks establish they are unused. Reused SQL extensions can remain installed harmlessly.
 
-React Aria base is supported by the [shadcn CLI](https://ui.shadcn.com/docs/cli). Verify generation against the pinned CLI and review copied component code; a registry item is not automatically accessible or safe.
+Every new dependency needs a missing capability, compatible licence and acceptable browser/image/maintenance cost. No second orchestration framework/model provider/cache/chart kit/account system by default. Optional old generation providers remain disabled unless deliberately configured with rotated credentials; the target uses Vertex IAM.
 
-New dependencies need an identifiable missing capability, license compatibility and acceptable browser/image cost. Do not add Redux, Zustand, Storybook, virtualizers, a second UI kit or a full AI chat SDK by default. Add a small local store only when actual shared UI state warrants it. Do not store secrets, profiles or full provider responses in that store persistently.
+## 3. Modules and contracts
 
-## 3. Component and contract boundaries
+- Fresh backend domain: apps/api/src/tasteduel. Frontend features: seed, duel, reveal, results, challenges, discoveries. Do not simply rename old planner modules.
+- API/UI call application use cases; domain imports pure types/ports, not FastAPI/provider SDKs/raw Qloo JSON/React. Wire adapters at a composition root.
+- Pydantic application schemas own HTTP contracts. Generate web types from actual exported application OpenAPI and check drift. An advertised generic OpenAPI meta-schema without paths is not a Qloo endpoint spec.
+- Keep distinct unanswered and accepted-reveal DTOs. Private snapshots/pools/persistence objects never serialize directly to browsers.
+- Deterministic backend rules own game decisions. Next.js forwarding handles safe transport/identity, not trusted scoring.
+- Parameterize SQL, use short transactions/constraints/expected revisions and never hold a connection across provider/model IO.
+- Inject network, clock and RNG for meaningful tests. Importing/constructing a module must not call providers, migrate data or mutate cloud.
 
-- Domain logic imports ports and pure types, never provider SDKs, FastAPI request objects or frontend concerns.
-- Provider adapters normalize raw responses. React cards and validators consume the AccessLife model, not Qloo/GTFS/OSM payloads.
-- Configure providers at a composition root; replacing weather or taste must not require editing UI components.
-- Python API schemas own the wire contract. Generate TypeScript from exported OpenAPI and check drift in CI.
-- Keep business logic in the backend. Next.js API forwarding handles identity, cookies, request/response transport and streaming only.
-- Each module owns its writes; expose repository/use-case operations rather than arbitrary cross-module SQL updates.
-- Use parameterized SQL, explicit transaction scopes and Alembic migrations. Never hold a transaction open across slow provider calls.
-- Preserve immutable plan versions. Replanning uses optimistic concurrency; duplicate/out-of-order requests must not overwrite newer state.
-- External network access is injected and mockable. Constructing a module must not start a request, ingest data or mutate infrastructure.
+## 4. Qloo semantics, sources and retention
 
-## 4. Evidence and recommendation rules
+Resolve typed IDs and ask users to settle material ambiguity. Search results are candidates, not proof of identity. Allowlist verified types/parameters; unsupported parameters may not fail helpfully. Actual workflows/arguments come from discovered pinned harness schemas. Application tools such as evaluate_pool are not official Qloo agents.
 
-Hard requirements are gates. A high taste score never overrides inaccessible, unknown, stale or conflicting mandatory facts. “Limited” requires documented compatible conditions and explicit acceptance; do not infer that a caregiver can overcome any limitation.
+Contestants in each duel share a target type and frozen context: seed/signals, filters, provider/harness version and snapshot. Never compare raw scores across domains, changed requests/filters or demographic contexts. Cross-domain means seed and target actually differ, not two artists for an artist seed.
 
-Store confirmed, limited, inaccessible and unknown as different states. Keep conflict as a separate property. Do not average contradictory facts into a confidence percentage. Track entrance, toilet, lift, boarding, vehicle and walking/rolling links separately.
+Verify wire score units/order before normalization/display. Prefer rank wording. No invented enjoyment probabilities, causal explanations, psychological labels or claims that scores measure a player's cultural worth. Qloo supplies the answer for that query, not universal cultural truth. Preserve ambiguous/missing metadata rather than inventing a plausible match.
 
-Every strong factual claim references evidence that actually supports it. Retain provider IDs, URLs, source type, retrieval/update dates, rights and transformation revision. “Fetched today” is not “verified today.” Generic RAG guidance cannot certify operational conditions.
+Prompt 2 observed decimal `query.affinity` in two explicitly affinity-sorted raw responses; this does not establish universal units or canonical MCP default ordering. Reject conflicting score fields; preserve `types[]`/subtype and matching interpretation context during normalization. Top-level warning absence does not prove absence of nested explainability warnings. The [capability matrix](qloo-capability-matrix.md) lists unresolved probes; do not reset its consumed 12-request budget. HTTP cache `Expires` is not credential expiry.
 
-Qloo interest/entity matching must be auditable. Ambiguous candidates stay unmapped; never map solely because a name resembles another venue. Preserve score semantics and scope. Do not invent probabilities, explainability relationships, testimonials or forced ranking changes. Impact comparisons retain the exact same eligible set and snapshot.
+Reject same/self pairs, wrong types, repeated contestants, ambiguous identity, unverifiable order, contradictory metadata, ties/near-ties and missing/nonfinite required scores. Arbitrary ID/name tie-breaks do not establish factual winners. Difficulty bands are versioned game heuristics calibrated from outputs/player observations, not universal attachment deltas or statistical confidence.
 
-Use only explicit user taste interests. Do not infer protected traits or diagnoses from cultural preferences. Never send unnecessary mobility details to Qloo. Do not bulk mirror its graph or responses into RAG without account terms permitting it.
+Send only the selected public cultural seed and permitted context to Qloo. Do not send names/emails/session IDs/location histories or infer sensitive traits. Optional TMDB/Wikidata/Commons metadata cannot become an alternate ranking engine. Cache only project-needed data privately with scope, rights, timestamps, version and expiry; no bulk graph mirror or artificial RAG corpus. Live response captures stay private/ignored, never Git or public endpoints.
 
-Inter-city travel is user-arranged and unverified in the MVP. Local validation does not establish a fully validated multi-city trip. Straight-line geometry is not a verified accessible route; GTFS is not a routing engine.
+Review applicable event/API terms for raw data, evidence, metadata, assets, games/challenges, logs and backups. Do not invent a fixed TTL as a licence condition. Conservative product defaults apply only where terms permit. Challenge expiry is no later than evidence expiry; expire/revoke rather than silently re-querying its answers. Session clear revokes owned live access/shares under the documented policy; backup expiry is separate, not instantaneous erasure.
 
-Fixtures and development providers are allowed for development and deterministic tests. Label them visibly in the UI. Release qualification requires a live path exercising actual Qloo; changing a label does not convert replay into live evidence.
+An image URL is not permission to mirror/transform/use artwork in social cards. Record per-asset source/licence/attribution/uses. Approved images or original title-based SVG/CSS fallbacks are allowed; broken images and fake posters for real works are not. Do not scrape Google Images/Letterboxd, assume Commons media is CC0 or add Spotify OAuth for covers. TMDB terms/credential/attribution and linked-media rights require their own review.
 
-## 5. Errors, deadlines and partial results
+## 5. Agent authority, game rules and answer secrecy
 
-Use typed errors at provider boundaries: invalid input, authentication/permission, rate limit, transient outage, timeout, unsupported capability and malformed data. Map these to a stable safe HTTP envelope. Preserve an internal cause for diagnosis without exposing raw exception text.
+RoundCurator chooses verified domains, calls allowlisted tools, inspects validation and makes a bounded correction. CandidateValidator owns eligibility, frozen Qloo order supplies winners, GameEngine owns delivery/scoring/adaptation, ChallengeService owns replay. The model cannot create entities/scores or override a veto. Precompute supported reveal text or use a factual template; correlation does not support invented personal/causal stories.
 
-| Situation | Required handling |
+Validate initial limits: around 20 seconds total, at most six upstream Qloo calls including retries/internal harness lookups, normally two and at most four Vertex requests, finite tokens/tool steps and repetition/cancellation checks. Coordinate per-key budgets across instances and overlapping legacy readers. Count actual upstream calls or conservative verified workflow maxima; one MCP invocation is not necessarily one HTTP call. Exhaustion is a useful failure state, not permission for an extended loop.
+
+Before acceptance, winners/ranks/affinities/revealing copy/remaining pools/answer-dependent URLs must stay out of JSON, HTML, RSC/preload/prefetch, bundles, accessible labels, public logs, analytics and OG images. Choice order cannot simply preserve upstream ranking. Persist independently assigned sides and opaque IDs.
+
+After acceptance, only that round may reveal its winner/evidence and real score. Separate accepted DTOs allow resume of saved current feedback and completed results may show answered rounds; neither grants future-answer disclosure. Audit every read transport, not just answer submission.
+
+Exactly five accepted rounds, distinct contestants, one point per correct prediction and maximum five. Prove no-repeat continuation before selecting an adaptive pair; scarce-band fallback remains explicit. Do not silently relax quality to fill slots. Never trust browser totals, use speed multipliers or display fake percentiles/testimonials/live counts.
+
+Freeze the creator's actual five played rounds, order/sides/question contexts/answers/scoring and validator versions. Friend replay is guest-owned and fixed, never independently adaptive. Answer, explicit Next and replay cause no Qloo/Vertex calls. Compare only inside the same challenge definition. This is casual play, not cheat-proof competition; external research and repeated plays exist.
+
+Label deterministic Qloo-backed curation when Vertex fails and synthetic fixtures during development. Neither proves live agent use. A model narrating a fixed pipeline is not autonomous tool reasoning. Mocks/replays alone or changed labels do not satisfy the live integration gate.
+
+## 6. Request ownership, errors and recovery
+
+Persist session/operation idempotency key, canonical body hash, stable game ID, bounded lease/fence and usage/attempt counters. Await generation within its active HTTP request and publish the pool/first round atomically before ready. Changed bodies conflict; lost-response retry recovers the same game. Stale claims cannot publish after replacement, revocation or evidence expiry.
+
+202 may describe an already-running claim with observation/retry guidance, not an undeployed queue's promise. Handler loss leaves a reservation explicitly reclaimable after expiry under bounded attempts. Do not rely on FastAPI BackgroundTasks, unobserved promises/RAM or post-response Cloud Run work. If measured generation needs durable dispatch, design/test that change before adding it; do not silently activate the old worker.
+
+Answer/advance use transactions, unique acceptance and expected revisions. Identical retries return saved outcomes; conflicting choices/bodies return 409. Future/out-of-order IDs fail. Session clear blocks late publication. Expired games do not silently become new games. Release permits/resources on cancellation/failure.
+
+| Condition | Required handling |
 |---|---|
-| Invalid input | Actionable field errors; do not send an avoidable bad request to a provider |
-| Authentication/permission failure | Do not retry blindly; report provider unavailable and alert protected operations |
-| Timeout/429/temporary 5xx | Retry once only if idempotent and the remaining run deadline permits; honor Retry-After when possible |
-| Malformed response | Fail normalization; never fill missing safety fields with optimistic defaults |
-| Mandatory evidence failure | Exclude affected candidate/leg from confirmed output |
-| Optional source failure | Return explicit partial/provider state; omit unsupported claims |
-| Unhandled exception | Safe internal error with request/run correlation; no traceback in browser |
-| No eligible result | Explain failed conditions and allow explicit input changes; do not relax requirements automatically |
-| User retry | Preserve idempotency keys where retrying the same operation |
+| Invalid/ambiguous input | Actionable validation/selection, no guessed identity |
+| Qloo auth/permission failure | No blind retry, silent transport/provider switch or fixture success |
+| Timeout/eligible 429/temporary 5xx | Bounded idempotent retry within deadline/quota; Retry-After where feasible |
+| Partial/degraded harness result | Explicit normalized status; normal deterministic quality gates still apply |
+| Malformed order or weak pool | Reject unsupported pairs and offer another seed |
+| Vertex unavailable/refusal/malformed output | Label deterministic curation/template fallback only where real Qloo permits |
+| Artwork failure | Preserve title and deliberate owned fallback |
+| Internal/database error | Stable safe envelope/correlation ID; no traceback/query/payload |
+| Lost answer/advance response | Saved outcome/round; no duplicate score or reshuffle |
 
-Initial ordinary tool deadline is 8 seconds and planning deadline is 30 seconds per attempt. Start at three active local runs, five calls per run and 12 globally. Bound queue attempts and embedding threads; capture cancellation and release resources in `finally`/context-manager paths. Broad exception swallowing, unbounded retry, busy polling, infinite tool loops and silent fallback are prohibited.
+Normalize ok, empty, needs_input, partial, degraded and error envelopes. Unknown structures fail safely. No broad exception swallowing, busy polling, infinite retry or repeated authentication retries. Docs MCP is reference only; no execute-request or key. Test throttling/deadlines synthetically rather than deliberately exhausting live quota.
 
-Durable tasks must survive client disconnects. Persist graph/run state and ordered events; enforce execution leases and idempotent publication. Reconcile failed enqueue and expired leases. Do not use FastAPI background tasks as the authoritative planning runtime on request-scaled Cloud Run.
+## 7. Security, privacy and visual quality
 
-SSE reconnects replay durable events after the last sequence; discard duplicates/stale generations. Do not claim completion until plan publication and the terminal event are committed. A cancelled or superseded run must not attach a new trip plan.
-
-## 6. Security, privacy and data admission
-
-- Keep Qloo and model credentials server-side in Secret Manager. `NEXT_PUBLIC_*` is always public.
-- Use separate least-privilege service identities. CI uses WIF scoped to the repository and intended environment; no static cloud key files.
-- Enforce session ownership for plans, trips, runs and evidence. Opaque IDs alone do not grant access.
-- Use Secure/HttpOnly/SameSite cookies, Origin checks for mutations, restricted forwarding paths and parameter validation. Strip untrusted internal headers.
-- Rate-limit sessions and expensive actions; cap model calls/tokens and payload sizes. A public anonymous demo still needs abuse controls.
-- Never log tokens, mobility profiles, precise user location, raw prompts or provider payloads by default. Log safe request/run IDs, stage, outcome and timings.
-- Keep plans/session data `no-store`; do not embed them into public HTML caches, analytics events or URLs.
-- Allow users to clear sessions; default active retention is 24 hours. Explain independent backup expiry.
-- Allowlist ingestion hosts and types; block loopback/private/link-local/metadata destinations and revalidate DNS/redirect targets to prevent SSRF. Enforce download, decompression, page and parsing limits.
-- Treat retrieved content as untrusted data, never instructions. It cannot change tool permissions, system rules or validation gates.
-- Use only licensed/authorized sources. Store attribution and rights; do not republish proprietary reviews, guidebooks or unlicensed images.
-
-Ingestion must enforce the Architecture quotas before admitting content: raw 20 GB hard cap, 500 MB clean text, 100,000 active chunks and 2,000 documents. Maintain a ledger and reconcile object versions/staging. Never evict evidence referenced by an active operation merely to make a batch fit.
-
-## 7. UI and accessibility rules
-
-Follow [design.md](design.md). Use visible labels, text plus icons for status, 48 px primary targets, readable contrast and persistent focus indicators. Do not communicate eligibility through color, hover or motion alone.
-
-The list is a complete alternative to the map. Provide buttons for drag/reorder interactions, text/table equivalents for charts and predictable drawer focus restoration. Announce meaningful progress with restrained live regions, not every SSE event or generated token.
-
-Use reduced-motion and reduced-transparency preferences with solid fallbacks. Keep evidence text on opaque surfaces. Never let premium visual effects obscure safety-related facts, unknowns or provider status.
+- Sensitive credentials stay in Secret Manager; ignored local config may contain nonsecret references. No payloads in examples/tests/source/history/CLI arguments/logs/builds/Terraform plaintext. Vertex/CI use IAM/ADC/WIF, no downloaded keys.
+- Scope web→API, API→database/Qloo/model and deploy grants. Separate migration/runtime DB roles. Verify private API IAM externally; untrusted forwarding headers are not identity proof.
+- Host-scoped secure cookies, mutation Origin checks, strict path/header allowlists, bounded bodies and ownership checks are mandatory. IDs/slugs are not authorization.
+- Rate-limit search/generation/assets/model tokens with shared per-key controls across scale-out. Do not collapse all users into the web forwarding IP or trust unvalidated forwarded headers.
+- Treat metadata/MCP/model content as untrusted data, never permission to alter tools, hosts or validation policy. Log safe action summaries, not raw content or private chain-of-thought.
+- Server image fetches block private/loopback/link-local/metadata destinations; revalidate DNS/redirects, approve schemes/types and bound bytes/time. No unrestricted proxy.
+- Follow [design.md](design.md): original cultural fight-night composition, readable titles, visible labels/focus, 48 px primary controls, contrast and keyboard/screen-reader/reduced-motion equivalents.
+- No forced sound/timer/automatic advance; correctness cannot depend on colour/hover/motion/audio. Image loading/failure keeps titles readable. No dashboard/chat/agent graph as decoration.
+- Inspect screenshots at 390×844, 1440×1000 and 320 CSS px plus long-title/image-failure/200%-zoom cases. Build success is not visual acceptance; axe success is not manual screen-reader proof.
 
 ## 8. Verification and release gates
 
-Run meaningful unit/contract tests for validators and provider normalization, transactional tests for versioning/task duplication, retrieval evaluation and browser flows for the main journey. Do not write tests that merely mirror a component's implementation or add needless tests for wording-only edits.
+Test pair/scoring permutations/ties/path exhaustion/RNG; synthetic provider envelopes/auth/deadlines/process failures; actual PostgreSQL migrations/constraints/fencing/concurrent retry/session isolation; Playwright solo/fixed replay/reload/expiry/keyboard/mobile/reduced-motion. Audit all pre-answer transports and accepted-answer recovery without future leakage.
 
-Golden cases cover every city, conflicting/missing facts, excessive distances, unavailable providers, time zones, stale events and cross-session access. Every release claim must point to a measured report, screenshot, test result or live observation appropriate to that claim.
+CI uses synthetic providers, never event keys. Check relevant lint/types, OpenAPI drift, domain/provider/DB scenarios, production/container builds, secrets/dependencies and full target-page axe/browser flows. Keep full scans with realistic timeouts and writable screenshot artifacts; inspect the actual remote application-SHA result. Do not suppress failing cases or describe static Terraform validation as successful cloud deployment.
 
-CI should block on lint/type checks, backend tests, schema drift, critical scenarios, build, secrets/dependency checks and full target-page accessibility checks. Separate deterministic fixtures from explicitly invoked live-provider checks. Do not commit provider secrets, full private captures, source documents or model weights to make CI pass.
+Live probes are separate/budgeted/private. Prompt 2 targets at most twelve upstream calls including retries/internal lookups; report the unproved matrix rather than exceeding it. Enabled model API does not establish project/model access. Rights, actual cross-domain ranking and five-round quality must pass before live claims.
 
-If a required check fails, fix the implementation or honestly report the blocker. Do not lower thresholds, delete failing cases, fabricate evidence or mark incomplete five-city coverage as done.
+Measure warm/cold generation/answer latency separately with samples/conditions. Performance budgets remain targets until measured; local Lighthouse is not field INP/p75. Human fun/clarity/retention needs actual consenting participants and denominators/bot/test exclusions. Agents are reviewers, not human testers.
 
-## 9. Cloud and change discipline
+## 9. Cloud migration, cost and retirement
 
-Use project `project-bb13ecd8-9d67-408d-9a7`, region `asia-south1` unless a verified model capability needs a separate explicit location. Create separate AccessLife resources. Do not modify, restart, delete or share existing PharmaGuard services or its Cloud SQL instance as an undocumented shortcut.
+Project project-bb13ecd8-9d67-408d-9a7, default asia-south1, explicit invocation scope and dedicated-resource map. Prompt 16 inventories/plans; 17 applies saved foundation; 18 publishes digests/reviews release/deploys candidate; 19 promotes; 20 retires verified legacy resources. Prompt 1 makes no cloud mutation.
 
-Keep incremental forecast through judging at or below the **US$80 target** before provisioning. Report the actual regional quote and remaining billing/credit uncertainty. Alerts are not hard caps; enforce request, instance, token, storage and log controls. If the design cannot fit, stop provisioning for a concrete budget/design adjustment.
+Reuse accesslife-db with a new tasteduel logical DB. Keep old DB/user resources at stable/moved Terraform addresses until deliberate retirement; never rename attributes into a destructive replacement. No second billed instance for branding. Document immutable registry/bucket/state/secret names retained for cost/preservation rather than falsely claiming a rename.
 
-Terraform applies are reviewed against an AccessLife-only inventory; never run broad project destruction. State and credentials remain ignored. Keep migration backups, image rollback references and a tested restore procedure. Default database deletion protection stays on until an intentional teardown.
+Preserve remote-state bucket/prefix/ownership during app migration. Reviewed moved/import operations only: no fresh empty state, broad destroy, deletion-protection removal or unrelated PharmaGuard modification. Preserve required Qloo readers until rollback expires; copying a key is not rotation. Repository rename needs coordinated narrow WIF/remote/workflows, not owner-wide trust.
 
-Retain live access through 5 November and required follow-up. A cleanup checkpoint on 3 November removes only verified unused AccessLife resources. Stopping a service does not prove storage, backups, schedules or image charges have ended.
+The **US$80 budget is cumulative**: AccessLife incurred cost plus pivot/shared SQL/storage/backups/models/API usage, overlap/builds/restore/currency/tax through at least **6 November 2026, 10:15 IST**, plus required follow-up. Historical US$78.48 through 5 November is not fresh headroom. Reprice before provisioning; stop if it fails. Alerts are not caps; reconcile old/new labels and unlabeled costs.
 
-## 10. Change records
+New Cloud Run first revisions cannot be assumed zero-traffic. Use controlled maintenance/IAM bootstrap or document actual restricted allocation, then candidate revisions. Tags may still be reachable at zero-percent; access is separate. Verify exact canonical/candidate origins, API audience, real browser journey and compatible rollback. Different services are not cross-product percentage splits.
 
-Each completed phase updates its checklist and adds a short `memory.md` entry with actual status. Update PRD, Architecture, phases and design together when behavior changes. README must never present a future feature or deployment as current. Keep secret-bearing transcripts, personal data and original references out of public history.
+Restore to a priced disposable target only; never overwrite live DB. Separate logical from managed-backup restore evidence. Pin digests and preserve recovery targets. Drain old work before retiring queue/worker/scheduler/jobs; revoke secrets/IAM only after reader/retention/rollback checks. Keep shared SQL/state/secrets protected. No automatic teardown or irreversible data deletion as cosmetic cleanup.
+
+## 10. Completion records
+
+Every iteration updates maintained specs and appends one or two factual dated memory lines. Report changed files, checks/artifacts, limitations and next prompt. Distinguish specs, fixture prototype, live-provider verification, local runtime, remote CI, candidate and production. Prompt 1 certifies none of the later gates.
+
+Target freeze: 30 October; submission: 31 October 2026, 09:15 IST, subject to official recheck. Keep judging access through the reviewed window/follow-up. Prepare submission materials, but sending messages, submitting Devpost or purchasing requires separate user instruction. Do not claim unmeasured popularity or hackathon success. Teardown is deliberate after judging/follow-up and retention checks.
+
+References collected for later recheck: [official kit](https://github.com/qloo/qloo-hackathon-kit), [MCP starter](https://github.com/qloo/qloo-hackathon-kit/blob/main/starter/mcp-client/README.md), [API access](https://github.com/qloo/qloo-hackathon-kit/blob/main/docs/API_ACCESS.md), [safe use](https://github.com/qloo/qloo-hackathon-kit/blob/main/docs/SAFE_USE.md), [terms](https://www.qloo.com/legal/terms). Current capability/rights/pricing checks belong to their numbered iterations.

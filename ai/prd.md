@@ -1,196 +1,141 @@
-# AccessLife AI product requirements
+# Taste Duel product requirements
 
-Revision 2 - 24 October 2026 - Local provisional planner implemented; release gates remain open
+Revision 1 · 24 October 2026 · Prompt 1: specification pivot only
 
-## Current implementation
+## Delivery status and authority
 
-Five-city intake, editable personas, discovery/evidence, deterministic eligibility, provisional itineraries, rest suggestions, versioned replanning, SSE progress and revisioned multi-city collections work locally. Actual Qloo search/tags/Insights calls and Vertex structured generation have passed live smoke checks. Optional Groq/OpenAI/Ollama adapters are implemented but unconfigured.
+Taste Duel is the selected new product. This document defines requirements; it does not report implemented Taste Duel features. Application source and the previously documented GCP deployment still belong to AccessLife at this checkpoint. Its old test results, venue smoke checks and live URL do not validate this game. No Taste Duel application code, database migration, repository rename or cloud change is part of Prompt 1.
 
-The sourced catalogue contains 15 real venues and 12 narrow feature summaries. Art/history Qloo matching smoke results: London 2/3, New York 1/3, Paris 2/3, Berlin 2/3, Chicago 3/3. Unmapped candidates have no fabricated scores. This measures matching, not recommendation uplift or accessible-route coverage.
+The execution sequence is [prompts.md](prompts.md). Use [Architecture.md](Architecture.md), [rules.md](rules.md), [design.md](design.md) and [phases.md](phases.md) together. Record actual results separately in [memory.md](memory.md). Preserve the original three reference files unchanged; their legacy planner requirements do not govern this pivot.
 
-Every current outing remains **provisional**. Opening windows, route geometry, travel duration, door-to-door access and actual rest seating remain unverified. Straight-line distance can reject an impossible allowance; it cannot certify a feasible route. Mandatory unknown, conflicting and stale evidence never becomes eligible because of taste. No city is coverage-complete.
+Prompt 2's [capability record](qloo-capability-matrix.md) establishes sample raw artist→movie and movie→artist numeric five-pair feasibility, not general coverage or game quality. Canonical MCP Insights and same-domain cells remain unverified within the exhausted twelve-request budget. The product requirements below remain acceptance targets; no Taste Duel feature or cloud resource is complete.
 
-The requirements below remain release targets wherever not verified in memory.md. GCP rollout was subsequently authorized; its actual results are recorded separately. Accounts, bookings, collaboration, verified inter-city routing, multilingual retrieval and live alerts remain later work.
+## 1. Product and problem
 
-This maintained specification lives in `ai/`. The original local reference files remain unchanged and excluded from Git; only the six maintained specifications in this folder are published.
+**Choose one favourite, predict five Qloo comparisons, discover something surprising, then challenge a friend to the same five rounds.**
 
-## 1. Product decision
+Taste Duel makes cultural connections playable. Rather than browsing another recommendation list, a guest predicts between two recognisable choices and sees which ranks higher for the selected seed in a frozen Qloo request. The intended benefit is entertaining discovery and a simple shared challenge, not psychological assessment.
 
-Build an accessible, culturally personalized outing planner for **London, New York, Paris, Berlin and Chicago**. A user chooses a city, time window, mobility requirements and interests. The application gathers evidence, rejects unsuitable options, uses Qloo to rank eligible places and constructs an explainable local plan. Users can combine local plans into a multi-city trip, with travel between cities left for them to arrange.
+Core question: **“Which ranks higher for this seed in Qloo's taste graph?”** A player predicts an aggregate ranking. Their own preferences are never right or wrong. Affinity is not a probability of individual enjoyment, proof of causation or universal cultural truth.
 
-This delivery establishes requirements and a public repository. It does not establish live data coverage, working providers or deployed infrastructure. The five-city scope and managed GCP deployment replace the earlier one-city and single-VM proposals.
-
-### The problem
-
-An entrance marked wheelchair-accessible does not establish whether the toilet, lift, route, boarding stop and vehicle meet a particular person's needs. Conventional recommendations also treat mobility suitability and cultural interests as separate problems. Users and caregivers must reconcile fragmented information themselves.
-
-AccessLife should reduce that work while preserving uncertainty. It supports planning decisions; it cannot guarantee physical access or replace checking conditions with the venue or operator.
-
-### Audience
-
-| Audience | Need | Product implication |
+| Audience | Job | Product implication |
 |---|---|---|
-| Wheelchair users | Specific entrance, toilet, lift and route requirements | Separate feature facts and journey-leg checks |
-| Older adults and people with limited stamina | Short travel legs, seating, breaks and clear instructions | Per-leg and total limits; rest segments; readable controls |
-| Caregivers and companions | Understand and edit another person's explicit requirements | Transparent structured inputs; no diagnosis inference |
-| Hackathon judges | Try a coherent end-to-end product quickly | No-signup personas, reset controls and visible provider state |
+| Music and film fans | Find an interesting connection quickly | One favourite, large visual choices, immediate reveal |
+| Friends | Compare predictions on the same questions | Fixed five-round snapshot, actual score, guest replay |
+| Qloo developers and judges | See cultural intelligence cause a product decision | Genuine Qloo ranking determines answers; bounded agent decisions are inspectable |
 
-Three synthetic demo personas represent a step-free cultural visitor, an older adult who needs frequent rests, and a caregiver planning a food-and-museum outing. They are test inputs, not fictional testimonials or asserted customer research.
+Enjoyment, discovery value and repeat use are hypotheses until observed with real participants. API success, Codex review and synthetic playthroughs are not human validation. No worldwide uniqueness claim is made.
 
-## 2. Scope and success criteria
+## 2. MVP scope
 
-### MVP commitments
+- Mobile and desktop browser application, guest play, no signup wall.
+- Typed entity search and explicit disambiguated selection. Music-artist and movie seeds, with movie/music-artist target rounds, are subject to live capability checks. A director/person is not silently treated as a film.
+- Five solo rounds selected adaptively from a bounded precomputed pool; no contestant repeats in a played game and the seed cannot oppose itself.
+- Server-authoritative answers, one point per correct prediction, maximum five. Optional streak; no speed bonus or fake percentile.
+- Artwork-led choices, immediate pressed feedback, grounded reveal, explicit Next and a shareable result ticket.
+- Guest discovery save/unsave with clear expiry.
+- Challenges freeze the creator's actual five played rounds, order, side positions, contexts, answers and scoring version. Friend replay is fixed rather than independently adaptive.
+- Honest insufficient-coverage, provider-failure, interrupted-game, expiry and artwork-failure states.
+- One bounded `RoundCuratorAgent`; deterministic services own validation, winners, scoring and replay.
+
+Accounts, public leaderboards, monetary prizes, personality diagnosis, native apps, social feeds, chat, bookings, maps, transport, accessibility routing and multi-city planning are outside this MVP. Book/person seeds and book rounds need separate coverage/metadata gates. No RAG corpus, ingestion, embeddings or new vector service is required.
+
+## 3. User journeys
+
+### Solo
+
+1. Understand the game from the opening screen; search for a favourite artist or film.
+2. Select a real entity with visible type/identity metadata.
+3. Start a game and see truthful preparing status while the server commits a validated private pool.
+4. Predict between two same-type choices without receiving hidden ranks, affinities or answers.
+5. Read the accepted reveal, optionally save a discovery and select Next.
+6. Finish five rounds; see the actual score, discoveries and share/replay actions.
+
+### Friend challenge
+
+A completed creator game produces an unguessable link with explicit expiry. Another guest sees the seed and creator score, then plays the exact same five comparisons in the same order and sides. Compare scores only for that challenge/version. Changed upstream rankings never change its answer key; expired evidence expires the challenge instead of silently refreshing it.
+
+### Recovery and clearing
+
+Refresh restores the saved current state, including an accepted reveal. Lost creation/answer/Next responses reconcile with saved state without extra games or points. A creation retry retains its idempotency key for the same input; conflicting reuse fails. Clearing a session revokes its owned private games and challenges under the documented policy; it does not retroactively rewrite backups. Expired state offers a fresh game, never another guest's records.
+
+## 4. Functional acceptance requirements
+
+Every acceptance criterion below is a **future gate**, not a pass recorded by this specification.
 
 | ID | Requirement | Acceptance criterion |
 |---|---|---|
-| FR-01 | Five-city selection | All five cities appear in the selector with time zone, supported area and coverage status. Each passes a local planning scenario before release. |
-| FR-02 | Anonymous intake | A visitor can launch a persona or enter requirements without signup, review interpreted inputs and reset the session. |
-| FR-03 | Explicit mobility limits | Store mandatory access features, assistance tolerance, maximum distance per leg, total distance, rest interval and transfer tolerance independently. |
-| FR-04 | Evidence-led discovery | Every place card exposes available access features, unknowns, source links, freshness and eligibility reasons. |
-| FR-05 | Real taste personalization | Resolve user-selected cultural interests to Qloo entities and use supported returned signals in ranking. Show provider state and unmapped candidates honestly. |
-| FR-06 | Local itinerary | Produce a bounded half-day plan of two or three stops, including time windows, travel legs and needed rest breaks, or explain why one cannot be validated. |
-| FR-07 | Deterministic eligibility | No confirmed stop or leg fails a mandatory requirement. Missing or conflicting mandatory evidence stays outside the confirmed plan. |
-| FR-08 | Replanning | A structured constraint change creates a new run and immutable plan version; preserve the prior version and show the changes. |
-| FR-09 | Multi-city trip | Create an ordered trip with city segments, local dates and attached plan versions; support changing or removing segments. |
-| FR-10 | Transfer gaps | Each inter-city handoff is labeled user-arranged and unverified. No journey duration, accessibility or transfer feasibility is invented. |
-| FR-11 | Qloo Impact Lab | Compare baseline and Qloo rankings using the same eligible candidate IDs, evidence snapshot and constraints. Explain genuine movement or absence of movement. |
-| FR-12 | Visible activity | Show queued/running/completed/partial/failed/cancelled states, meaningful tool progress and evidence count, without private chain-of-thought. |
-| FR-13 | Resilient use | Support reconnecting progress, map failure, empty eligibility, unavailable providers and stale evidence without false success. |
-| FR-14 | Inclusive interface | Core flow works by keyboard, at 200% zoom, on mobile and without map interaction or animation. |
-| FR-15 | External delivery | Public HTTPS app works in incognito on a separate device, backed by real Qloo calls and reproducible public source. |
+| FR-01 | Guest launch | A fresh browser reaches gameplay without signup; session clearing revokes owned private access. |
+| FR-02 | Typed seed search | Real IDs/types and useful identity metadata; ambiguous results require selection; stale responses cannot overwrite a newer search. |
+| FR-03 | Qloo evidence | Each pair has same-type contestants from a single verified affinity-ordering context, timestamp and immutable evidence reference. |
+| FR-04 | Cross-domain experience | The release path demonstrates genuine cross-domain rounds. Musician-to-musician results alone do not establish this capability. |
+| FR-05 | Complete pool | Generation proves a five-round path without repeated contestants, not merely five pairs that exhaust each other. |
+| FR-06 | Pair validation | Reject self/duplicate/ambiguous entities, ties/near-ties, missing required metadata, nonfinite scores and contradictory ordering under a versioned verified policy. |
+| FR-07 | Adaptive solo | Select unused saved pairs using versioned heuristic difficulty; scarce-band fallback is explicit and existing winners never change. |
+| FR-08 | Authoritative answer | Transactional ownership/state/one-answer checks; identical duplicates return the accepted answer, conflicts fail. |
+| FR-09 | Honest reveal/score | Expose only the accepted round's evidence; recompute actual score from saved answers. No fabricated percentile or client total. |
+| FR-10 | Explicit advancement | Next is sequential/idempotent and cannot skip an unanswered round; refresh restores current accepted reveal or unanswered state. |
+| FR-11 | Exact challenge | Two isolated sessions replay the creator's exact five rounds/order/sides/rules with zero Qloo/Vertex calls. |
+| FR-12 | Safe sharing | Invitation/OG contain only permitted seed/title/actual score and rights-cleared art, without future choices, private answers or session data. |
+| FR-13 | Discoveries | Session-owned save/unsave, useful empty/expired states and evidence/session retention; no inferred personal preference claims. |
+| FR-14 | Durability | Creation/answer/advance duplicates, lost responses, fenced lease expiry, restart, competing tabs and clearing during generation preserve correct state. |
+| FR-15 | Provider honesty | Distinguish genuine agent-curated Qloo, deterministic Qloo curator and development fixtures; insufficient coverage never becomes invented gameplay. |
+| FR-16 | Inclusive flow | Keyboard, screen-reader-oriented semantics, reduced motion, 200% zoom and 320px reflow; no reliance on sound/colour/animation. |
+| FR-17 | External release | Public GCP web app and licensed public source match the verified release SHA; direct unauthenticated private API access is rejected. |
 
-“Confirmed” means supported by the documented evidence policy at the recorded time. It is not an independent audit or a promise that facilities remain unchanged.
+## 5. Fairness, secrecy and semantic limits
 
-### Five-city coverage policy
+Both contestants share target type and request context. The five rounds may use several independently frozen domains; never compare movie scores to artist scores or mix values across queries. At least one tested round must genuinely cross domains relative to its seed. Determine actual wire units/ordering during capability work; do not convert example values into enjoyment percentages. Difficulty bands are game heuristics, not calibrated Qloo confidence or human win probabilities.
 
-The initial city registry uses these stable identifiers and IANA time zones:
+Public side order is independent of upstream rank; IDs are opaque. `PlayableRoundPublic` omits winner, ranks, affinities, revealing explanation and future pool. `RevealedRoundPublic` may expose only an accepted answered round after ownership/state checks. The boundary covers JSON, HTML, RSC, scripts, prefetch, answer-dependent URLs, analytics and OG output.
 
-| City ID | Display name | Time zone | Initial source leads |
-|---|---|---|---|
-| `london` | London | `Europe/London` | OSM, official venue pages, TfL Unified API |
-| `new-york` | New York | `America/New_York` | OSM, official venues, MTA GTFS and access/service information |
-| `paris` | Paris | `Europe/Paris` | OSM, official venues, Île-de-France Mobilités PRIM |
-| `berlin` | Berlin | `Europe/Berlin` | OSM, official venues, VBB open data and lift information |
-| `chicago` | Chicago | `America/Chicago` | OSM, official venues, CTA data and service/access information |
+Qloo/LLM requests are forbidden during answer acceptance and Next. Preserve challenge evidence and rule versions; never re-query to repair an expired snapshot. Shared challenges are casual games, not cheat-proof competitions: prior knowledge, external research and repeated attempts remain possible. Scores from unrelated adaptive games are not comparable as equal tests.
 
-These are source leads, not verified coverage. The registry starts with every city `unvalidated`. Phase 1 records provider access, source rights, Qloo crosswalks, supported districts, required evidence and test outcomes. A city moves to `limited` or `ready` only through measured results.
+## 6. Data, artwork and agent boundaries
 
-Start with a compact documented central district in each city. Do not claim citywide wheelchair routing. Readiness requires at least one evidence-backed half-day scenario for a declared persona, plus explicit failure/unknown cases. All five cities need usable local planning at release; previews do not satisfy this requirement. Record any shortfall as a release blocker rather than silently reducing the scope.
+| Source/component | Role | Gate |
+|---|---|---|
+| Official pinned Qloo harness | Resolve entities; rank candidates; supported explainability/metadata | Inspect real tools, limits, semantics, permissions and cross-domain coverage |
+| Original CSS/SVG/title artwork | Fallback covers, branding, safe social cards | Retain sources/font licences; never impersonate real promotional art |
+| Optional TMDB | Film metadata/artwork enrichment | Verify credentials, terms, attribution and separate social-reuse permission |
+| Optional Wikidata | External IDs/type/date enrichment | Bounded queries and matching provenance |
+| Optional Commons | Small rights-cleared image set | Check each file's licence, attribution and additional restrictions |
+| Vertex `RoundCuratorAgent` | Bounded tool choices and optional grounded copy | Verify model access; deterministic validators can veto |
 
-Venue data abundance does not prove usable routing or taste coverage. A GTFS feed is not a journey planner, and accessible stops alone do not establish an accessible door-to-door route.
+An image field is not permission to mirror, transform or publish that artwork in a social card. Missing rights lead to an intentional original title card. No Google Images/Letterboxd scraping, mandatory Spotify OAuth or fake real-film posters.
 
-## 3. Core user journeys
+Use private bounded caches. The dated [Qloo/source capability matrix](qloo-capability-matrix.md) records inspected terms, bounded operational defaults and any unresolved event restrictions for raw responses, minimal entities, immutable snapshots, challenges, logs and backups. No universal contractual numerical TTL is established by the inspected guidance; product defaults are not licence grants. Challenge lifetime cannot exceed its evidence permissions.
 
-### First local plan
+The agent can choose supported targets, request bounded data and propose valid pairs. It cannot create affinities, winners, candidates or causal explanations, or override validator rejection. Vertex failure may use a transparently labelled deterministic curator with genuine Qloo data; this is not a passed live-agent execution. A fixed pipeline narrated by an LLM is not automatically autonomous reasoning.
 
-1. Open the landing page and launch a persona or start a new plan.
-2. Select a city and supported district; choose a local date and outing window.
-3. Enter explicit mobility requirements and interests. Clarify missing critical inputs rather than guessing them.
-4. Review the structured interpretation before planning.
-5. Watch concise progress while providers gather facts and Qloo resolves interests.
-6. Compare eligible places in a list, optionally using the synchronized map.
-7. Inspect feature-level evidence and any uncertainty, then open the proposed itinerary.
-8. See validated stops, travel legs, rest breaks and the distinction between factual support and personal preference.
+## 7. Quality targets and verification
 
-### Change a requirement
-
-The user lowers maximum per-leg distance from 500 m to 200 m. AccessLife starts a versioned replan and reruns affected route and eligibility checks. The old plan remains available. The new plan shows removed/replaced stops and changed effort. A failed replan does not overwrite the last successful plan.
-
-### Create a multi-city trip
-
-The user adds London and Paris on different dates, in the order they want to visit. Each city segment has its own time zone, plan and validation status. The app presents a transfer placeholder between them: “Travel between these cities is yours to arrange; timing and accessibility have not been verified.” Local plans may be validated while the trip's transfer status remains `unverified`.
-
-Changing a segment's city invalidates its attached plan. Changing dates triggers a new local plan because opening windows, transport and weather may differ. Moving segments validates chronological order but does not prove the transfer can be made. Ambiguous daylight-saving times require explicit resolution.
-
-### Understand Qloo's contribution
-
-The user opens the Impact Lab. Both columns use the same eligibility snapshot. The baseline ranks by shortest travel duration, then category preference and stable place ID; the Qloo ranking adds supported taste ordering over mapped candidates. Show matched seed entities, provider state, comparable scores where permitted and rank changes. An unchanged order is a valid result, not an error to conceal.
-
-## 4. Trust, data and recommendation behavior
-
-### Access and evidence
-
-- Represent each feature as `confirmed`, `limited`, `inaccessible` or `unknown`; represent source conflict separately.
-- A mandatory requirement passes only with compatible evidence and no unresolved material conflict. “Limited” requires a supported, explicitly accepted accommodation; never treat it as an automatic pass.
-- Unknown information is not the same as inaccessible, but cannot satisfy a mandatory condition.
-- Preserve source URL, provider identifier, source type, retrieval time, source update time when known, rights and transformation version.
-- Distinguish “retrieved” from “verified.” Do not display a scrape timestamp as a venue inspection date.
-- RAG supplies attributable guidance; it cannot certify today's lift operation, pavement conditions or opening hours.
-
-### Qloo and ranking
-
-Maintain an auditable place-to-Qloo crosswalk using names, location and provider identifiers. Ambiguous matches remain unresolved. Do not assume every OSM object exists in Qloo.
-
-Only eligible candidates enter preference ranking. Preserve returned score semantics and the comparability scope; do not convert affinity into a probability of enjoyment. Unmapped candidates have no invented taste score. Any deterministic secondary rules and unmapped ordering must be disclosed in the Impact Lab.
-
-The development provider may match explicit categories and text. Label it “Development taste engine.” A saved-response mode says “Replay.” Neither qualifies as the real Qloo submission path.
-
-### Provider degradation
-
-| Failure | Required behavior |
+| Area | Target evidence |
 |---|---|
-| Qloo unavailable | Offer clearly labeled generic ranking if useful; mark live Qloo unavailable and disable unsupported contribution claims |
-| Missing mandatory access/route evidence | Keep affected options out of the confirmed itinerary; show verification-needed alternatives |
-| Weather unavailable | Show the missing check; any weather-dependent mandatory condition remains unresolved |
-| RAG unavailable | Omit guidance citations; continue only where structured factual checks remain sufficient |
-| Generation API unavailable | Render deterministic plan facts and a template explanation if validation succeeds |
-| No eligible candidates | Explain unmet requirements and allow explicit edits; never relax mandatory constraints silently |
-| Map unavailable | Preserve list, evidence and itinerary functionality |
+| Visual | Inspected 390×844, 1440×1000 and 320px screenshots, long titles and failed images; build success alone is insufficient. |
+| Accessibility | Full axe/keyboard/reduced-motion/reflow/contrast checks; no unresolved serious/critical defects. Report actual manual screen-reader checks separately. |
+| Performance | Lab LCP ≤2.5s/CLS ≤0.1; initial route JS about ≤180KB gzip/gameplay addition ≤100KB targets; pressed feedback <100ms; warm answer-handler p95 ≤500ms target. |
+| Generation | Target about 20s; ≤6 upstream Qloo requests including retries/harness lookups; normal 2 Vertex requests, hard max 4, with measured step/token/cost limits. |
+| Security | Session/mutation-origin isolation, secure cookies, private API IAM, safe bounded image fetching, prompt-injection resistance and no secret/pre-answer leakage. |
+| Reproducibility | Node 24/Python 3.12 compatible pins/locks, clean migrations/container restart and actual remote CI for the application SHA. |
+| Recovery | Actual local persistence and priced disposable restore checks; logical and managed Cloud SQL restore are distinct claims. |
 
-## 5. Quality, privacy and operational targets
+Targets remain unmeasured until implemented. Report sample sizes/network/cold-start conditions; Lighthouse cannot establish field INP/p75, and scans cannot establish zero risk or user enjoyment.
 
-These are acceptance targets, not measured results:
+## 8. GCP delivery and constraints
 
-| Area | Target and measurement |
-|---|---|
-| Factuality | Zero unsupported strong access claims across 20 golden local cases, four per city; retain evidence IDs and results |
-| Constraints | Every confirmed stop and leg passes the deterministic mandatory-feature, timing and distance checks |
-| Multi-city | Test at least two multi-city trips, including a cross-time-zone and daylight-saving boundary case |
-| Qloo influence | Exercise three taste personas; publish real supported effects and coverage gaps without forced rank changes |
-| Retrieval | Held-out Recall@5 target at least 0.85 on 20 held-out queries from a 50-question evaluation set |
-| Planning | Target first live progress within 1 second after stream connection; warm-run p95 below 20 seconds at three active local runs; hard run deadline 30 seconds |
-| Queue/cold starts | Report separately from planning latency; make no subsecond queued or cold-start guarantee |
-| Web | Target LCP ≤2.5 s, INP ≤200 ms and CLS ≤0.1 under recorded device/network conditions |
-| Accessibility | Automated axe checks plus manual keyboard, focus, 200% zoom, reduced-motion and map-free tests |
-| Recovery | Demonstrate duplicate-task handling, reconnectable progress, worker restart and a database restore before release |
+Plan public Next.js Cloud Run web, private FastAPI API, PostgreSQL 16 on the existing dedicated SQL instance, a migration job, scoped Secret Manager and Vertex IAM. One application agent does not require separate deployed agent services. No second billed SQL instance merely for branding.
 
-Use synthetic personas by default. Keep user accessibility preferences session-scoped, out of the knowledge corpus and out of ordinary logs. Send Qloo only the taste/location information necessary for its task, without mobility details. Anonymous sessions expire after 24 hours by default; users can clear them immediately. Document backup expiry separately so “clear session” does not imply historical backups are rewritten instantly.
+Project `project-bb13ecd8-9d67-408d-9a7`, default region `asia-south1`, is an input to re-inventory, not a new live check. New `tasteduel` logical data/identities stay separate from preserved AccessLife data. Retain Terraform ownership and rollback. Immutable physical names may remain documented legacy exceptions. Repository/WIF migration, provisioning, cutover and retirement occur only in their selected later prompts.
 
-The initial retained corpus is curated English material. Source titles/excerpts may remain in their original language with a clear label. General multilingual retrieval is later scope.
+The **US$80 total incremental envelope includes AccessLife cost already incurred**, remaining shared resources, pivot/overlap, models, builds, restore checks, currency and tax. The historical US$78.48 forecast is not new headroom. Reforecast through at least **6 November 2026, 10:15 IST**, plus required follow-up. Alerts are not caps; provisioning stops if the refreshed estimate fails.
 
-## 6. Delivery requirements and future work
+## 9. Later work and success evidence
 
-The [official rules](https://qloo.devpost.com/rules) require a working Qloo-integrated agentic application, functional demo link, public open-source repository and project description. The [overview](https://qloo.devpost.com/) requires externally published access and says a video is not required. Requirements were reviewed on 24 October 2026; verify again before submission.
+After the reliable core journey: additional domains/languages, richer permitted explanations, optional accounts for longer-lived discoveries and experimentally justified difficulty tuning. Do not add accounts/social features before proving the game is enjoyable.
 
-Feature freeze target: **30 October 2026**. Submission deadline: **31 October 2026, 9:15 AM IST**, equivalent to 30 October at 11:45 PM EDT. The official rules and schedule differ on the precise judging end time; preserve access through 5 November and any required organizer follow-up. A 3 November cleanup must not remove the working demo.
+Measure real completion, replay, challenge completion and discovery saves with explicit denominators/test exclusions, minimal first-party events and retention. Observe willing users with consent. No participants means human impact is pending; never invent popularity, testimonials or retention.
 
-The initial GCP target is **US$80 incremental spend through judging**, excluding existing unrelated resources. A priced regional forecast must pass before provisioning; documented targets do not guarantee that five cities and managed services fit that envelope.
+Target feature freeze: **30 October 2026**. Target submission: **31 October 2026, 09:15 IST**, subject to official-rule recheck. Preserve judging access through **6 November 2026, 10:15 IST** and required follow-up within refreshed cost review. Preparing materials does not authorize sending/submitting them.
 
-### Deferred features
-
-| Later capability | Prerequisite |
-|---|---|
-| Verified inter-city rail/air/coach routing | Authorized transport providers, assistance/transfer evidence and jurisdiction-specific validation |
-| Booking and payments | Provider agreements, payment integration and separate product/security review |
-| Accounts, shared plans and caregiver collaboration | Identity, authorization, retention and consent design |
-| Live journey monitoring | Reliable realtime feeds and notifications, plus recovery from stale updates |
-| User accessibility reports | Moderation, provenance, abuse controls and correction workflow |
-| Multilingual retrieval | Suitable embeddings, per-language evaluations and new corpus versions |
-| More cities and broader districts | The same source-rights, Qloo-mapping and local acceptance gates |
-| Advanced visuals | Measured value without weakening accessibility or performance |
-
-## 7. Primary source register
-
-- [TfL Unified API](https://tfl.gov.uk/info-for/open-data-users/unified-api)
-- [MTA developer resources](https://www.mta.info/developers)
-- [Île-de-France Mobilités PRIM GTFS](https://prim.iledefrance-mobilites.fr/en/reutilisations/reutilisation/gtfs)
-- [VBB digital services](https://unternehmen.vbb.de/digitale-services/)
-- [CTA developer center](https://www.transitchicago.com/developers/)
-- [Qloo developer guide linked by the organizer](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide)
-- [OSM attribution and licensing](https://www.openstreetmap.org/copyright)
-- [GTFS accessibility](https://gtfs.org/getting-started/features/accessibility/)
-- [Open-Meteo terms](https://open-meteo.com/en/terms)
-
-Dataset existence is established by these public sources; account access, field completeness, redistribution permission for each asset and usable five-city coverage remain implementation checks.
-
-Related documents: [Architecture](Architecture.md), [engineering rules](rules.md), [phases](phases.md), [design](design.md) and [project memory](memory.md).
+The MVP is complete only when a guest uses the real GCP app to select a supported real seed, finish five valid Qloo-backed rounds, see the actual score, save a discovery and create an identical friend replay, with visual/accessibility/security/recovery evidence and truthful operations documentation. At Prompt 1 this remains planned.

@@ -1,0 +1,16 @@
+{
+  "fixture_notice": "Entirely synthetic entities and scores; no Qloo response data.",
+  "status": "ok",
+  "results": [
+    {"entity_id": "synthetic-01", "name": "Synthetic Film 01", "type": "urn:entity:movie", "affinity": 0.95},
+    {"entity_id": "synthetic-02", "name": "Synthetic Film 02", "type": "urn:entity:movie", "affinity": 0.90},
+    {"entity_id": "synthetic-03", "name": "Synthetic Film 03", "type": "urn:entity:movie", "affinity": 0.85},
+    {"entity_id": "synthetic-04", "name": "Synthetic Film 04", "type": "urn:entity:movie", "affinity": 0.80},
+    {"entity_id": "synthetic-05", "name": "Synthetic Film 05", "type": "urn:entity:movie", "affinity": 0.75},
+    {"entity_id": "synthetic-06", "name": "Synthetic Film 06", "type": "urn:entity:movie", "affinity": 0.60},
+    {"entity_id": "synthetic-07", "name": "Synthetic Film 07", "type": "urn:entity:movie", "affinity": 0.55},
+    {"entity_id": "synthetic-08", "name": "Synthetic Film 08", "type": "urn:entity:movie", "affinity": 0.50},
+    {"entity_id": "synthetic-09", "name": "Synthetic Film 09", "type": "urn:entity:movie", "affinity": 0.45},
+    {"entity_id": "synthetic-10", "name": "Synthetic Film 10", "type": "urn:entity:movie", "affinity": 0.40}
+  ]
+}

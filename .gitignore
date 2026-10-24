@@ -1,4 +1,4 @@
-# Publish only the six maintained specifications; preserve references locally.
+# Publish the maintained specifications, prompts and dated capability matrix; preserve references locally.
 /ai/*
 !/ai/prd.md
 !/ai/Architecture.md
@@ -6,6 +6,8 @@
 !/ai/phases.md
 !/ai/design.md
 !/ai/memory.md
+!/ai/prompts.md
+!/ai/qloo-capability-matrix.md
 
 # Credentials and local configuration. Keep the public placeholder template.
 .env
@@ -62,6 +64,16 @@ override.tf.json
 
 # Data, models, exports and generated test artifacts.
 /data/
+/datasets/
+# Reserved private provider capture directories (synthetic fixtures live in tests/fixtures).
+qloo_responses/
+qloo-responses/
+provider_responses/
+provider-responses/
+live-qloo/
+live_qloo/
+qloo-captures/
+qloo_captures/
 /.data/
 /models/
 /backups/
