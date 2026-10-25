@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { fixturesEnabled } from "@/features/mode/config";
 export const metadata: Metadata = { title: "How it works" };
 export default function HowItWorksPage() {
   return (
@@ -25,22 +26,23 @@ export default function HowItWorksPage() {
           The future game will use aggregate, request-specific Qloo rankings.
           They are cultural connections, not a probability that you will enjoy
           something. A different favourite or query can produce a different
-          ranking. Your personal taste is never wrong.
+          ranking. Correct and incorrect guesses measure game performance: how
+          well you predicted that ranking. They do not tell us which choice you
+          personally like or dislike. Saving a discovery is your explicit choice
+          to explore it, independent of your prediction.
         </p>
-        <h2>What exists in this prototype</h2>
+        <h2>What exists today</h2>
         <p>
-          This is a local visual study with invented entities, original artwork
-          and one synthetic reveal. The 3/5 result and challenge invitation are
-          labelled specimens. There are no Qloo calls, accounts, scores, saved
-          discoveries or share links. Refreshing the arena resets its visual
-          state.
+          {fixturesEnabled
+            ? "This development-only fixture game uses invented entities and rankings, original artwork and five local rounds. Your score counts accepted sample answers out of five. It makes no Qloo calls and creates no real share link. Progress lasts only in this tab's current app session; reloading resets it."
+            : "Live games are not connected. The development-only fixture game is excluded from this production build. No live Qloo integration, accounts or shared game service is available yet."}
         </p>
         <h2>Built to be played your way.</h2>
         <p>
           No time pressure, sound or animation is required. Use the keyboard to
           search and choose. Reduced-motion preferences are respected. Real
-          gameplay, durable progress, exact friend replay and live ranking will
-          be built in later iterations.
+          server authority, durable progress, exact friend replay and live
+          ranking will be built in later iterations.
         </p>
         <h2>Artwork and type</h2>
         <p>
@@ -50,11 +52,13 @@ export default function HowItWorksPage() {
           licence notices.
         </p>
         <div className="state-actions">
-          <Link href="/g/demo" className="button button-primary">
-            Preview a duel <span aria-hidden="true">↗</span>
-          </Link>
+          {fixturesEnabled && (
+            <Link href="/" className="button button-primary">
+              Start a fixture duel <span aria-hidden="true">↗</span>
+            </Link>
+          )}
           <Link href="/" className="button button-secondary">
-            Choose a fictional seed
+            {fixturesEnabled ? "Choose a fictional seed" : "Back to Taste Duel"}
           </Link>
         </div>
       </div>

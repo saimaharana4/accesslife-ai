@@ -66,7 +66,7 @@ export function LandingStage() {
             <span>UNEXPECTED CONNECTIONS.</span>
           </p>
           <Link className="inline-link" href="/g/demo">
-            Preview a duel <span aria-hidden="true">↗</span>
+            Explore fixture states <span aria-hidden="true">↗</span>
           </Link>
         </div>
       </div>

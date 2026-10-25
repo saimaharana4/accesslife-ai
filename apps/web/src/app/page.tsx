@@ -1,4 +1,4 @@
-import { LandingStage } from "@/features/seed/landing-stage";
+import { FixtureLanding } from "tasteduel-fixture-entry";
 export default function Page() {
-  return <LandingStage />;
+  return <FixtureLanding />;
 }

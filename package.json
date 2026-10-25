@@ -9,11 +9,15 @@
     "dev": "corepack pnpm --filter web dev",
     "build": "corepack pnpm --filter web build",
     "typecheck": "corepack pnpm --filter web typecheck",
-    "dev:prototype": "corepack pnpm --filter web exec next dev --hostname 127.0.0.1 --port 3001",
+    "dev:prototype": "node scripts/dev-fixtures.mjs",
     "start:prototype": "node scripts/start-prototype.mjs",
     "test:prototype": "playwright test --config playwright.prototype.config.ts",
     "test:e2e": "playwright test",
-    "contracts": "openapi-typescript packages/contracts/openapi.json -o apps/web/src/lib/api/schema.d.ts && prettier --write apps/web/src/lib/api/schema.d.ts"
+    "contracts": "openapi-typescript packages/contracts/openapi.json -o apps/web/src/lib/api/schema.d.ts && prettier --write apps/web/src/lib/api/schema.d.ts",
+    "dev:fixtures": "node scripts/dev-fixtures.mjs",
+    "test:fixtures": "playwright test --config playwright.fixtures.config.ts",
+    "test:fixture-state": "node --experimental-strip-types --test apps/web/src/features/fixtures/*.test.ts",
+    "check:fixture-production": "node scripts/check-fixture-production.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",

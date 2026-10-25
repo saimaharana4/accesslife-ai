@@ -1,29 +1,29 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { DemoArena } from "@/features/duel/demo-arena";
-import { fictionalSeeds } from "@/features/seed/fictional-seeds";
-
+import { FixtureGame, type FixtureStory } from "tasteduel-fixture-entry";
+import { fixturesEnabled } from "@/features/mode/config";
 export const metadata: Metadata = { title: "The arena" };
-
-export default async function DemoGamePage({
+export default async function GamePage({
   searchParams,
 }: {
-  searchParams: Promise<{
-    variant?: string | string[];
-    seed?: string | string[];
-  }>;
+  searchParams: Promise<{ story?: string | string[] }>;
 }) {
-  const params = await searchParams;
-  const variant = typeof params.variant === "string" ? params.variant : "";
-  const selectedSeed = fictionalSeeds.find((item) => item.id === params.seed);
-  if (params.seed !== undefined && !selectedSeed) notFound();
-  const seed = selectedSeed ?? fictionalSeeds[0];
-  return (
-    <DemoArena
-      longTitle={variant.includes("long-title")}
-      missingImage={variant.includes("missing-image")}
-      seedName={seed.name}
-      seedType={seed.type}
-    />
-  );
+  if (!fixturesEnabled) notFound();
+  const { story } = await searchParams;
+  const allowed = [
+    "normal",
+    "empty",
+    "partial",
+    "retry",
+    "expired",
+    "interrupted",
+    "long-title",
+    "missing-image",
+  ] as const;
+  if (
+    story !== undefined &&
+    (typeof story !== "string" || !allowed.some((value) => value === story))
+  )
+    notFound();
+  return <FixtureGame story={story as FixtureStory | undefined} />;
 }

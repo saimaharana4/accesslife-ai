@@ -1,6 +1,6 @@
 # Taste Duel engineering rules
 
-Revision 4 — 25 October 2026 — Prompt 3 visual prototype. **These rules describe the Taste Duel target. The web shell is now a synthetic prototype; backend/cloud remain AccessLife AI.** Prototype checks do not complete gameplay, provider verification or a GCP migration.
+Revision 5 — 25 October 2026 — Prompt 4 fixture frontend. **These rules describe the Taste Duel target. The web implements five synthetic local rounds; backend/cloud remain AccessLife AI.** Fixture checks do not complete live gameplay, provider verification or a GCP migration.
 
 ## 1. Authority, scope and preservation
 
@@ -8,7 +8,9 @@ Follow the user's explicit Taste Duel pivot, [prompts.md](prompts.md) and the ma
 
 Build a guest web game: seed search, five Qloo-backed comparisons, honest score, discoveries and exact friend challenge. Initial artist/movie coverage is a live gate; book/person support is later. Remove the old five-city/planner requirement. Native apps, accounts, global leaderboards, maps, transport, multi-city travel and extra domains are outside this MVP.
 
-Prompt 3 is explicitly an isolated visual specimen: fictional local seed options, one disposable reveal and illustrative result/challenge pages. Its client-side sample outcome cannot be reused as production answer authority. No external/browser API calls, real scoring, saved session, sharing or fake provider progress. Keep the prototype disclosure visible. Use `dev:prototype`/`test:prototype`; old Compose, backend journeys and cloud workflows have not been migrated. Direct web dependencies are pinned, font notices remain with local files, and original SVG sources are retained in the [asset manifest](../third_party/taste-duel-assets.md).
+Prompt 4 extends the isolated visual prototype into five invented fixture rounds with computed accepted-answer scoring. Client fixture outcomes are never production authority. Keep the visible development disclosure and phase-gated adapter boundary; production aliases must resolve to a fixture-free unavailable entry even if the development flag is supplied. Use `dev:fixtures`, `test:fixture-state`, `test:fixtures` and `check:fixture-production`. `test:prototype` is historical; old Compose, backend journeys and cloud workflows have not been migrated. No external/browser API calls, durable session, public sharing or fake provider/agent progress. Direct web dependencies remain pinned, font notices stay with local files, and original SVG sources are retained in the [asset manifest](../third_party/taste-duel-assets.md).
+
+Post-answer disclosures are evidence surfaces, not generated cultural analysis. “Why this duel?” requires an accepted current-round result; it stays absent during preparation, unanswered, pending, response-loss and the next unanswered round. Label fixture provenance explicitly and omit unsupported explanations. Later live copy must use the authorized reveal DTO only. CurationSummary allowlists aggregate domain/mode/candidate/rejection/correction/path facts; never pass private receipts, chain-of-thought, raw payloads, ranks/affinities, future contestants/pairs or answer metadata. No pre-answer inference path is permitted. Correct/incorrect guesses measure prediction performance, not personal likes/dislikes; explicit discovery saves are separate.
 
 Use available Codex agents with explicit independent file ownership, coordinated contracts and an independent reviewer. Those build roles are not deployed agents. The application starts with one bounded RoundCuratorAgent; extra frameworks/agents/services are not evidence of quality.
 

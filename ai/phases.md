@@ -1,12 +1,12 @@
 # Taste Duel implementation phases
 
-Revision 2 - 25 October 2026 - Prompt 3 local visual prototype; backend/cloud remain legacy
+Revision 3 - 25 October 2026 - Prompt 4 local fixture frontend; backend/cloud remain legacy
 
-**Verified progress:** Prompt 1 preservation is complete; Prompt 2 remains a partial live gate in the [capability matrix](qloo-capability-matrix.md). Prompt 3 implements independent synthetic visual work: fresh shell, fictional seed selection, one interactive reveal, result/invitation specimens and loading/error screens, original SVG/local licensed type and responsive screenshots. Full five-round fixture play is Prompt 4; no backend/cloud gate passes from this visual work. Return to the listed Prompt 2 probes before dependent integration without resetting its exhausted budget. Current visual verification is recorded in README/memory.
+**Progress:** Prompt 1 preservation and Prompt 3 original visual prototype are complete; Prompt 2 remains a partial live gate in the [capability matrix](qloo-capability-matrix.md). Prompt 4 implements reusable tokens/components, guarded five-round in-memory play, computed /5 score, discoveries, local invitation and post-answer synthetic evidence/curation disclosures. Current verification is recorded in README/memory. No backend/cloud gate passes from fixture work. Next is Prompt 5; return to the listed Prompt 2 probes before dependent provider integration without resetting the exhausted budget.
 
 ## Status and execution rules
 
-This replaces the AccessLife phase plan for future work. Only Taste Duel specifications are being established at this checkpoint. No Taste Duel application code, live game, migration, repository rename or cloud deployment is implemented by Prompt 1. Existing AccessLife tests/deployment remain historical evidence for the old product.
+This replaces the AccessLife phase plan. Prompt 1 established specifications; Prompts 3–4 add local synthetic frontend code only. Live game, database migration, repository rename and cloud deployment remain future work. Existing AccessLife tests/deployment remain historical evidence for the old product.
 
 The copy/paste source is [prompts.md](prompts.md). Execute only the selected numbered prompt, not all 21. Use [prd.md](prd.md), [Architecture.md](Architecture.md), [rules.md](rules.md) and [design.md](design.md), then record actual outcomes in [memory.md](memory.md). Preserve original references unchanged.
 
@@ -82,6 +82,8 @@ Dependencies installed in the reused SQL instance need not be dropped merely bec
 **Prompt 4 owners:** primitives/tokens, state-machine/components, keyboard/mobile reviewer. Extract `SeedCombobox`, `DuelArena`, `ChoicePair`/`ChoiceCard`, `RoundFeedback`, `ExplicitNext`, `ResultTicket`, `ChallengeInvitation`. Wire five fixture rounds with pending/retry/expiry/interruption states. Isolate fixtures from production.
 
 **Prompt 4 gate:** meaningful Playwright full journey, keyboard/reduced-motion completion, ≥48px controls, stable images/readable titles and no overflow. No backend/cloud readiness claim.
+
+**Prompt 4 additions and handoff:** post-answer-only WhyThisDuel and a compact synthetic CurationSummary, factual context without unsupported causal copy, keyboard disclosure/saves and aggregate-only public projection tests. Accepted answer evidence disappears on the next unanswered round; no future title/answer appears in the rendered disclosure. Production build phase excludes fixture code/routes/controls. Agent ownership was tokens/primitives, gameplay/adapter/state and independent keyboard/mobile review; the lead integrated fixes and the additional evidence contract. Old single-round specimen components are removed after their five-round replacements work. See README for actual checks, screenshots and limitations; server-side isolation/durability are Prompt 5 onward.
 
 ## 4. Contracts, Qloo and curator — Prompts 5–8
 

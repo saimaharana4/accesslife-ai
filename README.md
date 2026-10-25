@@ -2,7 +2,7 @@
 
 One favourite. Five duels. Predict Qloo's ranking, discover something surprising, then challenge a friend to the same five rounds.
 
-**Status - 25 October 2026: Taste Duel has a local visual prototype (Prompt 3), using explicitly fictional content.** It includes seed selection, one sample duel/reveal, a result-ticket specimen, a challenge invitation and loading/error designs. It is not a complete five-round game or live Qloo integration. Prompt 2 remains partial: raw cross-domain samples passed, while canonical MCP Insights and same-domain cells remain unverified. Backend, containers and GCP deployment remain legacy AccessLife; no cloud provisioning, deployment or repository rename occurred.
+**Status - 25 October 2026: Taste Duel has a complete five-round development fixture frontend (Prompt 4).** Confirm a fictional seed, play five rounds, reveal each answer, use explicit Next and see your computed score out of five, discoveries and a local invitation preview. The adapter and progress are in memory only; no live Qloo, backend persistence or real sharing is implemented. Prompt 2 remains partial. Backend, containers and GCP deployment remain legacy AccessLife; no cloud provisioning, deployment or repository rename occurred.
 
 ## What the new product will do
 
@@ -22,8 +22,9 @@ The target interface is a mobile-first cultural game: oversized artwork, distinc
 |---|---|
 | Taste Duel requirements, architecture, rules, design and sequence | Rewritten for the pivot in Prompt 1 |
 | Existing AccessLife source | Recoverable at the checkpoint below; unused old planner/map web modules removed after replacement checks. Legacy backend/cloud unchanged |
-| Taste Duel UI | New server shell, local fonts, original SVG art, React Aria synthetic seed chooser and one interactive sample reveal; result/invitation are labelled specimens |
-| Taste Duel API, five-round engine, persistence, real sharing and RoundCuratorAgent | Planned; not implemented or tested |
+| Taste Duel fixture frontend | Server shell, reusable tokens/primitives, React Aria confirmation, discriminated state machine and in-memory adapter; five invented rounds, accepted-answer score, save/unsave and local invitation |
+| Prompt 4 verification | 10 state/adapter/disclosure tests and TypeScript passed; 13 affected Playwright checks passed, including full keyboard games at all three widths. 39 full axe scans found zero violations; 39 captures include accepted evidence, long titles, missing art and ranking semantics. Six unaffected cancellation/state-story checks retain their earlier passes |
+| Taste Duel API, production game engine, persistence, real sharing and RoundCuratorAgent | Planned; fixture state is not server authority or durable storage |
 | Qloo feasibility and rights | Pinned harness `0.1.26`; offline discovery and two raw cross-domain samples passed within **12/12** requests. Canonical MCP Insights, same-domain cells, nested explanation semantics and broad coverage remain unverified; [full matrix](ai/qloo-capability-matrix.md) |
 | Prompt 2 synthetic verification | 22 tests passed; Ruff passed. No production game, accessibility, restart or cloud readiness claim |
 | Prompt 3 local production-build verification | 12 Playwright tests passed across 1440×1000, 390×844 and 320×844; 27 full axe scans found zero violations; 30 screenshots captured, with core states and layout edge cases visually reviewed |
@@ -33,45 +34,79 @@ The target interface is a mobile-first cultural game: oversized artwork, distinc
 
 There is no Taste Duel production URL yet. Local preview: **http://127.0.0.1:3001**. The previously recorded [AccessLife endpoint](https://accesslife-web-dfthmgvvaa-el.a.run.app) remains a legacy deployment reference; its health was not rechecked in this frontend iteration.
 
-## Run the visual prototype
+## Run the development fixture game
 
 Node 24 with Corepack is sufficient; no Docker, database, ADC or API key is needed.
 
 ```powershell
 corepack pnpm install --frozen-lockfile
-corepack pnpm dev:prototype
+corepack pnpm dev:fixtures
 # Open http://127.0.0.1:3001 ; Ctrl+C stops the preview.
 ```
 
-Preview routes: `/`, `/g/demo`, `/results/demo`, `/c/demo`, `/how-it-works`,
-`/prototype/loading` and `/prototype/error`. Use
-`/g/demo?variant=long-title-missing-image` for the long-title/fallback specimen.
-Selecting another fictional seed updates the arena context. The result's 3/5 is
-an illustrative specimen, not a score calculated from the sample round.
+The launcher explicitly enables `TASTEDUEL_FIXTURES=1` for Next's development
+server. `dev:prototype` is a compatibility alias. Confirm a seed on `/`, then
+complete `/g/demo` to unlock `/results/demo` and `/c/demo` in the same app
+session. Ten unique invented contestants fill five rounds; the result is
+computed from accepted answers. All-first-card choices currently produce 3/5,
+but choosing other cards changes that score. Refresh clears progress and saves;
+opening a result directly never invents a completed game.
+
+Development stories: `/prototype/empty`, `/prototype/partial`,
+`/prototype/retry`, `/prototype/expired`, `/prototype/interrupted`,
+`/prototype/long-title`, `/prototype/missing-image`, `/prototype/preparing`,
+`/prototype/pending`, `/prototype/selected`, `/prototype/submitting` and
+`/prototype/disabled`. `/g/demo?story=retry` exercises an accepted answer whose
+response is lost; Retry reuses the same answer request without another point.
+Short pools explain why five rounds cannot start. Static selected/pending
+stories explicitly disclose that no task is running. `/how-it-works` explains
+aggregate ranking versus personal preference. Sound is absent and unnecessary.
+
+After an accepted answer, open **Why this duel?** for the explicitly synthetic
+ranking context, optional save actions and a compact fixture curation summary.
+No Qloo or agent was called. This reusable evidence component has a source,
+factual context and optional supported-explanation slot; no cultural cause is
+invented. The summary projects only safe aggregate preparation facts. Neither
+surface appears before acceptance or reveals future contestants/answers.
+Correct/incorrect predictions are game performance, not personal taste.
 
 ```powershell
 corepack pnpm typecheck
+corepack pnpm test:fixture-state
+corepack pnpm test:fixtures
+# Browser tests require the explicit dev fixture server on port 3001.
+# Stop dev before the production checks below:
 corepack pnpm build
-corepack pnpm test:prototype
-# Tests require the preview already running on port 3001.
-# For a local production-build preview, stop dev first, then:
+corepack pnpm check:fixture-production
 corepack pnpm start:prototype
 ```
 
-Prototype tests use only local assets and reject browser requests to external
-hosts or `/api/`. The old forwarding route now returns `503 PROTOTYPE_ONLY` and
-cannot contact AccessLife/Qloo/GCP. Answer and reveal state are disposable local
-UI state; refresh resets the specimen. There is no saved game, real score,
-challenge link or production answer-secrecy claim. The full fixture journey is
-Prompt 4; genuine backend integration comes later.
+**Production builds exclude the fixture implementation.** The Next configuration
+selects it only during `PHASE_DEVELOPMENT_SERVER` with the explicit flag. All
+other phases resolve the entry to a separate unavailable module, including a
+production build with `TASTEDUEL_FIXTURES=1` set. Production displays an honest
+unavailable landing page; game/result/challenge/story routes return 404 and no
+fixture controls are rendered. The emitted-output check rejects known fixture
+data/control markers. `start:prototype` serves this production boundary, not the
+fixture game. Use `dev:fixtures` to play locally.
 
-Screenshots/axe/geometry/font evidence: `test-results/tasteduel-prototype/`;
-HTML report: `playwright-report/tasteduel-prototype/index.html`.
-First/second visual passes and final review notes are under ignored
-`.data/tasteduel-prompt3/`. Verification outcomes below distinguish automated
-text scaling from actual browser zoom and screen-reader user testing.
+Tests reject browser requests to external hosts or `/api/`. The existing API
+stub returns `503 PROTOTYPE_ONLY` and cannot contact AccessLife/Qloo/GCP.
+Idempotent retries, cancellation tokens and duplicate guards belong to the
+local fixture adapter; they do not prove database concurrency, server ownership
+or restart recovery. The synthetic answer key is client code only in explicit
+development mode. Genuine backend integration remains later work.
 
-The final standalone build passes. Checks cover keyboard seed selection/reveal,
+Current journey screenshots/axe/geometry evidence: `test-results/tasteduel-fixtures-final/`;
+HTML report: `playwright-report/tasteduel-fixtures/index.html`. How-it-works and
+motion-equivalence checks have separate `tasteduel-fixtures-how` and
+`tasteduel-fixtures-motion` artifact/report folders. Earlier unchanged
+cancellation and state-story coverage remains in `test-results/tasteduel-fixtures/`.
+Review and production-boundary evidence: ignored `.data/tasteduel-prompt4/`.
+Prompt 3 captures remain under `.data/tasteduel-prompt3/`; its old isolated
+suite is historical and does not describe the full fixture journey.
+
+Prompt 3's standalone build passed. Its checks covered keyboard seed selection/reveal,
 focus transfer, local font loading, reduced motion, 48px interactive targets,
 320px overflow, 200% root-font text scaling and an actual aborted SVG request
 before hydration. Visual review corrected desktop action placement, mobile
@@ -83,7 +118,7 @@ Duel delivery infrastructure.
 
 ## Execute one iteration at a time
 
-The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next: Prompt 4 - complete five-round fixture frontend.** Resolve the recorded Prompt 2 MCP/coverage gaps under a separate small budget before dependent provider/game integration. Prompt 2 used exactly twelve Qloo requests; Prompt 3 makes zero Qloo/Vertex/Secret Manager calls. Do not restart Prompt 2's exhausted budget on resume or in a clean clone.
+The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next: Prompt 5 - domain/API/database foundation.** Resolve the recorded Prompt 2 MCP/coverage gaps under a separate small budget before dependent provider/game integration. Prompt 2 used exactly twelve Qloo requests; Prompts 3–4 make zero Qloo/Vertex/Secret Manager calls. Do not restart Prompt 2's exhausted budget on resume or in a clean clone.
 
 Read its shared requirements, then paste the complete numbered prompt. Do not run all prompts as a single implementation request. Independent synthetic visual work can proceed during a provider outage, but it cannot pass the genuine integration gate.
 
@@ -134,7 +169,7 @@ git show accesslife-before-taste-duel-2026-10-24:README.md
 git rev-parse 'accesslife-before-taste-duel-2026-10-24^{commit}'
 ```
 
-The existing `scripts/dev.ps1`, Compose stack, application E2E suite and cloud workflows still describe legacy backend integration and are **not** the new prototype's startup/verification path. Use the commands above. Legacy CI has not been migrated or run as Taste Duel CI; use the isolated `test:prototype` suite. Container/CI replacement remains Prompt 14.
+The existing `scripts/dev.ps1`, Compose stack, application E2E suite and cloud workflows still describe legacy backend integration and are **not** the new fixture frontend's startup/verification path. Use the commands above and isolated `test:fixtures` suite. Legacy CI has not been migrated or run as Taste Duel CI; no push was made to trigger it. Container/CI replacement remains Prompt 14.
 
 For source rollback, inspect the tag or use an explicitly isolated worktree outside the new build context; do not hard-reset user work or roll back a live database automatically. [Legacy operations](infra/README.md) and [legacy cost review](infra/COST_REVIEW.md) remain AccessLife baseline documents until their migration stages.
 

@@ -1,0 +1,38 @@
+/* Shared Taste Duel foundations. Runtime font variables come from next/font. */
+:root {
+  color-scheme: dark;
+  font-synthesis: none;
+  --canvas: #101014;
+  --surface: #1b1b23;
+  --surface-raised: #25252e;
+  --text: #f4f1ea;
+  --muted: #b9b7c3;
+  --primary: #dbff5e;
+  --lavender: #b9a9ff;
+  --coral: #ff9a9a;
+  --line: #3e3c48;
+  --control-border: #858191;
+  --on-primary: var(--canvas);
+  --focus-ring: var(--primary);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --radius-control: 0.625rem;
+  --radius-notice: 0.75rem;
+  --radius-card: 1.25rem;
+  --control-min-size: 3rem;
+  --duration-press: 160ms;
+  --duration-reveal: 320ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-press: 0ms;
+    --duration-reveal: 0ms;
+  }
+}

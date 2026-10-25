@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useContext, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useFixture } from "../fixtures/provider";
+import { Button as ActionButton } from "@/components/ui/button";
 import {
   Button,
   ComboBox,
+  ComboBoxStateContext,
   Input,
   Label,
   ListBox,
@@ -15,6 +18,8 @@ import {
 import { fictionalSeeds, type FictionalSeed } from "./fictional-seeds";
 
 export function SeedLauncher() {
+  const router = useRouter();
+  const { actions } = useFixture();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<FictionalSeed | null>(null);
   const matches = fictionalSeeds.filter((item) =>
@@ -33,7 +38,7 @@ export function SeedLauncher() {
         inputValue={query}
         selectedKey={selected?.id ?? null}
         items={matches}
-        menuTrigger="focus"
+        menuTrigger="input"
         allowsEmptyCollection
         onInputChange={(value) => {
           setQuery(value);
@@ -62,11 +67,7 @@ export function SeedLauncher() {
             />
             <path d="m16 16 4.5 4.5" stroke="currentColor" strokeWidth="1.8" />
           </svg>
-          <Input
-            className="seed-input"
-            placeholder="Search a demo artist or film"
-            aria-describedby="seed-help"
-          />
+          <SeedSearchInput />
           <Button
             className="seed-toggle"
             aria-label="Show fictional seed options"
@@ -116,28 +117,32 @@ export function SeedLauncher() {
           </button>
         ))}
       </div>
+      {selected && (
+        <section
+          className="fixture-confirmation"
+          aria-labelledby="confirm-seed-title"
+        >
+          <h2 id="confirm-seed-title">Confirm your seed</h2>
+          <p>
+            <strong>{selected.name}</strong> · {selected.type}
+          </p>
+        </section>
+      )}
       <div className="launch-actions">
-        {selected ? (
-          <Link
-            href={`/g/demo?seed=${selected.id}`}
-            className="button button-primary"
-            data-testid="start-duel"
-          >
-            Enter the arena <span aria-hidden="true">↗</span>
-          </Link>
-        ) : (
-          <button
-            type="button"
-            className="button button-primary"
-            data-testid="start-duel"
-            disabled
-          >
-            Enter the arena <span aria-hidden="true">↗</span>
-          </button>
-        )}
+        <ActionButton
+          data-testid="start-duel"
+          disabled={!selected}
+          onClick={() => {
+            if (!selected) return;
+            actions.start(selected);
+            router.push("/g/demo");
+          }}
+        >
+          Start fixture duel <span aria-hidden="true">↗</span>
+        </ActionButton>
         <span className="launch-note">
-          One sample round. <br />
-          No account. Just curiosity.
+          Five fictional rounds. <br />
+          Memory resets on refresh.
         </span>
       </div>
       {selected && (
@@ -146,5 +151,26 @@ export function SeedLauncher() {
         </p>
       )}
     </div>
+  );
+}
+
+function SeedSearchInput() {
+  const combo = useContext(ComboBoxStateContext);
+  return (
+    <Input
+      className="seed-input"
+      placeholder="Search a demo artist or film"
+      aria-describedby="seed-help"
+      onKeyDownCapture={(event) => {
+        if (event.key === "Escape" && combo?.isOpen) {
+          // close() commits/reverts a controlled query in this pinned Aria version,
+          // which can reopen it. Toggle the open menu without committing a seed.
+          // Arrow navigation and selection remain owned by React Aria.
+          event.preventDefault();
+          event.stopPropagation();
+          combo.toggle(null, "manual");
+        }
+      }}
+    />
   );
 }

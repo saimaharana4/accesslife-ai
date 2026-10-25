@@ -1,19 +1,5 @@
 @import "tailwindcss";
-
-:root {
-  color-scheme: dark;
-  font-synthesis: none;
-  --canvas: #101014;
-  --surface: #1b1b23;
-  --surface-raised: #25252e;
-  --text: #f4f1ea;
-  --muted: #b9b7c3;
-  --primary: #dbff5e;
-  --lavender: #b9a9ff;
-  --coral: #ff9a9a;
-  --line: #3e3c48;
-  --control-border: #858191;
-}
+@import "./tokens.css";
 
 * {
   box-sizing: border-box;
@@ -392,7 +378,7 @@ a svg {
   border-color: var(--text);
 }
 .button {
-  min-height: 52px;
+  min-height: max(52px, var(--control-min-size));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -408,6 +394,255 @@ a svg {
     transform 150ms ease,
     background-color 150ms ease,
     border-color 150ms ease;
+}
+
+/* Shared controls and the isolated fixture journey use the same foundations. */
+.button-quiet {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--control-border);
+}
+.button-quiet:hover {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+.button:disabled:hover {
+  transform: none;
+}
+.button[aria-busy="true"] {
+  cursor: progress;
+}
+.button[aria-busy="true"]::before {
+  content: "";
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.button-secondary:disabled,
+.button-quiet:disabled {
+  color: var(--muted);
+  background: var(--surface);
+  border-color: var(--line);
+}
+.state-panel[data-tone="warning"] {
+  border-color: var(--lavender);
+}
+.state-panel[data-tone="error"] {
+  border-color: var(--coral);
+}
+.state-panel[data-tone="pending"] .loading-orbit {
+  border-color: var(--primary);
+}
+.fixture-confirmation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-top: var(--space-3);
+  padding: 10px 14px;
+  border: 1px solid var(--lavender);
+  border-radius: var(--radius-notice);
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+.fixture-confirmation h2 {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.fixture-confirmation p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.fixture-confirmation strong {
+  color: var(--text);
+}
+.fixture-confirmation .button {
+  width: 100%;
+}
+.fixture-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 var(--space-6);
+}
+.fixture-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--lavender);
+  border-radius: var(--radius-control);
+  color: var(--lavender);
+  background: var(--surface);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.fixture-story-links {
+  display: block;
+  margin: var(--space-6) 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+.fixture-story-links > summary {
+  min-height: var(--control-min-size);
+  padding: var(--space-3) 0;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.fixture-story-links > summary:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 4px;
+}
+.fixture-story-links > p {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.fixture-story-links > nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.fixture-story-links .button {
+  font-size: 0.875rem;
+}
+.discovery-toggle {
+  min-width: var(--control-min-size);
+  min-height: var(--control-min-size);
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+.discovery-toggle[aria-pressed="true"] {
+  color: var(--canvas);
+  background: var(--lavender);
+  border-color: var(--lavender);
+}
+.result-round-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--space-6);
+}
+.result-round-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+.result-round-row strong {
+  color: var(--text);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ticket-discoveries {
+  padding: 24px 28px;
+}
+.ticket-discoveries > h2 {
+  margin: 0 0 var(--space-3);
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+.ticket-discoveries > p {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.75;
+  margin: 0;
+}
+.ticket-discoveries .ticket-discovery {
+  margin: 0;
+}
+.ticket-discoveries .ticket-discovery + .ticket-discovery {
+  margin-top: var(--space-6);
+}
+.ticket-discoveries .ticket-discovery > div:last-child {
+  min-width: 0;
+}
+.ticket-discoveries .ticket-discovery h3 {
+  overflow-wrap: anywhere;
+}
+.ticket-discoveries .ticket-discovery .button {
+  margin-top: var(--space-3);
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+.feedback-title {
+  overflow-wrap: anywhere;
+}
+.choice-result {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--primary);
+  font-size: 0.875rem;
+}
+.choice-result[data-result="lower"] {
+  color: var(--muted);
+}
+.fixture-status-note {
+  margin: var(--space-4) 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.fixture-status-note[data-tone="error"] {
+  color: var(--coral);
+}
+.fixture-status-note[data-tone="warning"] {
+  color: var(--lavender);
+}
+@media (max-width: 480px) {
+  .fixture-confirmation {
+    margin-top: 8px;
+    padding: 10px 12px;
+  }
+  .seed-launcher:has(.fixture-confirmation) .example-seeds {
+    margin-bottom: 8px;
+  }
+  .seed-launcher:has(.fixture-confirmation) .launch-actions {
+    margin-top: 12px;
+  }
+  .fixture-toolbar {
+    align-items: flex-start;
+  }
+  .result-round-list {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  .ticket-discoveries {
+    padding: 24px 20px;
+  }
+  .fixture-story-links > .button {
+    flex: 1 1 auto;
+  }
+}
+@media (forced-colors: active) {
+  .button-quiet,
+  .fixture-confirmation,
+  .fixture-badge,
+  .state-panel[data-tone] {
+    border-color: ButtonText;
+  }
+  .discovery-toggle[aria-pressed="true"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
 }
 .button:hover {
   transform: translateY(-2px);
@@ -779,6 +1014,51 @@ h1.arena-heading {
 }
 .feedback-copy strong {
   color: var(--text);
+}
+.why-this-duel {
+  margin-top: 12px;
+  border-top: 1px solid var(--control-border);
+  min-width: 0;
+}
+.why-this-duel > summary {
+  min-height: 48px;
+  display: list-item;
+  align-content: center;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--lavender);
+  overflow-wrap: anywhere;
+}
+.why-this-duel > summary:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.duel-evidence {
+  font-size: 0.875rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.duel-evidence p {
+  margin: 0 0 12px;
+}
+.evidence-source {
+  color: var(--primary);
+  font-weight: 600;
+}
+.curation-summary {
+  color: var(--muted);
+  border-left: 2px solid var(--control-border);
+  padding-left: 12px;
+  margin: 16px 0;
+}
+.curation-summary strong {
+  color: var(--text);
+}
+.duel-evidence blockquote {
+  margin: 16px 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--lavender);
 }
 .arena-actions {
   max-width: 820px;

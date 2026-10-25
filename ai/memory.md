@@ -2,7 +2,7 @@
 
 Keep each dated entry to one or two lines. Record completed work and verified outcomes; distinguish requirements, measurements and blockers. Never include secrets, personal profiles or unverified success claims.
 
-**Current direction - 25 October 2026:** Taste Duel. Prompt 3 is a local synthetic visual prototype; backend/cloud remain AccessLife. Prompt 2 retains its partial live gate with unresolved MCP/same-domain checks. Historical AccessLife results below are not Taste Duel verification.
+**Current direction - 25 October 2026:** Taste Duel. Prompt 4 adds complete local five-round fixture play and accepted-only synthetic evidence/curation disclosures; backend/cloud remain AccessLife. Prompt 2's MCP/same-domain live gate remains partial at 12/12 requests. Historical AccessLife results below are not Taste Duel verification.
 
 ## Historical AccessLife milestones (recorded at the time)
 
@@ -55,3 +55,6 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 
 - **2026-10-25 - Prompt 3:** Built a fresh local Taste Duel visual shell with fictional seed selection, one sample reveal, result/invitation specimens, original SVG/OFL type and loading/error/fallback states; removed unused planner web modules/dependencies. No Qloo, Vertex, Secret Manager or cloud changes; full five-round play remains Prompt 4.
 - **2026-10-25 - Prompt 3 verification:** Standalone build and 12 Playwright tests passed; 27 full axe scans had zero violations and 30 desktop/mobile/320px captures were reviewed/refined. Fixed real-image hydration fallback and stacked seam; preserved references/tag/history; human screen-reader and actual browser zoom remain unverified. Preview: http://127.0.0.1:3001; audit: `.data/tasteduel-prompt3/verification.json`.
+
+- **2026-10-25 - Prompt 4:** Extracted tokens/primitives and five-round fixture adapter/state/components with guarded retries, actual /5 scoring, saves and local invitation; added accepted-only synthetic WhyThisDuel/CurationSummary and ranking-versus-preference copy. Fixed controlled-combobox Escape and explicit final-Next navigation; no backend, live provider, secret or cloud changes.
+- **2026-10-25 - Prompt 4 verification:** TypeScript/10 state tests and 13 affected Playwright checks passed (three-width full keyboard games, evidence/fallback and semantics/motion); 39 full axe scans found zero violations, 39 captures were produced and key renders reviewed. Six unchanged cancellation/story checks retain prior passes; production flag-on build excluded fixtures across 217 outputs and tested routes returned 404. Audit: `.data/tasteduel-prompt4/verification.json`; next Prompt 5, with live/agent/durability/human screen-reader checks pending.

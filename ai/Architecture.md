@@ -1,10 +1,21 @@
 # Taste Duel architecture
 
-Revision 4 — 25 October 2026 — Prompt 3 frontend prototype. **The full architecture remains a target; only the synthetic visual shell is implemented. No Taste Duel backend or deployment exists.**
+Revision 5 — 25 October 2026 — Prompt 4 fixture frontend. **The full architecture remains a target; five-round local fixture play is implemented. No Taste Duel backend or deployment exists.**
 
 The web entry point is now a fresh Taste Duel prototype. Python backend, containers and recorded cloud deployment remain AccessLife AI. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate Taste Duel gameplay, its agent, data rights or cloud migration. [prompts.md](prompts.md) controls later iterations.
 
-**Implemented boundary in Prompt 3:** Next.js server layout/pages, two local licensed font families, original SVG art, a React Aria synthetic seed chooser and a client-only single-round reveal island. Result/challenge/loading/error pages are labelled specimens. No provider, database, session, model, score service or share link is involved. `/api/v1/*` returns a local `503 PROTOTYPE_ONLY` response instead of forwarding to the old planner; the real forwarding contract below is future work. The synthetic winner in this visual specimen is public fixture code, not the production secrecy implementation. Six unused legacy web modules and seven direct dependencies were removed after replacement checks; old source stays in the preservation tag. Legacy generated OpenAPI declarations remain until Prompt 5, unused by the prototype.
+**Implemented boundary through Prompt 4:** Next.js server layout/pages, local licensed fonts/original SVG art, React Aria seed confirmation, reusable tokens/primitives and a client fixture provider/adapter. Five invented rounds compute the result from accepted answers, support save/unsave and derive a local invitation from the played sequence. No network provider, database, durable session, model, production scoring service or share link is involved. `/api/v1/*` still returns local `503 PROTOTYPE_ONLY`; the forwarding contract below is future work. Synthetic winners are public development code, not a secrecy implementation for real answers. Six legacy web modules/seven dependencies were removed in Prompt 3; three superseded single-round/result/invitation specimens are removed in Prompt 4. Old source stays in the preservation tag. Legacy generated OpenAPI declarations remain unused until Prompt 5.
+
+### Implemented frontend boundary
+
+- `app/` keeps pages/layout as Server Components; bare `tasteduel-fixture-entry` resolves to a client fixture entry only for the explicit development-server phase/flag. Other phases use a separate unavailable entry that imports no fixtures. Normal production builds exclude fixture pools/controls, even when the flag is set; their routes return 404.
+- `app/tokens.css` and `components/ui/` own Button/ActionLink, RoundPips and StatusPanel. `features/{seed,duel,reveal,results,challenges,discoveries,curation}` own focused presentation components.
+- `features/fixtures/` owns UI-only types, discriminated reducer, synchronous duplicate guards, operation identities, abort/recovery and `FixtureTransport`. The in-memory implementation accepts then simulates response loss; the same answer key recovers one accepted answer. No browser storage, backend or external requests are used.
+- State sequence: idle → preparing → unanswered → submitting → revealed → advancing → unanswered/complete, with explicit issue/retry/interruption branches. Only the final explicit Next initiates result navigation; restored arenas cannot auto-redirect Back. Refresh intentionally clears state.
+- `features/reveal/WhyThisDuel` accepts an **accepted-round-only** presentation contract: source label, factual ranking-context sentence, optional supported explanation/attribution and discovery action. `fixtureDisclosure` produces this only for the current revealed/advancing answer. No unsupported explanation is supplied.
+- `features/curation/CurationSummary` explicitly projects typed domain/mode/count/path facts; it accepts no raw receipt, private reasoning, scores, contestant list or pair/answer data. Here it is nested inside the post-answer disclosure with unmistakable synthetic/no-agent labels. Later allowlisted API DTOs replace fixture facts; these UI types do not define the API.
+
+Fixture tests prove local behavior only. Server authority, adaptive pools, ownership, persistence, MCP/Vertex and exact two-session challenge replay remain future gates. Production exclusion is a build boundary, not proof of future server secrecy.
 
 **Prompt 2 evidence:** the [dated source/capability matrix](qloo-capability-matrix.md) pins harness `0.1.26` and official source commits. Twelve counted requests proved two raw cross-domain samples with five-pair numeric feasibility; canonical MCP Insights and same-domain cells remain unverified. No live payload or generated API client is committed. The advertised OpenAPI file is a meta-schema without endpoint paths and is rejected for code generation. This is a partial feasibility gate, not an implemented provider or game.
 
@@ -85,6 +96,9 @@ apps/
       results/                   # Score ticket and replay actions
       challenges/                # Invitation and fixed replay
       discoveries/               # Guest save/unsave list
+      curation/                  # Sanitized aggregate presentation facts
+      fixtures/                  # Explicit development adapter/state only
+      mode/                      # Fixture-free production composition root
     lib/{api,assets,telemetry}/
   api/
     src/tasteduel/
@@ -103,7 +117,7 @@ scripts/
 ai/                              # Six maintained specifications + prompts.md
 ```
 
-This is the planned replacement tree. Existing `apps/api/src/accesslife` and planner/place/trip/map features remain legacy code until replacement stages pass. Do not create empty modules simply to fill this tree.
+This is the target tree with the current frontend boundary included. Existing `apps/api/src/accesslife` remains legacy until its replacement gates. Planner/place/trip/map web features were removed in Prompt 3; single-round specimens were replaced in Prompt 4. Do not create empty modules simply to fill this tree.
 
 Dependency direction: API/UI → application → domain/ports. Adapters implement ports and are selected at a composition root. Domain code imports no FastAPI/provider SDK/React or raw Qloo JSON. Construction/import must not call networks, migrate data or mutate infrastructure. Pydantic owns application wire schemas; generate frontend TypeScript from actual exported FastAPI OpenAPI. Inspect upstream advertised specs before use: a generic OpenAPI meta-schema without endpoint paths is not a Qloo client contract.
 
