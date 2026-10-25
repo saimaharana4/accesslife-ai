@@ -2,3 +2,7 @@
 apps/web/public/fonts/*.ttf -text -diff
 # The unmodified upstream OFL notices contain trailing whitespace.
 apps/web/public/fonts/*-OFL.txt -text -whitespace
+# Preserve the exact applied SQLAlchemy DDL snapshots, including its formatting.
+# These two immutable generated files contain intentional comma/trailing spaces.
+apps/api/tasteduel_migrations/versions/0001_tasteduel_foundation.sql -text -whitespace
+apps/api/tasteduel_migrations/versions/0003_mutation_receipts.sql -text -whitespace

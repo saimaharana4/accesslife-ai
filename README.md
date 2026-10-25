@@ -2,7 +2,7 @@
 
 One favourite. Five duels. Predict Qloo's ranking, discover something surprising, then challenge a friend to the same five rounds.
 
-**Status - 25 October 2026: Taste Duel has a complete five-round development fixture frontend (Prompt 4).** Confirm a fictional seed, play five rounds, reveal each answer, use explicit Next and see your computed score out of five, discoveries and a local invitation preview. The adapter and progress are in memory only; no live Qloo, backend persistence or real sharing is implemented. Prompt 2 remains partial. Backend, containers and GCP deployment remain legacy AccessLife; no cloud provisioning, deployment or repository rename occurred.
+**Status - 25 October 2026: Prompt 5 adds the local Taste Duel API/database foundation.** The separate Python domain, 19 PostgreSQL tables, immutable migrations, owned read projections and generated application contracts are implemented. The Prompt 4 browser still plays in-memory synthetic fixtures; it is not connected to this API. Live Qloo, generation, authoritative gameplay mutations and public sharing remain planned. Prompt 2 remains partial. Deployed services, containers and cloud automation remain legacy AccessLife; no cloud provisioning, deployment or repository rename occurred.
 
 ## What the new product will do
 
@@ -24,7 +24,9 @@ The target interface is a mobile-first cultural game: oversized artwork, distinc
 | Existing AccessLife source | Recoverable at the checkpoint below; unused old planner/map web modules removed after replacement checks. Legacy backend/cloud unchanged |
 | Taste Duel fixture frontend | Server shell, reusable tokens/primitives, React Aria confirmation, discriminated state machine and in-memory adapter; five invented rounds, accepted-answer score, save/unsave and local invitation |
 | Prompt 4 verification | 10 state/adapter/disclosure tests and TypeScript passed; 13 affected Playwright checks passed, including full keyboard games at all three widths. 39 full axe scans found zero violations; 39 captures include accepted evidence, long titles, missing art and ranking semantics. Six unaffected cancellation/state-story checks retain their earlier passes |
-| Taste Duel API, production game engine, persistence, real sharing and RoundCuratorAgent | Planned; fixture state is not server authority or durable storage |
+| Taste Duel API/database foundation | Separate `tasteduel` domain, sessions, owned reads, private snapshots/pools/receipts, PostgreSQL constraints/RLS and separate migration/runtime roles; actual application OpenAPI generates frontend declarations |
+| Prompt 5 verification | Clean PostgreSQL 16 migration chain `td0001`–`td0004`; 157 checks passed, including real database constraints and HTTP secrecy/isolation; Ruff, TypeScript and OpenAPI drift passed. Final evidence is under `.data/tasteduel-prompt5/` |
+| Live search, generation, authoritative answer/Next/save mutations, public replay and RoundCuratorAgent | Contracts declared; unconnected operations return honest `501 FOUNDATION_NOT_IMPLEMENTED`. No full game engine, durable browser gameplay or live integration claim |
 | Qloo feasibility and rights | Pinned harness `0.1.26`; offline discovery and two raw cross-domain samples passed within **12/12** requests. Canonical MCP Insights, same-domain cells, nested explanation semantics and broad coverage remain unverified; [full matrix](ai/qloo-capability-matrix.md) |
 | Prompt 2 synthetic verification | 22 tests passed; Ruff passed. No production game, accessibility, restart or cloud readiness claim |
 | Prompt 3 local production-build verification | 12 Playwright tests passed across 1440×1000, 390×844 and 320×844; 27 full axe scans found zero violations; 30 screenshots captured, with core states and layout edge cases visually reviewed |
@@ -33,6 +35,52 @@ The target interface is a mobile-first cultural game: oversized artwork, distinc
 | Historical AccessLife verification | Recorded in [memory](ai/memory.md); not rerun or relabelled as Taste Duel verification |
 
 There is no Taste Duel production URL yet. Local preview: **http://127.0.0.1:3001**. The previously recorded [AccessLife endpoint](https://accesslife-web-dfthmgvvaa-el.a.run.app) remains a legacy deployment reference; its health was not rechecked in this frontend iteration.
+
+## Run the isolated API/database foundation
+
+Use Python 3.12, uv and running Docker Desktop. This workflow targets only a
+new loopback-bound PostgreSQL 16 container at `127.0.0.1:55435/tasteduel_prompt5`.
+It refuses the legacy database, remote hosts and the wrong database role. The
+existing Compose stack is not used. No provider credentials or ADC are needed.
+
+```powershell
+uv sync --locked
+uv run --no-sync python scripts/tasteduel_local.py start
+uv run --no-sync python scripts/tasteduel_local.py migrate
+uv run --no-sync python scripts/tasteduel_local.py test -q
+corepack pnpm contracts
+uv run --no-sync python scripts/export_contracts.py --check
+corepack pnpm typecheck
+uv run --no-sync python scripts/tasteduel_local.py api
+# API documentation: http://127.0.0.1:8002/docs ; Ctrl+C stops the API.
+# Then stop the dedicated database without deleting its data:
+uv run --no-sync python scripts/tasteduel_local.py stop
+```
+
+The helper generates local-only credentials in process memory and dedicated
+Docker container configuration, never repository credential files or command
+arguments. Docker stores its own metadata locally. It neither reads nor copies
+real provider keys. Runtime has DML/RLS privileges; the separate migration owner
+owns schema changes. See the [migration guide](apps/api/tasteduel_migrations/README.md).
+
+Actual private routes use `/v1`; the declared browser base `/api` gives
+`/api/v1`. The web forwarding boundary remains disabled until integration.
+Sessions, health and owned game/current-round/result/discovery reads are
+implemented. Tests seed synthetic private database graphs directly; this is
+not an implemented generation or answer service. Asking for an already answered
+playable round returns 409; an owned game read restores that accepted reveal.
+Other guests receive uniform 404s. Receipts, future pools, ranks, affinities and
+raw cache payloads never become public response models.
+
+Python/Pydantic is the single wire-contract source. `contracts` exports the
+actual application OpenAPI and regenerates `apps/web/src/lib/api/schema.d.ts`;
+the rejected upstream Qloo meta-schema is not involved. Fixture/presentation
+types remain UI-only. [API foundation details](apps/api/README.md) distinguish
+declared success contracts from handlers still returning 501.
+
+Prompt 5 evidence belongs in ignored `.data/tasteduel-prompt5/`. This stage
+does not validate legacy containers/CI, live Qloo/Vertex, cloud connectivity,
+global provider admission, public replay or restart-safe mutation execution.
 
 ## Run the development fixture game
 
@@ -118,7 +166,7 @@ Duel delivery infrastructure.
 
 ## Execute one iteration at a time
 
-The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next: Prompt 5 - domain/API/database foundation.** Resolve the recorded Prompt 2 MCP/coverage gaps under a separate small budget before dependent provider/game integration. Prompt 2 used exactly twelve Qloo requests; Prompts 3–4 make zero Qloo/Vertex/Secret Manager calls. Do not restart Prompt 2's exhausted budget on resume or in a clean clone.
+The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next: Prompt 6 - official Qloo transport and normalized provider port.** Resolve the recorded Prompt 2 MCP/coverage gaps under a separate small budget before dependent provider/game integration. Prompt 2 used exactly twelve Qloo requests; Prompts 3–5 make zero Qloo/Vertex/Secret Manager calls. Do not restart Prompt 2's exhausted budget on resume or in a clean clone.
 
 Read its shared requirements, then paste the complete numbered prompt. Do not run all prompts as a single implementation request. Independent synthetic visual work can proceed during a provider outage, but it cannot pass the genuine integration gate.
 

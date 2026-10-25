@@ -1,8 +1,8 @@
 # Taste Duel implementation phases
 
-Revision 3 - 25 October 2026 - Prompt 4 local fixture frontend; backend/cloud remain legacy
+Revision 4 - 25 October 2026 - Prompt 5 local API/database foundation; deployed services remain legacy
 
-**Progress:** Prompt 1 preservation and Prompt 3 original visual prototype are complete; Prompt 2 remains a partial live gate in the [capability matrix](qloo-capability-matrix.md). Prompt 4 implements reusable tokens/components, guarded five-round in-memory play, computed /5 score, discoveries, local invitation and post-answer synthetic evidence/curation disclosures. Current verification is recorded in README/memory. No backend/cloud gate passes from fixture work. Next is Prompt 5; return to the listed Prompt 2 probes before dependent provider integration without resetting the exhausted budget.
+**Progress:** Prompts 1, 3 and 4 preservation/visual/fixture work are complete. Prompt 5 adds the separate local domain/API/database foundation, generated contracts and owned read projections; it does not connect the fixture browser to a live game. Current checks are recorded in README/memory. Prompt 2 remains a partial live gate in the [capability matrix](qloo-capability-matrix.md). Next is Prompt 6; return to the listed MCP/coverage probes before dependent integration without resetting its exhausted budget. No cloud gate passes from local foundation work.
 
 ## Status and execution rules
 
@@ -90,6 +90,8 @@ Dependencies installed in the reused SQL instance need not be dropped merely bec
 **Prompt 5 owners:** Pydantic/domain/API, SQLAlchemy/Alembic, secrecy/isolation reviewer. Create new `tasteduel` modules and clean local database: sessions, generation reservations/leases, minimal entities, ranking snapshots, private pools, delivered rounds, answers, results, immutable challenges/replays, discoveries and bounded usage/cache. Generate frontend types from application OpenAPI.
 
 **Prompt 5 gate:** clean migrations and real database constraints, separate migration/runtime privileges, explicit ownership/state transitions. `PlayableRoundPublic` never exposes answers; `RevealedRoundPublic` restores only accepted authorized rounds. No competing schema authority.
+
+**Prompt 5 implementation:** nineteen ordinary PostgreSQL tables and separate `td0001`–`td0004` lineage on local port 55435; private structured curation/mutation receipts, generated application OpenAPI and nested opaque choice/entity identities. Sessions and scoped read projections work; unsupported search/generation/mutation/share handlers return 501. Real database tests cover constraints, forced RLS, role restrictions, accepted reload and next-round secrecy. Bounded bodies/safe errors, expired/revoked cookies and forged-owner checks are included. Initial migrations remain immutable; forward repairs close revocation/freeze and completed-receipt gaps. Full HTTP retries, global admission, retention cleanup and actual live gameplay remain their later stages.
 
 **Prompt 6 owners:** MCP adapter, synthetic contracts, subprocess/security reviewer. Package pinned Node/harness, local stdio lifecycle/readiness/concurrency/shutdown and safe child environment. Normalize actual envelopes before domain/UI. Bound deadlines/retries; auth failure cannot become fake data. Any justified HTTP escape hatch is explicit and independently tested.
 

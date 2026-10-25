@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-  "/v1/sessions": {
+  "/v1/challenges": {
     parameters: {
       query?: never;
       header?: never;
@@ -13,41 +13,23 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Create Session */
-    post: operations["create_session_v1_sessions_post"];
+    /** Create Challenge */
+    post: operations["createChallenge"];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  "/v1/sessions/current": {
+  "/v1/challenges/{slug}": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Current Session */
-    get: operations["current_session_v1_sessions_current_get"];
-    put?: never;
-    post?: never;
-    /** Clear Session */
-    delete: operations["clear_session_v1_sessions_current_delete"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/cities": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Cities */
-    get: operations["cities_v1_cities_get"];
+    /** Invitation */
+    get: operations["getChallengeInvitation"];
     put?: never;
     post?: never;
     delete?: never;
@@ -56,75 +38,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/v1/providers": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Providers */
-    get: operations["providers_v1_providers_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/places": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Places */
-    get: operations["places_v1_places_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/cities/{city_id}/discover": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Osm */
-    get: operations["osm_v1_cities__city_id__discover_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/evidence/{evidence_id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Evidence */
-    get: operations["evidence_v1_evidence__evidence_id__get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/intent": {
+  "/v1/challenges/{slug}/plays": {
     parameters: {
       query?: never;
       header?: never;
@@ -133,84 +47,33 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Interpret */
-    post: operations["interpret_v1_intent_post"];
+    /** Play Challenge */
+    post: operations["playChallenge"];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  "/v1/plans": {
+  "/v1/discoveries": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** List Plans */
-    get: operations["list_plans_v1_plans_get"];
+    /** Discoveries */
+    get: operations["getDiscoveries"];
     put?: never;
-    /** New Plan */
-    post: operations["new_plan_v1_plans_post"];
+    /** Save Discovery */
+    post: operations["saveDiscovery"];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  "/v1/plans/{plan_id}/replan": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Replan */
-    post: operations["replan_v1_plans__plan_id__replan_post"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/plans/{plan_id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get Plan */
-    get: operations["get_plan_v1_plans__plan_id__get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/plans/{plan_id}/impact": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Impact */
-    get: operations["impact_v1_plans__plan_id__impact_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/v1/runs/{run_id}/cancel": {
+  "/v1/discoveries/{entity_id}": {
     parameters: {
       query?: never;
       header?: never;
@@ -219,23 +82,23 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Cancel */
-    post: operations["cancel_v1_runs__run_id__cancel_post"];
-    delete?: never;
+    post?: never;
+    /** Remove Discovery */
+    delete: operations["removeDiscovery"];
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  "/v1/runs/{run_id}/events": {
+  "/v1/entities/search": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Events */
-    get: operations["events_v1_runs__run_id__events_get"];
+    /** Search Entities */
+    get: operations["searchEntities"];
     put?: never;
     post?: never;
     delete?: never;
@@ -244,40 +107,106 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/v1/trips": {
+  "/v1/games": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** List Trips */
-    get: operations["list_trips_v1_trips_get"];
+    get?: never;
     put?: never;
-    /** Create Trip */
-    post: operations["create_trip_v1_trips_post"];
+    /** Create Game */
+    post: operations["createGame"];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  "/v1/trips/{trip_id}": {
+  "/v1/games/{game_id}": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Get Trip */
-    get: operations["get_trip_v1_trips__trip_id__get"];
+    /** Get Game */
+    get: operations["getGame"];
     put?: never;
     post?: never;
     delete?: never;
     options?: never;
     head?: never;
-    /** Edit Trip */
-    patch: operations["edit_trip_v1_trips__trip_id__patch"];
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/games/{game_id}/advance": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Advance */
+    post: operations["advanceRound"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/games/{game_id}/answer": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Answer */
+    post: operations["answerRound"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/games/{game_id}/results": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Results */
+    get: operations["getResults"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/games/{game_id}/round": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Round */
+    get: operations["getCurrentRound"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/v1/health/live": {
@@ -288,7 +217,7 @@ export interface paths {
       cookie?: never;
     };
     /** Live */
-    get: operations["live_v1_health_live_get"];
+    get: operations["liveness"];
     put?: never;
     post?: never;
     delete?: never;
@@ -305,10 +234,45 @@ export interface paths {
       cookie?: never;
     };
     /** Ready */
-    get: operations["ready_v1_health_ready_get"];
+    get: operations["readiness"];
     put?: never;
     post?: never;
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/sessions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Create Session */
+    post: operations["createSession"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/sessions/current": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Current Session */
+    get: operations["getCurrentSession"];
+    put?: never;
+    post?: never;
+    /** Clear Session */
+    delete: operations["clearSession"];
     options?: never;
     head?: never;
     patch?: never;
@@ -318,456 +282,528 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
-    /** City */
-    City: {
+    /** AdvanceRequest */
+    AdvanceRequest: {
       /**
-       * Id
-       * @enum {string}
+       * Answered Round Id
+       * Format: uuid
        */
-      id: "london" | "new-york" | "paris" | "berlin" | "chicago";
-      /** Name */
-      name: string;
-      /** Time Zone */
-      time_zone: string;
-      /** Latitude */
-      latitude: number;
-      /** Longitude */
-      longitude: number;
-      /** District */
-      district: string;
-      /**
-       * Coverage
-       * @default limited
-       */
-      coverage: string;
-      /**
-       * Limitation
-       * @default Curated venue evidence; door-to-door wheelchair routes are not verified.
-       */
-      limitation: string;
+      answered_round_id: string;
+      /** Expected Revision */
+      expected_revision: number;
     };
-    /** EligiblePlace */
-    EligiblePlace: {
-      /** Id */
-      id: string;
+    /** AnswerRequest */
+    AnswerRequest: {
       /**
-       * City Id
-       * @enum {string}
+       * Choice Id
+       * Format: uuid
        */
-      city_id: "london" | "new-york" | "paris" | "berlin" | "chicago";
-      /** Name */
-      name: string;
-      /** Category */
-      category: string;
-      /** Latitude */
-      latitude: number;
-      /** Longitude */
-      longitude: number;
-      /** Interests */
-      interests: string[];
-      /** Description */
-      description: string;
-      /** Facts */
-      facts: components["schemas"]["Fact"][];
-      /** Source Url */
-      source_url: string;
-      /** Issues */
-      issues?: string[];
-      /** Venue Eligible */
-      venue_eligible: boolean;
-    };
-    /** EnvironmentResult */
-    EnvironmentResult: {
-      /** Weather */
-      weather: {
-        [key: string]: unknown;
-      };
-      /** Transport */
-      transport: {
-        [key: string]: unknown;
-      };
-      knowledge: components["schemas"]["KnowledgeResult"];
-    };
-    /** Evidence */
-    Evidence: {
-      /** Id */
-      id: string;
-      /** Source Url */
-      source_url: string;
-      /** Title */
-      title: string;
+      choice_id: string;
+      /** Expected Revision */
+      expected_revision: number;
       /**
-       * Source Type
-       * @default official_venue
+       * Round Id
+       * Format: uuid
        */
-      source_type: string;
-      /** Claim */
-      claim: string;
-      /** Retrieved At */
-      retrieved_at: string;
-      /** Source Updated At */
-      source_updated_at?: string | null;
-      /**
-       * Rights
-       * @default Original factual summary; linked source retains its own copyright.
-       */
-      rights: string;
-      /**
-       * Transformation Version
-       * @default manual-summary-v1
-       */
-      transformation_version: string;
+      round_id: string;
     };
-    /** ExplanationResult */
-    ExplanationResult: {
-      /** Summary */
-      summary: string;
-      /** Provider */
-      provider: string;
-      /** Error */
-      error?: string | null;
-    };
-    /** Fact */
-    Fact: {
-      /** Feature */
-      feature: string;
-      /**
-       * Status
-       * @default unknown
-       * @enum {string}
-       */
-      status: "confirmed" | "limited" | "inaccessible" | "unknown";
-      /** Evidence Ids */
-      evidence_ids?: string[];
-      /**
-       * Conflict
-       * @default false
-       */
-      conflict: boolean;
-      /**
-       * Stale
-       * @default false
-       */
-      stale: boolean;
-      /** Conditions */
-      conditions?: string | null;
-    };
-    /** HTTPValidationError */
-    HTTPValidationError: {
-      /** Detail */
-      detail?: components["schemas"]["ValidationError"][];
-    };
-    /** IntentInput */
-    IntentInput: {
-      /** Text */
-      text: string;
-    };
-    /** Interest */
-    Interest: {
-      /** Name */
-      name: string;
+    /** ArtworkPublic */
+    ArtworkPublic: {
+      /** Asset Id */
+      asset_id: string;
+      /** Attribution */
+      attribution?: string | null;
       /**
        * Kind
-       * @default culture
-       */
-      kind: string;
-    };
-    /** KnowledgeResult */
-    KnowledgeResult: {
-      /** Status */
-      status: string;
-      /** Passages */
-      passages: components["schemas"]["Passage"][];
-    };
-    /** Leg */
-    Leg: {
-      /** From Id */
-      from_id: string;
-      /** To Id */
-      to_id: string;
-      /**
-       * Status
-       * @constant
-       */
-      status: "unknown";
-      /** Distance M */
-      distance_m?: number | null;
-      /** Distance Lower Bound M */
-      distance_lower_bound_m: number;
-      /** Duration Seconds */
-      duration_seconds?: number | null;
-      /** Message */
-      message: string;
-    };
-    /** Mobility */
-    Mobility: {
-      /** Required Features */
-      required_features?: (
-        | "step_free_entrance"
-        | "accessible_toilet"
-        | "lift"
-      )[];
-      /** Accepted Limitations */
-      accepted_limitations?: string[];
-      /**
-       * Max Leg Distance M
-       * @default 500
-       */
-      max_leg_distance_m: number;
-      /**
-       * Max Total Distance M
-       * @default 2000
-       */
-      max_total_distance_m: number;
-      /**
-       * Rest Every Minutes
-       * @default 45
-       */
-      rest_every_minutes: number;
-      /**
-       * Max Transfers
-       * @default 1
-       */
-      max_transfers: number;
-    };
-    /** Passage */
-    Passage: {
-      /** Id */
-      id: string;
-      /** Text */
-      text: string;
-      /** Source Title */
-      source_title: string;
-      /** Source Url */
-      source_url: string;
-    };
-    /** PendingPlan */
-    PendingPlan: {
-      /** Id */
-      id: string;
-      /**
-       * Version
-       * @constant
-       */
-      version: 0;
-      /**
-       * Status
-       * @constant
-       */
-      status: "pending";
-    };
-    /** Place */
-    Place: {
-      /** Id */
-      id: string;
-      /**
-       * City Id
        * @enum {string}
        */
-      city_id: "london" | "new-york" | "paris" | "berlin" | "chicago";
-      /** Name */
-      name: string;
-      /** Category */
-      category: string;
-      /** Latitude */
-      latitude: number;
-      /** Longitude */
-      longitude: number;
-      /** Interests */
-      interests: string[];
-      /** Description */
-      description: string;
-      /** Facts */
-      facts: components["schemas"]["Fact"][];
-      /** Source Url */
-      source_url: string;
+      kind: "owned_fallback" | "licensed";
     };
-    /** PlanDiff */
-    PlanDiff: {
-      /** From Version */
-      from_version: number;
-      /** Removed */
-      removed: string[];
-      /** Added */
-      added: string[];
-    };
-    /** PlanInput */
-    PlanInput: {
+    /** ChallengeCreateRequest */
+    ChallengeCreateRequest: {
       /**
-       * City Id
-       * @enum {string}
+       * Game Id
+       * Format: uuid
        */
-      city_id: "london" | "new-york" | "paris" | "berlin" | "chicago";
-      window: components["schemas"]["Window"];
-      mobility?: components["schemas"]["Mobility"];
-      /** Interests */
-      interests?: components["schemas"]["Interest"][];
-      /**
-       * Intent
-       * @default
-       */
-      intent: string;
-      /** Trip Id */
-      trip_id?: string | null;
-      /** Segment Id */
-      segment_id?: string | null;
+      game_id: string;
     };
-    /** PlanSnapshot */
-    PlanSnapshot: {
-      /** Id */
+    /** ChallengeCreatedPublic */
+    ChallengeCreatedPublic: {
+      invitation: components["schemas"]["ChallengeInvitationPublic"];
+      /** Share Path */
+      share_path: string;
+    };
+    /** ChallengeInvitationPublic */
+    ChallengeInvitationPublic: {
+      /** Creator Score */
+      creator_score: number;
+      /**
+       * Expires At
+       * Format: date-time
+       */
+      expires_at: string;
+      seed: components["schemas"]["EntityPublic"];
+      /** Slug */
+      slug: string;
+      source: components["schemas"]["RankingSource"];
+      /**
+       * Total
+       * @default 5
+       * @constant
+       */
+      total: 5;
+    };
+    /**
+     * ChoicePublic
+     * @description An opaque delivered choice, distinct from its searchable entity ID.
+     */
+    ChoicePublic: {
+      entity: components["schemas"]["EntityPublic"];
+      /**
+       * Id
+       * Format: uuid
+       */
       id: string;
-      /** Version */
-      version: number;
-      inputs: components["schemas"]["PlanInput"];
-      /** Status */
-      status: string;
-      /** Confirmed */
-      confirmed: boolean;
-      /** Stops */
-      stops: components["schemas"]["Stop"][];
-      /** Legs */
-      legs: components["schemas"]["Leg"][];
-      /** Candidates */
-      candidates: components["schemas"]["EligiblePlace"][];
-      /** Verification Needed */
-      verification_needed: components["schemas"]["EligiblePlace"][];
-      taste: components["schemas"]["TasteResult"];
-      /** Baseline Order */
-      baseline_order: string[];
-      environment: components["schemas"]["EnvironmentResult"];
-      explanation: components["schemas"]["ExplanationResult"];
-      /** Unresolved */
-      unresolved: string[];
-      /** Evidence */
-      evidence: components["schemas"]["Evidence"][];
-      /** Distance Lower Bound Total M */
-      distance_lower_bound_total_m: number;
-      diff?: components["schemas"]["PlanDiff"] | null;
     };
-    /** ReplanInput */
-    ReplanInput: {
-      /** Expected Version */
-      expected_version: number;
-      inputs: components["schemas"]["PlanInput"];
-    };
-    /** Stop */
-    Stop: {
-      place: components["schemas"]["Place"];
+    /** CreateGameRequest */
+    CreateGameRequest: {
       /**
-       * Status
+       * Mode
+       * @default solo
        * @constant
        */
-      status: "provisional";
-      /** Suggested Visit Minutes */
-      suggested_visit_minutes: number;
-      /** Rest Every Minutes */
-      rest_every_minutes: number;
+      mode: "solo";
       /**
-       * Opening Hours Status
-       * @constant
+       * Seed Entity Id
+       * Format: uuid
        */
-      opening_hours_status: "unknown";
+      seed_entity_id: string;
+      seed_type: components["schemas"]["EntityType"];
     };
-    /** TasteResult */
-    TasteResult: {
-      /** Provider */
-      provider: string;
-      /** Label */
-      label: string;
-      /** Order */
-      order: string[];
-      /** Matches */
-      matches?: {
-        [key: string]: string[];
-      };
-      /** Warning */
-      warning?: string | null;
-      /** Live */
-      live: boolean;
-      /** Scores */
-      scores?: {
+    /** CurationSummaryPublic */
+    CurationSummaryPublic: {
+      /** Bounded Correction Count */
+      bounded_correction_count: number;
+      /** Candidate Count Received */
+      candidate_count_received: number;
+      curator_mode: components["schemas"]["CuratorMode"];
+      /** Five Round Path Verified */
+      five_round_path_verified: boolean;
+      /** Rejection Counts */
+      rejection_counts: {
         [key: string]: number;
       };
-      /** Unmapped */
-      unmapped?: string[];
-      /** Score Semantics */
-      score_semantics?: string | null;
-    };
-    /** TripInput */
-    TripInput: {
+      source: components["schemas"]["RankingSource"];
       /**
-       * Title
-       * @default My city collection
-       */
-      title: string;
-      /** Segments */
-      segments?: components["schemas"]["TripSegment"][];
-      /** Expected Revision */
-      expected_revision?: number | null;
-    };
-    /** TripSegment */
-    TripSegment: {
-      /** Id */
-      id: string;
-      /**
-       * City Id
-       * @enum {string}
-       */
-      city_id: "london" | "new-york" | "paris" | "berlin" | "chicago";
-      /** Date */
-      date: string;
-      /** Plan Id */
-      plan_id?: string | null;
-      /** Plan Version */
-      plan_version?: number | null;
-    };
-    /** TripSnapshot */
-    TripSnapshot: {
-      /** Id */
-      id: string;
-      /** Title */
-      title: string;
-      /** Revision */
-      revision: number;
-      /** Segments */
-      segments: components["schemas"]["TripSegment"][];
-      /**
-       * Transfer Status
+       * Status
+       * @default succeeded
        * @constant
        */
-      transfer_status: "user_arranged_unverified";
-      /** Transfers */
-      transfers: {
-        [key: string]: string;
-      }[];
+      status: "succeeded";
+      /** Target Domains */
+      target_domains: components["schemas"]["EntityType"][];
     };
-    /** ValidationError */
-    ValidationError: {
-      /** Location */
-      loc: (string | number)[];
+    /**
+     * CuratorMode
+     * @enum {string}
+     */
+    CuratorMode: "genuine_agent" | "deterministic_qloo" | "fixture";
+    /** DiscoveriesPublic */
+    DiscoveriesPublic: {
+      /**
+       * Discoveries
+       * @default []
+       */
+      discoveries: components["schemas"]["DiscoveryPublic"][];
+    };
+    /** DiscoveryCreateRequest */
+    DiscoveryCreateRequest: {
+      /**
+       * Entity Id
+       * Format: uuid
+       */
+      entity_id: string;
+    };
+    /** DiscoveryPublic */
+    DiscoveryPublic: {
+      entity: components["schemas"]["EntityPublic"];
+      /**
+       * Expires At
+       * Format: date-time
+       */
+      expires_at: string;
+      /**
+       * Saved At
+       * Format: date-time
+       */
+      saved_at: string;
+    };
+    /** EntityPublic */
+    EntityPublic: {
+      artwork?: components["schemas"]["ArtworkPublic"] | null;
+      /** Disambiguation */
+      disambiguation?: string | null;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      source: components["schemas"]["RankingSource"];
+      type: components["schemas"]["EntityType"];
+    };
+    /** EntitySearchPublic */
+    EntitySearchPublic: {
       /** Message */
-      msg: string;
-      /** Error Type */
-      type: string;
-      /** Input */
-      input?: unknown;
-      /** Context */
-      ctx?: Record<string, never>;
+      message?: string | null;
+      /**
+       * Results
+       * @default []
+       */
+      results: components["schemas"]["EntityPublic"][];
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: "ok" | "empty" | "needs_input" | "partial" | "unavailable";
     };
-    /** Window */
-    Window: {
+    /**
+     * EntityType
+     * @enum {string}
+     */
+    EntityType: "artist" | "movie";
+    /** ErrorEnvelope */
+    ErrorEnvelope: {
+      error: components["schemas"]["ErrorPublic"];
+    };
+    /** ErrorPublic */
+    ErrorPublic: {
+      /** Code */
+      code: string;
       /**
-       * Starts At
+       * Field Errors
+       * @default []
+       */
+      field_errors: components["schemas"]["FieldErrorPublic"][];
+      /** Message */
+      message: string;
+      /**
+       * Request Id
+       * Format: uuid
+       */
+      request_id: string;
+      /** Retry After Seconds */
+      retry_after_seconds?: number | null;
+      /** Retryable */
+      retryable: boolean;
+    };
+    /** FieldErrorPublic */
+    FieldErrorPublic: {
+      /** Loc */
+      loc: (string | number)[];
+      /** Type */
+      type: string;
+    };
+    /** GameGenerationPendingPublic */
+    GameGenerationPendingPublic: {
+      /**
+       * Game Id
+       * Format: uuid
+       */
+      game_id: string;
+      /**
+       * Lease Expires At
        * Format: date-time
        */
-      starts_at: string;
+      lease_expires_at: string;
+      /** Retry After Seconds */
+      retry_after_seconds: number;
       /**
-       * Ends At
+       * Status
+       * @default generation_in_progress
+       * @constant
+       */
+      status: "generation_in_progress";
+    };
+    /**
+     * GameMode
+     * @enum {string}
+     */
+    GameMode: "solo" | "fixed";
+    /**
+     * GamePhase
+     * @enum {string}
+     */
+    GamePhase:
+      | "preparing"
+      | "ready"
+      | "playing"
+      | "completed"
+      | "expired"
+      | "cancelled";
+    /** GamePublic */
+    GamePublic: {
+      /** Answered Count */
+      answered_count: number;
+      curator_mode: components["schemas"]["CuratorMode"];
+      /** Current Ordinal */
+      current_ordinal: number;
+      /** Current Round */
+      current_round?:
+        | (
+            | components["schemas"]["PlayableRoundPublic"]
+            | components["schemas"]["RevealedRoundPublic"]
+          )
+        | null;
+      /**
+       * Expires At
        * Format: date-time
        */
-      ends_at: string;
-      /** Time Zone */
-      time_zone: string;
+      expires_at: string;
+      /**
+       * Game Id
+       * Format: uuid
+       */
+      game_id: string;
+      mode: components["schemas"]["GameMode"];
+      phase: components["schemas"]["GamePhase"];
+      /** Revision */
+      revision: number;
+      /** Score */
+      score: number;
+      seed: components["schemas"]["EntityPublic"];
+      source: components["schemas"]["RankingSource"];
+      /**
+       * Total
+       * @default 5
+       * @constant
+       */
+      total: 5;
+    };
+    /** GameResultPublic */
+    GameResultPublic: {
+      /** Answered Rounds */
+      answered_rounds: [
+        components["schemas"]["RevealedRoundPublic"],
+        components["schemas"]["RevealedRoundPublic"],
+        components["schemas"]["RevealedRoundPublic"],
+        components["schemas"]["RevealedRoundPublic"],
+        components["schemas"]["RevealedRoundPublic"],
+      ];
+      curator_mode: components["schemas"]["CuratorMode"];
+      /**
+       * Discoveries
+       * @default []
+       */
+      discoveries: components["schemas"]["DiscoveryPublic"][];
+      /**
+       * Expires At
+       * Format: date-time
+       */
+      expires_at: string;
+      /**
+       * Game Id
+       * Format: uuid
+       */
+      game_id: string;
+      /**
+       * Phase
+       * @default completed
+       * @constant
+       */
+      phase: "completed";
+      /** Score */
+      score: number;
+      source: components["schemas"]["RankingSource"];
+      /**
+       * Total
+       * @default 5
+       * @constant
+       */
+      total: 5;
+    };
+    /** HealthPublic */
+    HealthPublic: {
+      /**
+       * Component
+       * @default api
+       * @constant
+       */
+      component: "api";
+      /**
+       * Generation Available
+       * @default false
+       */
+      generation_available: boolean;
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: "ok" | "unavailable";
+    };
+    /** PlayableRoundPublic */
+    PlayableRoundPublic: {
+      /** Choices */
+      choices: [
+        components["schemas"]["ChoicePublic"],
+        components["schemas"]["ChoicePublic"],
+      ];
+      /**
+       * Game Id
+       * Format: uuid
+       */
+      game_id: string;
+      /** Ordinal */
+      ordinal: number;
+      /** Question */
+      question: string;
+      /** Revision */
+      revision: number;
+      /**
+       * Round Id
+       * Format: uuid
+       */
+      round_id: string;
+      seed: components["schemas"]["EntityPublic"];
+      source: components["schemas"]["RankingSource"];
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      state: "unanswered";
+      target_type: components["schemas"]["EntityType"];
+      /**
+       * Total
+       * @default 5
+       * @constant
+       */
+      total: 5;
+    };
+    /** RankingContextPublic */
+    RankingContextPublic: {
+      /**
+       * Retrieved At
+       * Format: date-time
+       */
+      retrieved_at: string;
+      seed: components["schemas"]["EntityPublic"];
+      target_type: components["schemas"]["EntityType"];
+    };
+    /**
+     * RankingSource
+     * @enum {string}
+     */
+    RankingSource: "qloo" | "fixture";
+    /**
+     * RejectionReason
+     * @enum {string}
+     */
+    RejectionReason:
+      | "invalid_identity"
+      | "wrong_type"
+      | "self_pair"
+      | "duplicate_entity"
+      | "missing_score"
+      | "nonfinite_score"
+      | "score_tie"
+      | "near_tie"
+      | "contradictory_order"
+      | "insufficient_metadata"
+      | "unsupported_rights";
+    /** RevealedEvidencePublic */
+    RevealedEvidencePublic: {
+      context: components["schemas"]["RankingContextPublic"];
+      source: components["schemas"]["RankingSource"];
+      supported_explanation?:
+        | components["schemas"]["SupportedExplanationPublic"]
+        | null;
+    };
+    /** RevealedRoundPublic */
+    RevealedRoundPublic: {
+      /**
+       * Accepted At
+       * Format: date-time
+       */
+      accepted_at: string;
+      /** Choices */
+      choices: [
+        components["schemas"]["ChoicePublic"],
+        components["schemas"]["ChoicePublic"],
+      ];
+      /** Correct */
+      correct: boolean;
+      /** Cumulative Score */
+      cumulative_score: number;
+      curation_summary?: components["schemas"]["CurationSummaryPublic"] | null;
+      evidence?: components["schemas"]["RevealedEvidencePublic"] | null;
+      /**
+       * Game Id
+       * Format: uuid
+       */
+      game_id: string;
+      /** Ordinal */
+      ordinal: number;
+      /** Revision */
+      revision: number;
+      /**
+       * Round Id
+       * Format: uuid
+       */
+      round_id: string;
+      seed: components["schemas"]["EntityPublic"];
+      /**
+       * Selected Choice Id
+       * Format: uuid
+       */
+      selected_choice_id: string;
+      source: components["schemas"]["RankingSource"];
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      state: "revealed";
+      target_type: components["schemas"]["EntityType"];
+      /**
+       * Total
+       * @default 5
+       * @constant
+       */
+      total: 5;
+      /**
+       * Winning Choice Id
+       * Format: uuid
+       */
+      winning_choice_id: string;
+    };
+    /** SessionCreateRequest */
+    SessionCreateRequest: Record<string, never>;
+    /** SessionPublic */
+    SessionPublic: {
+      /** Active */
+      active: boolean;
+      /**
+       * Expires At
+       * Format: date-time
+       */
+      expires_at: string;
+      /**
+       * Resumable Game Ids
+       * @default []
+       */
+      resumable_game_ids: string[];
+    };
+    /** SupportedExplanationPublic */
+    SupportedExplanationPublic: {
+      /** Attribution */
+      attribution: string;
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: "provider_returned" | "factual_template" | "synthetic";
+      /** Text */
+      text: string;
     };
   };
   responses: never;
@@ -778,509 +814,137 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  create_session_v1_sessions_post: {
+  createChallenge: {
     parameters: {
       query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": unknown;
-        };
+      header: {
+        "Idempotency-Key": string;
       };
-    };
-  };
-  current_session_v1_sessions_current_get: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  clear_session_v1_sessions_current_delete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  cities_v1_cities_get: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["City"][];
-        };
-      };
-    };
-  };
-  providers_v1_providers_get: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  places_v1_places_get: {
-    parameters: {
-      query: {
-        city_id: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["Place"][];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  osm_v1_cities__city_id__discover_get: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        city_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  evidence_v1_evidence__evidence_id__get: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        evidence_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["Evidence"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  interpret_v1_intent_post: {
-    parameters: {
-      query?: never;
-      header?: never;
       path?: never;
       cookie?: never;
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["IntentInput"];
+        "application/json": components["schemas"]["ChallengeCreateRequest"];
       };
     };
     responses: {
-      /** @description Successful Response */
+      /** @description OK */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          "application/json": unknown;
+          "application/json": components["schemas"]["ChallengeCreatedPublic"];
         };
       };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  list_plans_v1_plans_get: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  new_plan_v1_plans_post: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PlanInput"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  replan_v1_plans__plan_id__replan_post: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        plan_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ReplanInput"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  get_plan_v1_plans__plan_id__get: {
-    parameters: {
-      query?: {
-        version?: number | null;
-      };
-      header?: never;
-      path: {
-        plan_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json":
-            | components["schemas"]["PlanSnapshot"]
-            | components["schemas"]["PendingPlan"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  impact_v1_plans__plan_id__impact_get: {
-    parameters: {
-      query?: {
-        version?: number | null;
-      };
-      header?: never;
-      path: {
-        plan_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  cancel_v1_runs__run_id__cancel_post: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        run_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  events_v1_runs__run_id__events_get: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        run_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  list_trips_v1_trips_get: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["TripSnapshot"][];
-        };
-      };
-    };
-  };
-  create_trip_v1_trips_post: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TripInput"];
-      };
-    };
-    responses: {
       /** @description Successful Response */
       201: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          "application/json": unknown;
+          "application/json": components["schemas"]["ChallengeCreatedPublic"];
         };
       };
-      /** @description Validation Error */
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
       422: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
         };
       };
     };
   };
-  get_trip_v1_trips__trip_id__get: {
+  getChallengeInvitation: {
     parameters: {
       query?: never;
       header?: never;
       path: {
-        trip_id: string;
+        slug: string;
       };
       cookie?: never;
     };
@@ -1292,32 +956,943 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["TripSnapshot"];
+          "application/json": components["schemas"]["ChallengeInvitationPublic"];
         };
       };
-      /** @description Validation Error */
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
       422: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
         };
       };
     };
   };
-  edit_trip_v1_trips__trip_id__patch: {
+  playChallenge: {
+    parameters: {
+      query?: never;
+      header: {
+        "Idempotency-Key": string;
+      };
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GamePublic"];
+        };
+      };
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GamePublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  getDiscoveries: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DiscoveriesPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  saveDiscovery: {
+    parameters: {
+      query?: never;
+      header: {
+        "Idempotency-Key": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DiscoveryCreateRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DiscoveryPublic"];
+        };
+      };
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DiscoveryPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  removeDiscovery: {
     parameters: {
       query?: never;
       header?: never;
       path: {
-        trip_id: string;
+        entity_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  searchEntities: {
+    parameters: {
+      query: {
+        q: string;
+        type: components["schemas"]["EntityType"];
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["EntitySearchPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  createGame: {
+    parameters: {
+      query?: never;
+      header: {
+        "Idempotency-Key": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateGameRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GamePublic"];
+        };
+      };
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GamePublic"];
+        };
+      };
+      /** @description Accepted */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GameGenerationPendingPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  getGame: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        game_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GamePublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  advanceRound: {
+    parameters: {
+      query?: never;
+      header: {
+        "Idempotency-Key": string;
+      };
+      path: {
+        game_id: string;
       };
       cookie?: never;
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["TripInput"];
+        "application/json": components["schemas"]["AdvanceRequest"];
       };
     };
     responses: {
@@ -1327,21 +1902,444 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["TripSnapshot"];
+          "application/json": components["schemas"]["GamePublic"];
         };
       };
-      /** @description Validation Error */
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
       422: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
         };
       };
     };
   };
-  live_v1_health_live_get: {
+  answerRound: {
+    parameters: {
+      query?: never;
+      header: {
+        "Idempotency-Key": string;
+      };
+      path: {
+        game_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AnswerRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RevealedRoundPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  getResults: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        game_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GameResultPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  getCurrentRound: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        game_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PlayableRoundPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  liveness: {
     parameters: {
       query?: never;
       header?: never;
@@ -1356,12 +2354,102 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": unknown;
+          "application/json": components["schemas"]["HealthPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
         };
       };
     };
   };
-  ready_v1_health_ready_get: {
+  readiness: {
     parameters: {
       query?: never;
       header?: never;
@@ -1376,7 +2464,438 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": unknown;
+          "application/json": components["schemas"]["HealthPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  createSession: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SessionCreateRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SessionPublic"];
+        };
+      };
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SessionPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  getCurrentSession: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SessionPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  clearSession: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
         };
       };
     };

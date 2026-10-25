@@ -1,1497 +1,956 @@
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "AccessLife API",
-    "version": "0.1.0"
-  },
-  "paths": {
-    "/v1/sessions": {
-      "post": {
-        "summary": "Create Session",
-        "operationId": "create_session_v1_sessions_post",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/sessions/current": {
-      "get": {
-        "summary": "Current Session",
-        "operationId": "current_session_v1_sessions_current_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Clear Session",
-        "operationId": "clear_session_v1_sessions_current_delete",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/cities": {
-      "get": {
-        "summary": "Cities",
-        "operationId": "cities_v1_cities_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/City"
-                  },
-                  "type": "array",
-                  "title": "Response Cities V1 Cities Get"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/providers": {
-      "get": {
-        "summary": "Providers",
-        "operationId": "providers_v1_providers_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/places": {
-      "get": {
-        "summary": "Places",
-        "operationId": "places_v1_places_get",
-        "parameters": [
-          {
-            "name": "city_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "City Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Place"
-                  },
-                  "title": "Response Places V1 Places Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/cities/{city_id}/discover": {
-      "get": {
-        "summary": "Osm",
-        "operationId": "osm_v1_cities__city_id__discover_get",
-        "parameters": [
-          {
-            "name": "city_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "City Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/evidence/{evidence_id}": {
-      "get": {
-        "summary": "Evidence",
-        "operationId": "evidence_v1_evidence__evidence_id__get",
-        "parameters": [
-          {
-            "name": "evidence_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Evidence Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Evidence"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/intent": {
-      "post": {
-        "summary": "Interpret",
-        "operationId": "interpret_v1_intent_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/IntentInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/plans": {
-      "get": {
-        "summary": "List Plans",
-        "operationId": "list_plans_v1_plans_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "New Plan",
-        "operationId": "new_plan_v1_plans_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PlanInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "202": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/plans/{plan_id}/replan": {
-      "post": {
-        "summary": "Replan",
-        "operationId": "replan_v1_plans__plan_id__replan_post",
-        "parameters": [
-          {
-            "name": "plan_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Plan Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReplanInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/plans/{plan_id}": {
-      "get": {
-        "summary": "Get Plan",
-        "operationId": "get_plan_v1_plans__plan_id__get",
-        "parameters": [
-          {
-            "name": "plan_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Plan Id"
-            }
-          },
-          {
-            "name": "version",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Version"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/PlanSnapshot"
-                    },
-                    {
-                      "$ref": "#/components/schemas/PendingPlan"
-                    }
-                  ],
-                  "title": "Response Get Plan V1 Plans  Plan Id  Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/plans/{plan_id}/impact": {
-      "get": {
-        "summary": "Impact",
-        "operationId": "impact_v1_plans__plan_id__impact_get",
-        "parameters": [
-          {
-            "name": "plan_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Plan Id"
-            }
-          },
-          {
-            "name": "version",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Version"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/runs/{run_id}/cancel": {
-      "post": {
-        "summary": "Cancel",
-        "operationId": "cancel_v1_runs__run_id__cancel_post",
-        "parameters": [
-          {
-            "name": "run_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Run Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/runs/{run_id}/events": {
-      "get": {
-        "summary": "Events",
-        "operationId": "events_v1_runs__run_id__events_get",
-        "parameters": [
-          {
-            "name": "run_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Run Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/trips": {
-      "get": {
-        "summary": "List Trips",
-        "operationId": "list_trips_v1_trips_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/TripSnapshot"
-                  },
-                  "type": "array",
-                  "title": "Response List Trips V1 Trips Get"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create Trip",
-        "operationId": "create_trip_v1_trips_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TripInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/trips/{trip_id}": {
-      "get": {
-        "summary": "Get Trip",
-        "operationId": "get_trip_v1_trips__trip_id__get",
-        "parameters": [
-          {
-            "name": "trip_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Trip Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TripSnapshot"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "summary": "Edit Trip",
-        "operationId": "edit_trip_v1_trips__trip_id__patch",
-        "parameters": [
-          {
-            "name": "trip_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Trip Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TripInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TripSnapshot"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/health/live": {
-      "get": {
-        "summary": "Live",
-        "operationId": "live_v1_health_live_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/health/ready": {
-      "get": {
-        "summary": "Ready",
-        "operationId": "ready_v1_health_ready_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   "components": {
     "schemas": {
-      "City": {
+      "AdvanceRequest": {
+        "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "enum": [
-              "london",
-              "new-york",
-              "paris",
-              "berlin",
-              "chicago"
-            ],
-            "title": "Id"
+          "answered_round_id": {
+            "format": "uuid",
+            "title": "Answered Round Id",
+            "type": "string"
           },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "time_zone": {
-            "type": "string",
-            "title": "Time Zone"
-          },
-          "latitude": {
-            "type": "number",
-            "title": "Latitude"
-          },
-          "longitude": {
-            "type": "number",
-            "title": "Longitude"
-          },
-          "district": {
-            "type": "string",
-            "title": "District"
-          },
-          "coverage": {
-            "type": "string",
-            "title": "Coverage",
-            "default": "limited"
-          },
-          "limitation": {
-            "type": "string",
-            "title": "Limitation",
-            "default": "Curated venue evidence; door-to-door wheelchair routes are not verified."
+          "expected_revision": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Expected Revision",
+            "type": "integer"
           }
         },
-        "type": "object",
         "required": [
-          "id",
-          "name",
-          "time_zone",
-          "latitude",
-          "longitude",
-          "district"
+          "answered_round_id",
+          "expected_revision"
         ],
-        "title": "City"
+        "title": "AdvanceRequest",
+        "type": "object"
       },
-      "EligiblePlace": {
+      "AnswerRequest": {
+        "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id"
+          "choice_id": {
+            "format": "uuid",
+            "title": "Choice Id",
+            "type": "string"
           },
-          "city_id": {
-            "type": "string",
-            "enum": [
-              "london",
-              "new-york",
-              "paris",
-              "berlin",
-              "chicago"
-            ],
-            "title": "City Id"
+          "expected_revision": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Expected Revision",
+            "type": "integer"
           },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "category": {
-            "type": "string",
-            "title": "Category"
-          },
-          "latitude": {
-            "type": "number",
-            "title": "Latitude"
-          },
-          "longitude": {
-            "type": "number",
-            "title": "Longitude"
-          },
-          "interests": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Interests"
-          },
-          "description": {
-            "type": "string",
-            "title": "Description"
-          },
-          "facts": {
-            "items": {
-              "$ref": "#/components/schemas/Fact"
-            },
-            "type": "array",
-            "title": "Facts"
-          },
-          "source_url": {
-            "type": "string",
-            "title": "Source Url"
-          },
-          "issues": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Issues"
-          },
-          "venue_eligible": {
-            "type": "boolean",
-            "title": "Venue Eligible"
+          "round_id": {
+            "format": "uuid",
+            "title": "Round Id",
+            "type": "string"
           }
         },
-        "type": "object",
         "required": [
-          "id",
-          "city_id",
-          "name",
-          "category",
-          "latitude",
-          "longitude",
-          "interests",
-          "description",
-          "facts",
-          "source_url",
-          "venue_eligible"
+          "round_id",
+          "choice_id",
+          "expected_revision"
         ],
-        "title": "EligiblePlace"
+        "title": "AnswerRequest",
+        "type": "object"
       },
-      "EnvironmentResult": {
+      "ArtworkPublic": {
+        "additionalProperties": false,
         "properties": {
-          "weather": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Weather"
+          "asset_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,99}$",
+            "title": "Asset Id",
+            "type": "string"
           },
-          "transport": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Transport"
-          },
-          "knowledge": {
-            "$ref": "#/components/schemas/KnowledgeResult"
-          }
-        },
-        "type": "object",
-        "required": [
-          "weather",
-          "transport",
-          "knowledge"
-        ],
-        "title": "EnvironmentResult"
-      },
-      "Evidence": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id"
-          },
-          "source_url": {
-            "type": "string",
-            "title": "Source Url"
-          },
-          "title": {
-            "type": "string",
-            "title": "Title"
-          },
-          "source_type": {
-            "type": "string",
-            "title": "Source Type",
-            "default": "official_venue"
-          },
-          "claim": {
-            "type": "string",
-            "title": "Claim"
-          },
-          "retrieved_at": {
-            "type": "string",
-            "title": "Retrieved At"
-          },
-          "source_updated_at": {
+          "attribution": {
             "anyOf": [
               {
+                "maxLength": 200,
+                "minLength": 1,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Source Updated At"
-          },
-          "rights": {
-            "type": "string",
-            "title": "Rights",
-            "default": "Original factual summary; linked source retains its own copyright."
-          },
-          "transformation_version": {
-            "type": "string",
-            "title": "Transformation Version",
-            "default": "manual-summary-v1"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "source_url",
-          "title",
-          "claim",
-          "retrieved_at"
-        ],
-        "title": "Evidence"
-      },
-      "ExplanationResult": {
-        "properties": {
-          "summary": {
-            "type": "string",
-            "title": "Summary"
-          },
-          "provider": {
-            "type": "string",
-            "title": "Provider"
-          },
-          "error": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Error"
-          }
-        },
-        "type": "object",
-        "required": [
-          "summary",
-          "provider"
-        ],
-        "title": "ExplanationResult"
-      },
-      "Fact": {
-        "properties": {
-          "feature": {
-            "type": "string",
-            "title": "Feature"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "confirmed",
-              "limited",
-              "inaccessible",
-              "unknown"
-            ],
-            "title": "Status",
-            "default": "unknown"
-          },
-          "evidence_ids": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Evidence Ids"
-          },
-          "conflict": {
-            "type": "boolean",
-            "title": "Conflict",
-            "default": false
-          },
-          "stale": {
-            "type": "boolean",
-            "title": "Stale",
-            "default": false
-          },
-          "conditions": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Conditions"
-          }
-        },
-        "type": "object",
-        "required": [
-          "feature"
-        ],
-        "title": "Fact"
-      },
-      "HTTPValidationError": {
-        "properties": {
-          "detail": {
-            "items": {
-              "$ref": "#/components/schemas/ValidationError"
-            },
-            "type": "array",
-            "title": "Detail"
-          }
-        },
-        "type": "object",
-        "title": "HTTPValidationError"
-      },
-      "IntentInput": {
-        "properties": {
-          "text": {
-            "type": "string",
-            "maxLength": 1200,
-            "minLength": 1,
-            "title": "Text"
-          }
-        },
-        "type": "object",
-        "required": [
-          "text"
-        ],
-        "title": "IntentInput"
-      },
-      "Interest": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "maxLength": 80,
-            "minLength": 1,
-            "title": "Name"
+            "title": "Attribution"
           },
           "kind": {
-            "type": "string",
-            "maxLength": 40,
+            "enum": [
+              "owned_fallback",
+              "licensed"
+            ],
             "title": "Kind",
-            "default": "culture"
+            "type": "string"
           }
         },
-        "type": "object",
         "required": [
-          "name"
+          "kind",
+          "asset_id"
         ],
-        "title": "Interest"
+        "title": "ArtworkPublic",
+        "type": "object"
       },
-      "KnowledgeResult": {
+      "ChallengeCreateRequest": {
+        "additionalProperties": false,
         "properties": {
-          "status": {
-            "type": "string",
-            "title": "Status"
-          },
-          "passages": {
-            "items": {
-              "$ref": "#/components/schemas/Passage"
-            },
-            "type": "array",
-            "title": "Passages"
+          "game_id": {
+            "format": "uuid",
+            "title": "Game Id",
+            "type": "string"
           }
         },
-        "type": "object",
         "required": [
-          "status",
-          "passages"
+          "game_id"
         ],
-        "title": "KnowledgeResult"
+        "title": "ChallengeCreateRequest",
+        "type": "object"
       },
-      "Leg": {
+      "ChallengeCreatedPublic": {
+        "additionalProperties": false,
         "properties": {
-          "from_id": {
-            "type": "string",
-            "title": "From Id"
+          "invitation": {
+            "$ref": "#/components/schemas/ChallengeInvitationPublic"
           },
-          "to_id": {
-            "type": "string",
-            "title": "To Id"
-          },
-          "status": {
-            "type": "string",
-            "const": "unknown",
-            "title": "Status"
-          },
-          "distance_m": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Distance M"
-          },
-          "distance_lower_bound_m": {
-            "type": "integer",
-            "title": "Distance Lower Bound M"
-          },
-          "duration_seconds": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Duration Seconds"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message"
+          "share_path": {
+            "pattern": "^/c/[A-Za-z0-9_-]{22,80}$",
+            "title": "Share Path",
+            "type": "string"
           }
         },
-        "type": "object",
         "required": [
-          "from_id",
-          "to_id",
-          "status",
-          "distance_lower_bound_m",
-          "message"
+          "invitation",
+          "share_path"
         ],
-        "title": "Leg"
+        "title": "ChallengeCreatedPublic",
+        "type": "object"
       },
-      "Mobility": {
+      "ChallengeInvitationPublic": {
+        "additionalProperties": false,
         "properties": {
-          "required_features": {
-            "items": {
-              "type": "string",
-              "enum": [
-                "step_free_entrance",
-                "accessible_toilet",
-                "lift"
-              ]
-            },
-            "type": "array",
-            "title": "Required Features"
-          },
-          "accepted_limitations": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Accepted Limitations"
-          },
-          "max_leg_distance_m": {
-            "type": "integer",
-            "maximum": 10000.0,
-            "minimum": 0.0,
-            "title": "Max Leg Distance M",
-            "default": 500
-          },
-          "max_total_distance_m": {
-            "type": "integer",
-            "maximum": 50000.0,
-            "minimum": 0.0,
-            "title": "Max Total Distance M",
-            "default": 2000
-          },
-          "rest_every_minutes": {
-            "type": "integer",
-            "maximum": 180.0,
-            "minimum": 10.0,
-            "title": "Rest Every Minutes",
-            "default": 45
-          },
-          "max_transfers": {
-            "type": "integer",
+          "creator_score": {
             "maximum": 5.0,
             "minimum": 0.0,
-            "title": "Max Transfers",
-            "default": 1
+            "title": "Creator Score",
+            "type": "integer"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "seed": {
+            "$ref": "#/components/schemas/EntityPublic"
+          },
+          "slug": {
+            "pattern": "^[A-Za-z0-9_-]{22,80}$",
+            "title": "Slug",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/RankingSource"
+          },
+          "total": {
+            "const": 5,
+            "default": 5,
+            "title": "Total",
+            "type": "integer"
           }
         },
-        "type": "object",
-        "title": "Mobility"
+        "required": [
+          "slug",
+          "seed",
+          "creator_score",
+          "source",
+          "expires_at"
+        ],
+        "title": "ChallengeInvitationPublic",
+        "type": "object"
       },
-      "Passage": {
+      "ChoicePublic": {
+        "additionalProperties": false,
+        "description": "An opaque delivered choice, distinct from its searchable entity ID.",
         "properties": {
+          "entity": {
+            "$ref": "#/components/schemas/EntityPublic"
+          },
           "id": {
-            "type": "string",
-            "title": "Id"
-          },
-          "text": {
-            "type": "string",
-            "title": "Text"
-          },
-          "source_title": {
-            "type": "string",
-            "title": "Source Title"
-          },
-          "source_url": {
-            "type": "string",
-            "title": "Source Url"
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
           }
         },
-        "type": "object",
         "required": [
           "id",
-          "text",
-          "source_title",
-          "source_url"
+          "entity"
         ],
-        "title": "Passage"
+        "title": "ChoicePublic",
+        "type": "object"
       },
-      "PendingPlan": {
+      "CreateGameRequest": {
+        "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id"
+          "mode": {
+            "const": "solo",
+            "default": "solo",
+            "title": "Mode",
+            "type": "string"
           },
-          "version": {
-            "type": "integer",
-            "const": 0,
-            "title": "Version"
+          "seed_entity_id": {
+            "format": "uuid",
+            "title": "Seed Entity Id",
+            "type": "string"
+          },
+          "seed_type": {
+            "$ref": "#/components/schemas/EntityType"
+          }
+        },
+        "required": [
+          "seed_entity_id",
+          "seed_type"
+        ],
+        "title": "CreateGameRequest",
+        "type": "object"
+      },
+      "CurationSummaryPublic": {
+        "additionalProperties": false,
+        "properties": {
+          "bounded_correction_count": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Bounded Correction Count",
+            "type": "integer"
+          },
+          "candidate_count_received": {
+            "maximum": 1000.0,
+            "minimum": 0.0,
+            "title": "Candidate Count Received",
+            "type": "integer"
+          },
+          "curator_mode": {
+            "$ref": "#/components/schemas/CuratorMode"
+          },
+          "five_round_path_verified": {
+            "title": "Five Round Path Verified",
+            "type": "boolean"
+          },
+          "rejection_counts": {
+            "additionalProperties": {
+              "maximum": 1000.0,
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/RejectionReason"
+            },
+            "title": "Rejection Counts",
+            "type": "object"
+          },
+          "source": {
+            "$ref": "#/components/schemas/RankingSource"
           },
           "status": {
-            "type": "string",
-            "const": "pending",
-            "title": "Status"
+            "const": "succeeded",
+            "default": "succeeded",
+            "title": "Status",
+            "type": "string"
+          },
+          "target_domains": {
+            "items": {
+              "$ref": "#/components/schemas/EntityType"
+            },
+            "maxItems": 2,
+            "minItems": 1,
+            "title": "Target Domains",
+            "type": "array"
           }
         },
-        "type": "object",
         "required": [
-          "id",
-          "version",
-          "status"
+          "curator_mode",
+          "source",
+          "target_domains",
+          "candidate_count_received",
+          "rejection_counts",
+          "bounded_correction_count",
+          "five_round_path_verified"
         ],
-        "title": "PendingPlan"
+        "title": "CurationSummaryPublic",
+        "type": "object"
       },
-      "Place": {
+      "CuratorMode": {
+        "enum": [
+          "genuine_agent",
+          "deterministic_qloo",
+          "fixture"
+        ],
+        "title": "CuratorMode",
+        "type": "string"
+      },
+      "DiscoveriesPublic": {
+        "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id"
+          "discoveries": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DiscoveryPublic"
+            },
+            "maxItems": 100,
+            "title": "Discoveries",
+            "type": "array"
+          }
+        },
+        "title": "DiscoveriesPublic",
+        "type": "object"
+      },
+      "DiscoveryCreateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "entity_id": {
+            "format": "uuid",
+            "title": "Entity Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_id"
+        ],
+        "title": "DiscoveryCreateRequest",
+        "type": "object"
+      },
+      "DiscoveryPublic": {
+        "additionalProperties": false,
+        "properties": {
+          "entity": {
+            "$ref": "#/components/schemas/EntityPublic"
           },
-          "city_id": {
-            "type": "string",
-            "enum": [
-              "london",
-              "new-york",
-              "paris",
-              "berlin",
-              "chicago"
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "saved_at": {
+            "format": "date-time",
+            "title": "Saved At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity",
+          "saved_at",
+          "expires_at"
+        ],
+        "title": "DiscoveryPublic",
+        "type": "object"
+      },
+      "EntityPublic": {
+        "additionalProperties": false,
+        "properties": {
+          "artwork": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ArtworkPublic"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "disambiguation": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
             ],
-            "title": "City Id"
+            "title": "Disambiguation"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
           },
           "name": {
-            "type": "string",
-            "title": "Name"
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
           },
-          "category": {
-            "type": "string",
-            "title": "Category"
+          "source": {
+            "$ref": "#/components/schemas/RankingSource"
           },
-          "latitude": {
-            "type": "number",
-            "title": "Latitude"
-          },
-          "longitude": {
-            "type": "number",
-            "title": "Longitude"
-          },
-          "interests": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Interests"
-          },
-          "description": {
-            "type": "string",
-            "title": "Description"
-          },
-          "facts": {
-            "items": {
-              "$ref": "#/components/schemas/Fact"
-            },
-            "type": "array",
-            "title": "Facts"
-          },
-          "source_url": {
-            "type": "string",
-            "title": "Source Url"
+          "type": {
+            "$ref": "#/components/schemas/EntityType"
           }
         },
-        "type": "object",
         "required": [
           "id",
-          "city_id",
           "name",
-          "category",
-          "latitude",
-          "longitude",
-          "interests",
-          "description",
-          "facts",
-          "source_url"
+          "type",
+          "source"
         ],
-        "title": "Place"
+        "title": "EntityPublic",
+        "type": "object"
       },
-      "PlanDiff": {
+      "EntitySearchPublic": {
+        "additionalProperties": false,
         "properties": {
-          "from_version": {
-            "type": "integer",
-            "title": "From Version"
-          },
-          "removed": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Removed"
-          },
-          "added": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Added"
-          }
-        },
-        "type": "object",
-        "required": [
-          "from_version",
-          "removed",
-          "added"
-        ],
-        "title": "PlanDiff"
-      },
-      "PlanInput": {
-        "properties": {
-          "city_id": {
-            "type": "string",
-            "enum": [
-              "london",
-              "new-york",
-              "paris",
-              "berlin",
-              "chicago"
-            ],
-            "title": "City Id"
-          },
-          "window": {
-            "$ref": "#/components/schemas/Window"
-          },
-          "mobility": {
-            "$ref": "#/components/schemas/Mobility"
-          },
-          "interests": {
-            "items": {
-              "$ref": "#/components/schemas/Interest"
-            },
-            "type": "array",
-            "maxItems": 12,
-            "title": "Interests"
-          },
-          "intent": {
-            "type": "string",
-            "maxLength": 1200,
-            "title": "Intent",
-            "default": ""
-          },
-          "trip_id": {
+          "message": {
             "anyOf": [
               {
+                "maxLength": 600,
+                "minLength": 1,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Trip Id"
+            "title": "Message"
           },
-          "segment_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Segment Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "city_id",
-          "window"
-        ],
-        "title": "PlanInput"
-      },
-      "PlanSnapshot": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id"
-          },
-          "version": {
-            "type": "integer",
-            "title": "Version"
-          },
-          "inputs": {
-            "$ref": "#/components/schemas/PlanInput"
+          "results": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EntityPublic"
+            },
+            "maxItems": 20,
+            "title": "Results",
+            "type": "array"
           },
           "status": {
-            "type": "string",
-            "title": "Status"
+            "enum": [
+              "ok",
+              "empty",
+              "needs_input",
+              "partial",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "EntitySearchPublic",
+        "type": "object"
+      },
+      "EntityType": {
+        "enum": [
+          "artist",
+          "movie"
+        ],
+        "title": "EntityType",
+        "type": "string"
+      },
+      "ErrorEnvelope": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorPublic"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorEnvelope",
+        "type": "object"
+      },
+      "ErrorPublic": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^[A-Z][A-Z0-9_]{0,63}$",
+            "title": "Code",
+            "type": "string"
           },
-          "confirmed": {
-            "type": "boolean",
-            "title": "Confirmed"
-          },
-          "stops": {
+          "field_errors": {
+            "default": [],
             "items": {
-              "$ref": "#/components/schemas/Stop"
+              "$ref": "#/components/schemas/FieldErrorPublic"
             },
-            "type": "array",
-            "title": "Stops"
+            "maxItems": 16,
+            "title": "Field Errors",
+            "type": "array"
           },
-          "legs": {
-            "items": {
-              "$ref": "#/components/schemas/Leg"
-            },
-            "type": "array",
-            "title": "Legs"
+          "message": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
           },
-          "candidates": {
-            "items": {
-              "$ref": "#/components/schemas/EligiblePlace"
-            },
-            "type": "array",
-            "title": "Candidates"
+          "request_id": {
+            "format": "uuid",
+            "title": "Request Id",
+            "type": "string"
           },
-          "verification_needed": {
-            "items": {
-              "$ref": "#/components/schemas/EligiblePlace"
-            },
-            "type": "array",
-            "title": "Verification Needed"
-          },
-          "taste": {
-            "$ref": "#/components/schemas/TasteResult"
-          },
-          "baseline_order": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Baseline Order"
-          },
-          "environment": {
-            "$ref": "#/components/schemas/EnvironmentResult"
-          },
-          "explanation": {
-            "$ref": "#/components/schemas/ExplanationResult"
-          },
-          "unresolved": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Unresolved"
-          },
-          "evidence": {
-            "items": {
-              "$ref": "#/components/schemas/Evidence"
-            },
-            "type": "array",
-            "title": "Evidence"
-          },
-          "distance_lower_bound_total_m": {
-            "type": "integer",
-            "title": "Distance Lower Bound Total M"
-          },
-          "diff": {
+          "retry_after_seconds": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/PlanDiff"
+                "maximum": 3600.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retry After Seconds"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable",
+          "request_id"
+        ],
+        "title": "ErrorPublic",
+        "type": "object"
+      },
+      "FieldErrorPublic": {
+        "additionalProperties": false,
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "maximum": 10000.0,
+                  "minimum": 0.0,
+                  "type": "integer"
+                }
+              ]
+            },
+            "maxItems": 8,
+            "title": "Loc",
+            "type": "array"
+          },
+          "type": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "type"
+        ],
+        "title": "FieldErrorPublic",
+        "type": "object"
+      },
+      "GameGenerationPendingPublic": {
+        "additionalProperties": false,
+        "properties": {
+          "game_id": {
+            "format": "uuid",
+            "title": "Game Id",
+            "type": "string"
+          },
+          "lease_expires_at": {
+            "format": "date-time",
+            "title": "Lease Expires At",
+            "type": "string"
+          },
+          "retry_after_seconds": {
+            "maximum": 30.0,
+            "minimum": 1.0,
+            "title": "Retry After Seconds",
+            "type": "integer"
+          },
+          "status": {
+            "const": "generation_in_progress",
+            "default": "generation_in_progress",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "game_id",
+          "retry_after_seconds",
+          "lease_expires_at"
+        ],
+        "title": "GameGenerationPendingPublic",
+        "type": "object"
+      },
+      "GameMode": {
+        "enum": [
+          "solo",
+          "fixed"
+        ],
+        "title": "GameMode",
+        "type": "string"
+      },
+      "GamePhase": {
+        "enum": [
+          "preparing",
+          "ready",
+          "playing",
+          "completed",
+          "expired",
+          "cancelled"
+        ],
+        "title": "GamePhase",
+        "type": "string"
+      },
+      "GamePublic": {
+        "additionalProperties": false,
+        "properties": {
+          "answered_count": {
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Answered Count",
+            "type": "integer"
+          },
+          "curator_mode": {
+            "$ref": "#/components/schemas/CuratorMode"
+          },
+          "current_ordinal": {
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Current Ordinal",
+            "type": "integer"
+          },
+          "current_round": {
+            "anyOf": [
+              {
+                "discriminator": {
+                  "mapping": {
+                    "revealed": "#/components/schemas/RevealedRoundPublic",
+                    "unanswered": "#/components/schemas/PlayableRoundPublic"
+                  },
+                  "propertyName": "state"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/PlayableRoundPublic"
+                  },
+                  {
+                    "$ref": "#/components/schemas/RevealedRoundPublic"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Round"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "game_id": {
+            "format": "uuid",
+            "title": "Game Id",
+            "type": "string"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/GameMode"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/GamePhase"
+          },
+          "revision": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "score": {
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "type": "integer"
+          },
+          "seed": {
+            "$ref": "#/components/schemas/EntityPublic"
+          },
+          "source": {
+            "$ref": "#/components/schemas/RankingSource"
+          },
+          "total": {
+            "const": 5,
+            "default": 5,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "game_id",
+          "phase",
+          "mode",
+          "revision",
+          "seed",
+          "curator_mode",
+          "source",
+          "current_ordinal",
+          "answered_count",
+          "score",
+          "expires_at"
+        ],
+        "title": "GamePublic",
+        "type": "object"
+      },
+      "GameResultPublic": {
+        "additionalProperties": false,
+        "properties": {
+          "answered_rounds": {
+            "maxItems": 5,
+            "minItems": 5,
+            "prefixItems": [
+              {
+                "$ref": "#/components/schemas/RevealedRoundPublic"
+              },
+              {
+                "$ref": "#/components/schemas/RevealedRoundPublic"
+              },
+              {
+                "$ref": "#/components/schemas/RevealedRoundPublic"
+              },
+              {
+                "$ref": "#/components/schemas/RevealedRoundPublic"
+              },
+              {
+                "$ref": "#/components/schemas/RevealedRoundPublic"
+              }
+            ],
+            "title": "Answered Rounds",
+            "type": "array"
+          },
+          "curator_mode": {
+            "$ref": "#/components/schemas/CuratorMode"
+          },
+          "discoveries": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DiscoveryPublic"
+            },
+            "maxItems": 100,
+            "title": "Discoveries",
+            "type": "array"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "game_id": {
+            "format": "uuid",
+            "title": "Game Id",
+            "type": "string"
+          },
+          "phase": {
+            "const": "completed",
+            "default": "completed",
+            "title": "Phase",
+            "type": "string"
+          },
+          "score": {
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "type": "integer"
+          },
+          "source": {
+            "$ref": "#/components/schemas/RankingSource"
+          },
+          "total": {
+            "const": 5,
+            "default": 5,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "game_id",
+          "score",
+          "source",
+          "curator_mode",
+          "answered_rounds",
+          "expires_at"
+        ],
+        "title": "GameResultPublic",
+        "type": "object"
+      },
+      "HealthPublic": {
+        "additionalProperties": false,
+        "properties": {
+          "component": {
+            "const": "api",
+            "default": "api",
+            "title": "Component",
+            "type": "string"
+          },
+          "generation_available": {
+            "default": false,
+            "title": "Generation Available",
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "HealthPublic",
+        "type": "object"
+      },
+      "PlayableRoundPublic": {
+        "additionalProperties": false,
+        "properties": {
+          "choices": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "$ref": "#/components/schemas/ChoicePublic"
+              },
+              {
+                "$ref": "#/components/schemas/ChoicePublic"
+              }
+            ],
+            "title": "Choices",
+            "type": "array"
+          },
+          "game_id": {
+            "format": "uuid",
+            "title": "Game Id",
+            "type": "string"
+          },
+          "ordinal": {
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "question": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Question",
+            "type": "string"
+          },
+          "revision": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "round_id": {
+            "format": "uuid",
+            "title": "Round Id",
+            "type": "string"
+          },
+          "seed": {
+            "$ref": "#/components/schemas/EntityPublic"
+          },
+          "source": {
+            "$ref": "#/components/schemas/RankingSource"
+          },
+          "state": {
+            "const": "unanswered",
+            "default": "unanswered",
+            "title": "State",
+            "type": "string"
+          },
+          "target_type": {
+            "$ref": "#/components/schemas/EntityType"
+          },
+          "total": {
+            "const": 5,
+            "default": 5,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "game_id",
+          "round_id",
+          "ordinal",
+          "revision",
+          "seed",
+          "target_type",
+          "question",
+          "choices",
+          "source"
+        ],
+        "title": "PlayableRoundPublic",
+        "type": "object"
+      },
+      "RankingContextPublic": {
+        "additionalProperties": false,
+        "properties": {
+          "retrieved_at": {
+            "format": "date-time",
+            "title": "Retrieved At",
+            "type": "string"
+          },
+          "seed": {
+            "$ref": "#/components/schemas/EntityPublic"
+          },
+          "target_type": {
+            "$ref": "#/components/schemas/EntityType"
+          }
+        },
+        "required": [
+          "seed",
+          "target_type",
+          "retrieved_at"
+        ],
+        "title": "RankingContextPublic",
+        "type": "object"
+      },
+      "RankingSource": {
+        "enum": [
+          "qloo",
+          "fixture"
+        ],
+        "title": "RankingSource",
+        "type": "string"
+      },
+      "RejectionReason": {
+        "enum": [
+          "invalid_identity",
+          "wrong_type",
+          "self_pair",
+          "duplicate_entity",
+          "missing_score",
+          "nonfinite_score",
+          "score_tie",
+          "near_tie",
+          "contradictory_order",
+          "insufficient_metadata",
+          "unsupported_rights"
+        ],
+        "title": "RejectionReason",
+        "type": "string"
+      },
+      "RevealedEvidencePublic": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/RankingContextPublic"
+          },
+          "source": {
+            "$ref": "#/components/schemas/RankingSource"
+          },
+          "supported_explanation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SupportedExplanationPublic"
               },
               {
                 "type": "null"
@@ -1499,356 +958,2661 @@
             ]
           }
         },
-        "type": "object",
         "required": [
-          "id",
-          "version",
-          "inputs",
-          "status",
-          "confirmed",
-          "stops",
-          "legs",
-          "candidates",
-          "verification_needed",
-          "taste",
-          "baseline_order",
-          "environment",
-          "explanation",
-          "unresolved",
-          "evidence",
-          "distance_lower_bound_total_m"
+          "source",
+          "context"
         ],
-        "title": "PlanSnapshot"
+        "title": "RevealedEvidencePublic",
+        "type": "object"
       },
-      "ReplanInput": {
+      "RevealedRoundPublic": {
+        "additionalProperties": false,
         "properties": {
-          "expected_version": {
-            "type": "integer",
+          "accepted_at": {
+            "format": "date-time",
+            "title": "Accepted At",
+            "type": "string"
+          },
+          "choices": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "$ref": "#/components/schemas/ChoicePublic"
+              },
+              {
+                "$ref": "#/components/schemas/ChoicePublic"
+              }
+            ],
+            "title": "Choices",
+            "type": "array"
+          },
+          "correct": {
+            "title": "Correct",
+            "type": "boolean"
+          },
+          "cumulative_score": {
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Cumulative Score",
+            "type": "integer"
+          },
+          "curation_summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CurationSummaryPublic"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RevealedEvidencePublic"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "game_id": {
+            "format": "uuid",
+            "title": "Game Id",
+            "type": "string"
+          },
+          "ordinal": {
+            "maximum": 5.0,
             "minimum": 1.0,
-            "title": "Expected Version"
-          },
-          "inputs": {
-            "$ref": "#/components/schemas/PlanInput"
-          }
-        },
-        "type": "object",
-        "required": [
-          "expected_version",
-          "inputs"
-        ],
-        "title": "ReplanInput"
-      },
-      "Stop": {
-        "properties": {
-          "place": {
-            "$ref": "#/components/schemas/Place"
-          },
-          "status": {
-            "type": "string",
-            "const": "provisional",
-            "title": "Status"
-          },
-          "suggested_visit_minutes": {
-            "type": "integer",
-            "title": "Suggested Visit Minutes"
-          },
-          "rest_every_minutes": {
-            "type": "integer",
-            "title": "Rest Every Minutes"
-          },
-          "opening_hours_status": {
-            "type": "string",
-            "const": "unknown",
-            "title": "Opening Hours Status"
-          }
-        },
-        "type": "object",
-        "required": [
-          "place",
-          "status",
-          "suggested_visit_minutes",
-          "rest_every_minutes",
-          "opening_hours_status"
-        ],
-        "title": "Stop"
-      },
-      "TasteResult": {
-        "properties": {
-          "provider": {
-            "type": "string",
-            "title": "Provider"
-          },
-          "label": {
-            "type": "string",
-            "title": "Label"
-          },
-          "order": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Order"
-          },
-          "matches": {
-            "additionalProperties": {
-              "items": {
-                "type": "string"
-              },
-              "type": "array"
-            },
-            "type": "object",
-            "title": "Matches"
-          },
-          "warning": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Warning"
-          },
-          "live": {
-            "type": "boolean",
-            "title": "Live"
-          },
-          "scores": {
-            "additionalProperties": {
-              "type": "number"
-            },
-            "type": "object",
-            "title": "Scores"
-          },
-          "unmapped": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Unmapped"
-          },
-          "score_semantics": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Score Semantics"
-          }
-        },
-        "type": "object",
-        "required": [
-          "provider",
-          "label",
-          "order",
-          "live"
-        ],
-        "title": "TasteResult"
-      },
-      "TripInput": {
-        "properties": {
-          "title": {
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 1,
-            "title": "Title",
-            "default": "My city collection"
-          },
-          "segments": {
-            "items": {
-              "$ref": "#/components/schemas/TripSegment"
-            },
-            "type": "array",
-            "maxItems": 12,
-            "title": "Segments"
-          },
-          "expected_revision": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Expected Revision"
-          }
-        },
-        "type": "object",
-        "title": "TripInput"
-      },
-      "TripSegment": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "maxLength": 80,
-            "minLength": 1,
-            "title": "Id"
-          },
-          "city_id": {
-            "type": "string",
-            "enum": [
-              "london",
-              "new-york",
-              "paris",
-              "berlin",
-              "chicago"
-            ],
-            "title": "City Id"
-          },
-          "date": {
-            "type": "string",
-            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-            "title": "Date"
-          },
-          "plan_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Plan Id"
-          },
-          "plan_version": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Plan Version"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "city_id",
-          "date"
-        ],
-        "title": "TripSegment"
-      },
-      "TripSnapshot": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id"
-          },
-          "title": {
-            "type": "string",
-            "title": "Title"
+            "title": "Ordinal",
+            "type": "integer"
           },
           "revision": {
-            "type": "integer",
-            "title": "Revision"
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Revision",
+            "type": "integer"
           },
-          "segments": {
-            "items": {
-              "$ref": "#/components/schemas/TripSegment"
-            },
-            "type": "array",
-            "title": "Segments"
+          "round_id": {
+            "format": "uuid",
+            "title": "Round Id",
+            "type": "string"
           },
-          "transfer_status": {
-            "type": "string",
-            "const": "user_arranged_unverified",
-            "title": "Transfer Status"
+          "seed": {
+            "$ref": "#/components/schemas/EntityPublic"
           },
-          "transfers": {
-            "items": {
-              "additionalProperties": {
-                "type": "string"
-              },
-              "type": "object"
-            },
-            "type": "array",
-            "title": "Transfers"
+          "selected_choice_id": {
+            "format": "uuid",
+            "title": "Selected Choice Id",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/RankingSource"
+          },
+          "state": {
+            "const": "revealed",
+            "default": "revealed",
+            "title": "State",
+            "type": "string"
+          },
+          "target_type": {
+            "$ref": "#/components/schemas/EntityType"
+          },
+          "total": {
+            "const": 5,
+            "default": 5,
+            "title": "Total",
+            "type": "integer"
+          },
+          "winning_choice_id": {
+            "format": "uuid",
+            "title": "Winning Choice Id",
+            "type": "string"
           }
         },
-        "type": "object",
         "required": [
-          "id",
-          "title",
+          "game_id",
+          "round_id",
+          "ordinal",
           "revision",
-          "segments",
-          "transfer_status",
-          "transfers"
+          "seed",
+          "target_type",
+          "choices",
+          "selected_choice_id",
+          "winning_choice_id",
+          "correct",
+          "cumulative_score",
+          "source",
+          "accepted_at"
         ],
-        "title": "TripSnapshot"
+        "title": "RevealedRoundPublic",
+        "type": "object"
       },
-      "ValidationError": {
+      "SessionCreateRequest": {
+        "additionalProperties": false,
+        "properties": {},
+        "title": "SessionCreateRequest",
+        "type": "object"
+      },
+      "SessionPublic": {
+        "additionalProperties": false,
         "properties": {
-          "loc": {
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "resumable_game_ids": {
+            "default": [],
             "items": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "integer"
-                }
-              ]
+              "format": "uuid",
+              "type": "string"
             },
-            "type": "array",
-            "title": "Location"
-          },
-          "msg": {
-            "type": "string",
-            "title": "Message"
-          },
-          "type": {
-            "type": "string",
-            "title": "Error Type"
-          },
-          "input": {
-            "title": "Input"
-          },
-          "ctx": {
-            "type": "object",
-            "title": "Context"
+            "maxItems": 20,
+            "title": "Resumable Game Ids",
+            "type": "array"
           }
         },
-        "type": "object",
         "required": [
-          "loc",
-          "msg",
-          "type"
+          "active",
+          "expires_at"
         ],
-        "title": "ValidationError"
+        "title": "SessionPublic",
+        "type": "object"
       },
-      "Window": {
+      "SupportedExplanationPublic": {
+        "additionalProperties": false,
         "properties": {
-          "starts_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Starts At"
+          "attribution": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Attribution",
+            "type": "string"
           },
-          "ends_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Ends At"
+          "kind": {
+            "enum": [
+              "provider_returned",
+              "factual_template",
+              "synthetic"
+            ],
+            "title": "Kind",
+            "type": "string"
           },
-          "time_zone": {
-            "type": "string",
-            "title": "Time Zone"
+          "text": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
           }
         },
-        "type": "object",
         "required": [
-          "starts_at",
-          "ends_at",
-          "time_zone"
+          "kind",
+          "text",
+          "attribution"
         ],
-        "title": "Window"
+        "title": "SupportedExplanationPublic",
+        "type": "object"
       }
     }
-  }
+  },
+  "info": {
+    "description": "Prompt 5 contract and owned-read foundation. Live search, generation and mutations are not connected.",
+    "title": "Taste Duel API",
+    "version": "0.1.0-foundation"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/v1/challenges": {
+      "post": {
+        "operationId": "createChallenge",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 16,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChallengeCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChallengeCreatedPublic"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChallengeCreatedPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Create Challenge"
+      }
+    },
+    "/v1/challenges/{slug}": {
+      "get": {
+        "operationId": "getChallengeInvitation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "maxLength": 80,
+              "minLength": 22,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChallengeInvitationPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Invitation"
+      }
+    },
+    "/v1/challenges/{slug}/plays": {
+      "post": {
+        "operationId": "playChallenge",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "maxLength": 80,
+              "minLength": 22,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 16,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamePublic"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamePublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Play Challenge"
+      }
+    },
+    "/v1/discoveries": {
+      "get": {
+        "operationId": "getDiscoveries",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscoveriesPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Discoveries"
+      },
+      "post": {
+        "operationId": "saveDiscovery",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 16,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiscoveryCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscoveryPublic"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscoveryPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Save Discovery"
+      }
+    },
+    "/v1/discoveries/{entity_id}": {
+      "delete": {
+        "operationId": "removeDiscovery",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Entity Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Remove Discovery"
+      }
+    },
+    "/v1/entities/search": {
+      "get": {
+        "operationId": "searchEntities",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "maxLength": 100,
+              "minLength": 1,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EntityType"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "maximum": 20,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntitySearchPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Search Entities"
+      }
+    },
+    "/v1/games": {
+      "post": {
+        "operationId": "createGame",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 16,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGameRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamePublic"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamePublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameGenerationPendingPublic"
+                }
+              }
+            },
+            "description": "Accepted"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Create Game"
+      }
+    },
+    "/v1/games/{game_id}": {
+      "get": {
+        "operationId": "getGame",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Game Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamePublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Get Game"
+      }
+    },
+    "/v1/games/{game_id}/advance": {
+      "post": {
+        "operationId": "advanceRound",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Game Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 16,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdvanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamePublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Advance"
+      }
+    },
+    "/v1/games/{game_id}/answer": {
+      "post": {
+        "operationId": "answerRound",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Game Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 16,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevealedRoundPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Answer"
+      }
+    },
+    "/v1/games/{game_id}/results": {
+      "get": {
+        "operationId": "getResults",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Game Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameResultPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Results"
+      }
+    },
+    "/v1/games/{game_id}/round": {
+      "get": {
+        "operationId": "getCurrentRound",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Game Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayableRoundPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Get Round"
+      }
+    },
+    "/v1/health/live": {
+      "get": {
+        "operationId": "liveness",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Live"
+      }
+    },
+    "/v1/health/ready": {
+      "get": {
+        "operationId": "readiness",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Ready"
+      }
+    },
+    "/v1/sessions": {
+      "post": {
+        "operationId": "createSession",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionPublic"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Create Session"
+      }
+    },
+    "/v1/sessions/current": {
+      "delete": {
+        "operationId": "clearSession",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Clear Session"
+      },
+      "get": {
+        "operationId": "getCurrentSession",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Implemented"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Current Session"
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "Private API, including the local documentation server",
+      "url": "/"
+    },
+    {
+      "description": "Planned same-origin browser prefix; route paths are /v1",
+      "url": "/api"
+    }
+  ]
 }

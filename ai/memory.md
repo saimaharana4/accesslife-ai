@@ -2,7 +2,7 @@
 
 Keep each dated entry to one or two lines. Record completed work and verified outcomes; distinguish requirements, measurements and blockers. Never include secrets, personal profiles or unverified success claims.
 
-**Current direction - 25 October 2026:** Taste Duel. Prompt 4 adds complete local five-round fixture play and accepted-only synthetic evidence/curation disclosures; backend/cloud remain AccessLife. Prompt 2's MCP/same-domain live gate remains partial at 12/12 requests. Historical AccessLife results below are not Taste Duel verification.
+**Current direction - 25 October 2026:** Taste Duel. Prompt 5 adds the local API/database foundation and generated contracts; the browser remains Prompt 4 fixtures and deployed services/cloud remain AccessLife. Prompt 2's MCP/same-domain live gate remains partial at 12/12 requests. Historical AccessLife results below are not Taste Duel verification.
 
 ## Historical AccessLife milestones (recorded at the time)
 
@@ -58,3 +58,6 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 
 - **2026-10-25 - Prompt 4:** Extracted tokens/primitives and five-round fixture adapter/state/components with guarded retries, actual /5 scoring, saves and local invitation; added accepted-only synthetic WhyThisDuel/CurationSummary and ranking-versus-preference copy. Fixed controlled-combobox Escape and explicit final-Next navigation; no backend, live provider, secret or cloud changes.
 - **2026-10-25 - Prompt 4 verification:** TypeScript/10 state tests and 13 affected Playwright checks passed (three-width full keyboard games, evidence/fallback and semantics/motion); 39 full axe scans found zero violations, 39 captures were produced and key renders reviewed. Six unchanged cancellation/story checks retain prior passes; production flag-on build excluded fixtures across 217 outputs and tested routes returned 404. Audit: `.data/tasteduel-prompt4/verification.json`; next Prompt 5, with live/agent/durability/human screen-reader checks pending.
+
+- **2026-10-25 - Prompt 5:** Added separate domain/ports/API/read/persistence modules, strict public DTOs/private curation and mutation receipts, nineteen PostgreSQL tables and generated application contracts. Sessions/owned reads work locally; live search, generation, answer/Next/save/share handlers remain 501, with no Qloo/Vertex/Secret Manager or cloud changes.
+- **2026-10-25 - Prompt 5 verification:** Fresh isolated PostgreSQL 16 applied immutable `td0001`–`td0004`; 156 combined unit/database/HTTP secrecy checks plus one focused completed-result check passed, plus Ruff, TypeScript and OpenAPI drift. Prior synthetic DB data preserved separately; original references/AccessLife history retained. Evidence: `.data/tasteduel-prompt5/verification.json`; next Prompt 6, with provider integration, durable mutation execution, public replay and deployment pending.

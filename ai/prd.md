@@ -1,16 +1,18 @@
 # Taste Duel product requirements
 
-Revision 3 - 25 October 2026 - Prompt 4 development fixture journey; live-product requirements remain targets
+Revision 4 - 25 October 2026 - Prompt 5 local API/database foundation; live-product requirements remain targets
 
 ## Delivery status and authority
 
-Taste Duel is the selected new product. This document defines full-product requirements. Prompt 4 implements a complete five-round development fixture frontend, following Prompt 3's original visual prototype. The Python backend and GCP deployment remain AccessLife. Old venue checks and the old live URL do not validate this game. No database migration, repository rename or cloud change occurred in Prompts 3–4.
+Taste Duel is the selected new product. Prompt 4 implements the five-round development fixture frontend; Prompt 5 adds a separate local Python API/database foundation and generated contracts. The browser remains a fixture adapter, while deployed services and cloud automation remain AccessLife. Old venue checks and the old live URL do not validate this game. Only isolated local Taste Duel migrations run; no deployed database, repository identity or cloud resource changes.
 
 The execution sequence is [prompts.md](prompts.md). Use [Architecture.md](Architecture.md), [rules.md](rules.md), [design.md](design.md) and [phases.md](phases.md) together. Record actual results separately in [memory.md](memory.md). Preserve the original three reference files unchanged; their legacy planner requirements do not govern this pivot.
 
 Prompt 2's [capability record](qloo-capability-matrix.md) establishes sample raw artist→movie and movie→artist numeric five-pair feasibility, not general coverage or game quality. Canonical MCP Insights and same-domain cells remain unverified within the exhausted twelve-request budget. Prompts 3–4 add no live calls. The fixture now computes a score from five accepted invented answers and supports optional local discovery saves; it is in memory, fixed rather than adaptive, and resets on refresh. Its invitation previews the five played rounds without creating a public link or friend replay. These checks do not pass the live functional requirements below.
 
 **Current fixture contract:** explicit development mode only; fictional seed confirmation, preparing/submitting locks, accepted reveal, manual Next, computed n/5 result and local invitation. “Why this duel?” appears only after acceptance and identifies synthetic evidence, never Qloo output. A compact fixture-labelled curation summary exposes only aggregate preparation facts. No causal explanation, taste diagnosis, future contestant, affinity value or private reasoning belongs in these disclosures. Prediction correctness measures game performance; only the chosen seed and explicit saves are user-selected discovery signals.
+
+**Prompt 5 foundation contract:** guest sessions and authorized read projections operate against separate local PostgreSQL storage. Private pools/receipts never serialize directly. Reload may retrieve an already accepted current reveal; this is proven with synthetic database fixtures, not an implemented answer endpoint. Live search, generation, answer/advance/save handlers and public challenge replay return explicit unimplemented responses. Schema constraints and read isolation are foundation evidence; they do not pass the full durability/live acceptance requirements below.
 
 ## 1. Product and problem
 
@@ -140,4 +142,4 @@ Measure real completion, replay, challenge completion and discovery saves with e
 
 Target feature freeze: **30 October 2026**. Target submission: **31 October 2026, 09:15 IST**, subject to official-rule recheck. Preserve judging access through **6 November 2026, 10:15 IST** and required follow-up within refreshed cost review. Preparing materials does not authorize sending/submitting them.
 
-The MVP is complete only when a guest uses the real GCP app to select a supported real seed, finish five valid Qloo-backed rounds, see the actual score, save a discovery and create an identical friend replay, with visual/accessibility/security/recovery evidence and truthful operations documentation. After Prompt 4 this remains a live-product target; synthetic local play does not complete it.
+The MVP is complete only when a guest uses the real GCP app to select a supported real seed, finish five valid Qloo-backed rounds, see the actual score, save a discovery and create an identical friend replay, with visual/accessibility/security/recovery evidence and truthful operations documentation. After Prompt 5 this remains a live-product target; synthetic local play and database foundation checks do not complete it.

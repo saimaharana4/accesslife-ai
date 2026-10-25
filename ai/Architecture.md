@@ -1,10 +1,10 @@
 # Taste Duel architecture
 
-Revision 5 — 25 October 2026 — Prompt 4 fixture frontend. **The full architecture remains a target; five-round local fixture play is implemented. No Taste Duel backend or deployment exists.**
+Revision 6 — 25 October 2026 — Prompt 5 local API/database foundation. **Five-round fixture UI and a separate local backend foundation exist; no live Taste Duel game service or cloud deployment exists.**
 
-The web entry point is now a fresh Taste Duel prototype. Python backend, containers and recorded cloud deployment remain AccessLife AI. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate Taste Duel gameplay, its agent, data rights or cloud migration. [prompts.md](prompts.md) controls later iterations.
+The web entry point is a fresh Taste Duel fixture frontend. `apps/api/src/tasteduel` now contains the independent local domain/API/read foundation; legacy backend entry points, containers and recorded deployment remain AccessLife. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate live Taste Duel gameplay, its agent, data rights or cloud migration. [prompts.md](prompts.md) controls later iterations.
 
-**Implemented boundary through Prompt 4:** Next.js server layout/pages, local licensed fonts/original SVG art, React Aria seed confirmation, reusable tokens/primitives and a client fixture provider/adapter. Five invented rounds compute the result from accepted answers, support save/unsave and derive a local invitation from the played sequence. No network provider, database, durable session, model, production scoring service or share link is involved. `/api/v1/*` still returns local `503 PROTOTYPE_ONLY`; the forwarding contract below is future work. Synthetic winners are public development code, not a secrecy implementation for real answers. Six legacy web modules/seven dependencies were removed in Prompt 3; three superseded single-round/result/invitation specimens are removed in Prompt 4. Old source stays in the preservation tag. Legacy generated OpenAPI declarations remain unused until Prompt 5.
+**Implemented frontend boundary through Prompt 4:** Next.js server layout/pages, local licensed fonts/original SVG art, React Aria seed confirmation, reusable tokens/primitives and a client fixture provider/adapter. Five invented rounds compute the result from accepted answers, support save/unsave and derive a local invitation from the played sequence. No network provider, database, durable session, model, production scoring service or share link is involved in that browser flow. `/api/v1/*` still returns local `503 PROTOTYPE_ONLY`; forwarding is future work. Synthetic winners are public development code, not a secrecy implementation for real answers. Six legacy web modules/seven dependencies were removed in Prompt 3; three superseded single-round/result/invitation specimens were removed in Prompt 4. Old source stays in the preservation tag. Prompt 5 replaces unused legacy API declarations with generated Taste Duel wire types, without connecting the fixture browser.
 
 ### Implemented frontend boundary
 
@@ -15,7 +15,17 @@ The web entry point is now a fresh Taste Duel prototype. Python backend, contain
 - `features/reveal/WhyThisDuel` accepts an **accepted-round-only** presentation contract: source label, factual ranking-context sentence, optional supported explanation/attribution and discovery action. `fixtureDisclosure` produces this only for the current revealed/advancing answer. No unsupported explanation is supplied.
 - `features/curation/CurationSummary` explicitly projects typed domain/mode/count/path facts; it accepts no raw receipt, private reasoning, scores, contestant list or pair/answer data. Here it is nested inside the post-answer disclosure with unmistakable synthetic/no-agent labels. Later allowlisted API DTOs replace fixture facts; these UI types do not define the API.
 
-Fixture tests prove local behavior only. Server authority, adaptive pools, ownership, persistence, MCP/Vertex and exact two-session challenge replay remain future gates. Production exclusion is a build boundary, not proof of future server secrecy.
+Fixture tests prove local behavior only. Prompt 5 adds owned read isolation and storage checks below; authoritative gameplay mutations, adaptive pools, MCP/Vertex and exact two-session challenge replay remain future gates. Production exclusion is a build boundary, not proof of future server secrecy.
+
+### Prompt 5 backend foundation
+
+`domain` owns bounded values/private receipt and canonical signature helpers; `ports` defines bounded immutable read values; `application` enforces read state/ownership; `adapters` loads scoped relational data; `api` explicitly projects public Pydantic DTOs; `persistence` owns SQLAlchemy rows and lazy scoped transactions. Import/export never opens a database, calls a provider or migrates data. No new dependency or legacy planner import is required.
+
+The isolated PostgreSQL 16 database is `127.0.0.1:55435/tasteduel_prompt5`, schema `tasteduel`. Nineteen tables and separate `td0001`–`td0004` forward migrations use migration-owner/runtime roles; no spatial/vector extension. Composite owner references, forced RLS, immutable evidence/answers/challenges, sequential delivery, derived correctness and typed mutation receipts enforce database invariants. The trusted session GUC is not cryptographic SQL authentication: only the server sets it after validating the full random cookie hash, and DB credentials remain private. The initial possible session row is selected by cookie UUID before hash validation; no private game query occurs until authentication succeeds.
+
+The private `CurationReceipt` stores strict structured execution facts and versions, no freeform reasoning/raw response/pool. Its public summary is an explicit successful-receipt projection returned only with accepted evidence here. Mutation receipts store canonical signature hashes and typed owned references, never raw request/response JSON. Completed answer receipts require an accepted answer and exact game revision at completion; saved revisions survive later advancement. These storage guards do not implement HTTP idempotent executors or generation leases.
+
+Only sessions, health and owned game/round/result/discovery reads are connected. Other declared routes return `501 FOUNDATION_NOT_IMPLEMENTED`; database-seeded synthetic graphs prove projections, not a working live creation/answer/replay path. `/api/v1` forwarding remains disabled. Generated frontend declarations now come from this application's actual OpenAPI; no Qloo meta-schema or hand-maintained wire schema is used. See the [API foundation guide](../apps/api/README.md) and [migration guide](../apps/api/tasteduel_migrations/README.md).
 
 **Prompt 2 evidence:** the [dated source/capability matrix](qloo-capability-matrix.md) pins harness `0.1.26` and official source commits. Twelve counted requests proved two raw cross-domain samples with five-pair numeric feasibility; canonical MCP Insights and same-domain cells remain unverified. No live payload or generated API client is committed. The advertised OpenAPI file is a meta-schema without endpoint paths and is rejected for code generation. This is a partial feasibility gate, not an implemented provider or game.
 
@@ -157,7 +167,7 @@ Qloo is the sole ranking source. Original title-based SVG/CSS cards are an alway
 
 ## 5. Public API and disclosure contracts
 
-These are target contracts for Prompt 5, not existing endpoints. Browser prefix `/api/v1`, private FastAPI `/v1`. Private records require session ownership. Creation/mutation requests use `Idempotency-Key` scoped to session, operation and canonical body; changed input under the same key returns `409`.
+These are the declared application contracts, exported in Prompt 5. Private paths use `/v1`; the planned same-origin browser base `/api` gives `/api/v1`, while forwarding remains disabled. Sessions and owned reads are implemented; live search/generation/gameplay/discovery/challenge mutations and invitations currently return 501. The table describes intended successful behavior for those later handlers. `Idempotency-Key` is scoped to session/operation and a canonical typed-body signature; storage supports retries, but changed-body 409 execution remains Prompt 9 work.
 
 | Method/path without prefix | Request | Successful behavior |
 |---|---|---|
@@ -183,17 +193,19 @@ Illustrative synthetic unanswered DTO:
 
 ```json
 {
-  "game_id": "opaque-game-id",
-  "round_id": "opaque-round-id",
+  "state": "unanswered",
+  "game_id": "10000000-0000-4000-8000-000000000001",
+  "round_id": "20000000-0000-4000-8000-000000000001",
   "ordinal": 2,
   "total": 5,
   "revision": 4,
-  "seed": {"id": "opaque-seed-id", "name": "Example seed", "type": "artist"},
+  "seed": {"id": "30000000-0000-4000-8000-000000000001", "name": "Synthetic seed", "type": "artist", "source": "fixture"},
   "target_type": "movie",
-  "question": "Which movie ranks higher for this seed in Qloo's taste graph?",
+  "question": "Which movie ranks higher in this synthetic fixture?",
+  "source": "fixture",
   "choices": [
-    {"id": "opaque-left-choice", "name": "Synthetic Film A", "artwork": {"kind": "owned_fallback", "asset_id": "cover-a"}},
-    {"id": "opaque-right-choice", "name": "Synthetic Film B", "artwork": {"kind": "owned_fallback", "asset_id": "cover-b"}}
+    {"id": "40000000-0000-4000-8000-000000000001", "entity": {"id": "50000000-0000-4000-8000-000000000001", "name": "Synthetic Film A", "type": "movie", "source": "fixture", "artwork": {"kind": "owned_fallback", "asset_id": "afterlight"}}},
+    {"id": "40000000-0000-4000-8000-000000000002", "entity": {"id": "50000000-0000-4000-8000-000000000002", "name": "Synthetic Film B", "type": "movie", "source": "fixture", "artwork": {"kind": "owned_fallback", "asset_id": "blue-hour"}}}
   ]
 }
 ```

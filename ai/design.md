@@ -1,10 +1,10 @@
 # Taste Duel design specification
 
-Revision 3 · 25 October 2026 · Five-round synthetic fixture UI; live game remains planned
+Revision 4 · 25 October 2026 · Fixture visual system preserved; Prompt 5 wire contracts added
 
 ## Status and visual goal
 
-The fresh Taste Duel shell implements this direction as a five-round local development fixture. It replaces the planner's web entry point; backend/cloud remain AccessLife. Planner screenshots and historical accessibility results cannot satisfy this game's gates. Preserve original reference files unchanged.
+The fresh Taste Duel shell implements this direction as a five-round local development fixture. Prompt 5 adds a separate local API/schema foundation without changing that composition or connecting it to live data. Deployed services/cloud remain AccessLife. Planner screenshots and historical accessibility results cannot satisfy this game's gates. Preserve original reference files unchanged.
 
 Follow [prompts.md](prompts.md), [prd.md](prd.md), [Architecture.md](Architecture.md) and [rules.md](rules.md); record real results in [memory.md](memory.md).
 
@@ -13,6 +13,8 @@ Prompt 2 found image metadata in both cross-domain samples but established no as
 **Historical Prompt 3 refinement:** corrected desktop paired-cover/action placement, mobile headline sizing, failed-image hydration fallback and the seam between unequal stacked cards. Prompt 4 preserves that composition while replacing the single-round/result specimens with an actual five-round fixture journey. Seed confirmation is compact, discoveries have reading space, long save labels wrap and explicit Next remains distinct. New-round focus moves to its question/context; the accepted outcome heading is focused once without a competing live region. Actual checks/captures are in README/memory; no human screen-reader or real-user enjoyment claim is made.
 
 **Post-answer evidence:** “Why this duel?” is a native keyboard-operable disclosure below the accepted result, closed by default and secondary to Next. Its visible source says SYNTHETIC FIXTURE EVIDENCE/no live Qloo. It states only this accepted comparison's invented context; no psychological, causal or cultural explanation is fabricated. An optional supported-explanation slot is unused. Save/unsave is an explicit action within the disclosure. A small text-only CurationSummary reports labelled synthetic aggregate preparation facts; no tiles, dashboard, agent diagram, private reasoning, affinity values or future contestants. Production builds omit fixture behavior entirely.
+
+**Prompt 5 integration boundary:** generated Python-owned wire contracts distinguish a delivered `ChoicePublic.id` from `ChoicePublic.entity.id` used for discovery. Later adapters normalize these into the existing visual components; do not create a second handwritten wire schema or redesign the arena around storage fields. Accepted evidence supplies source and seed/target/retrieval context, with optional supported text; summary fields are sanitized aggregates only. The browser still uses the fixture adapter, and backend 501/readiness-with-generation-unavailable must never be relabelled as live Qloo or silently replaced by production fixtures. No new screenshots or changed visual acceptance are claimed for this backend iteration.
 
 The experience should feel like **a cultural fight-night editorial**: one favourite, two oversized opponents, a quick prediction and a revealing result. Type and artwork create impact. The game must be understandable before explaining infrastructure.
 
