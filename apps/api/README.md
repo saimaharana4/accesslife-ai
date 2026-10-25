@@ -4,6 +4,14 @@ Prompt 5 adds a separate application under `src/tasteduel`. The old `accesslife`
 entry point, migration lineage, deployed database and containers are unchanged.
 The browser fixture game is not connected to this API yet.
 
+Prompt 6 adds the typed private [Qloo runtime](../../runtime/qloo/README.md),
+bounded stdio lifecycle and shared key-wide SQL admission through `td0005`.
+The new isolated container is separate from legacy Compose/CI. Provider mode is
+disabled by default; explicitly enabled startup may access the existing Secret
+Manager reference through server ADC. No credential lookup or live Qloo call was
+exercised in this delivery. Public handlers below remain as listed; adding the
+private port does not connect search or gameplay to the browser.
+
 From the repository root, with Python 3.12, uv and Docker Desktop running:
 
 ```powershell
@@ -55,7 +63,7 @@ disabled; no browser fixture request reaches this backend.
 | GET `/challenges/{slug}` | 501, safe invitation DTO | Public seed/score/expiry only |
 | POST `/challenges/{slug}/plays` | 501, guest/idempotency contract | Owned exact fixed replay |
 | GET `/health/live` | Process liveness, generation unavailable | Later generation capability reported truthfully |
-| GET `/health/ready` | Exact local schema revision `td0004`, generation unavailable | Later dependency checks |
+| GET `/health/ready` | Exact local schema revision `td0005`, generation unavailable | Later dependency checks |
 
 Database tests insert clearly synthetic private graphs through trusted fixtures.
 Reading those graphs is not evidence that public game creation, acceptance,
@@ -86,7 +94,7 @@ missing/forged Content-Length. SQL parameters and raw exceptions are not public.
 | 409 | State conflict, awaiting explicit Next, incomplete result; later signature conflicts |
 | 410 | Owned game/evidence expired; later public expired challenges |
 | 413/422 | Bounded-body or safe input validation failure |
-| 429 | Declared admission failure; provider-wide admission not yet implemented |
+| 429 | Declared browser admission failure; private Qloo port now has shared admission, browser wiring remains later |
 | 501 | Defined operation not connected in this stage; no fixture fallback |
 | 503 | Sanitized unavailable configuration/database/stored state |
 
@@ -114,7 +122,7 @@ an optional supported explanation; richer text is absent in this foundation.
 Neither private receipt is an OpenAPI response model. Raw bounded provider cache
 payloads stay private; only synthetic data is stored by these tests.
 
-The [separate migration lineage](tasteduel_migrations/README.md) creates 19 ordinary
+The [separate migration lineage](tasteduel_migrations/README.md) creates 20 ordinary
 PostgreSQL tables without spatial/vector extensions. Composite owner references,
 forced RLS, immutable snapshots/answers/results/challenge rounds, sequential
 delivery and derived correctness enforce real SQL constraints. Runtime cannot
@@ -123,6 +131,8 @@ perform DDL, create temporary objects/roles or become the migration owner.
 The session GUC is trusted application context, not a cryptographic database
 identity. A holder of the private runtime password can set it; API authentication
 and the private database boundary are still essential. Cross-session challenge
-copying, generation execution, provider-key-wide quotas, retention purge and all
-cloud/container/CI migration are later prompts. Run isolated tests with the
+copying, generation execution, verified external quota metadata, retention purge and
+cloud/CI and full Compose migration are later prompts. Prompt 6 adds an isolated
+offline-tested image and engineering admission controls, not verified provider
+quota metadata or live game readiness. Run isolated tests with the
 provided helper so legacy `tests/conftest.py` is never imported.

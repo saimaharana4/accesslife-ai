@@ -18,6 +18,15 @@ Every owned table uses forced RLS. A trusted API transaction authenticates the s
 
 `td0001` is the frozen initial SQL schema. `td0002` adds irreversible session revocation, insertion freeze after first delivery, seed exclusion and runtime revision-stamp access. `td0003` adds private mutation receipts containing a canonical signature and checked typed owned references; no raw request or response payload is stored. `td0004` requires an accepted answer for a completed answer receipt and captures the exact authoritative game revision at completion under a row lock. Later advancement leaves the saved completion revision unchanged. Forward migrations carry changes after application; automatic destructive downgrades are disabled. Deployment rollback must preserve a compatible database or use an explicitly reviewed forward repair.
 
-The 19 tables provide the storage foundation. Generation claim/reclaim/concurrency orchestration, authenticated cross-session challenge copying, provider retention policy enforcement and a bounded maintenance purge are later prompts. Session-scoped usage counters do not establish a provider-key-wide quota. Expiry caps and private storage do not establish permission to retain Qloo data; retention still requires verified provider policy. Do not grant a public runtime service migration credentials to perform maintenance.
+The original 19 tables provide the game storage foundation. Prompt 6 adds
+`td0005` and the twentieth table, `provider_controls`, with key-fingerprint RLS,
+minute counters, spacing and circuit/auth flags. This service-private table uses
+`app.provider_scope`, not guest ownership; runtime has SELECT/INSERT/UPDATE but
+no DELETE/DDL. Session usage counters alone do not establish a shared quota.
+All participating instances must use the same store; legacy bypass callers are
+not covered. Limits are engineering policy, not a Qloo quota claim. Original
+applied migrations remain byte-identical. Generation claim/reclaim orchestration,
+cross-session challenge copying, retention enforcement and maintenance purge
+remain later prompts. Private storage does not grant Qloo retention rights.
 
 Mutation receipt subjects are owned games for answer/advance/create-challenge/play-challenge operations and owned entities for discovery saves. A play receipt refers to the newly allocated local replay game. A completed receipt refers only to the matching owned round, discovery, challenge or game; immutable signatures support later request handlers distinguishing a retry from a changed-body conflict. The schema does not implement those handlers or compare incoming HTTP bodies.

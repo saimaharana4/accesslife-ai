@@ -1,9 +1,10 @@
-"""Taste Duel contract/read foundation. No provider calls or gameplay mutations.
+"""Taste Duel contract/read foundation plus opt-in private provider lifecycle.
 
 Run separately from accesslife.api.main; no automatic migration or import I/O.
+Gameplay HTTP mutations/search remain unconnected; only explicit startup resolves credentials.
 """
 
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 from datetime import UTC, datetime, timedelta
 import hashlib
 import hmac
@@ -26,6 +27,7 @@ from tasteduel.api import presenters, schemas as s
 from tasteduel.api.body_limit import BoundedBodyMiddleware
 from tasteduel.application.errors import AppError
 from tasteduel.application.reads import ReadService
+from tasteduel.api.provider_runtime import ProviderStartupFailure, build_qloo_runtime
 from tasteduel.config import Settings
 from tasteduel.domain.types import EntityType
 from tasteduel.persistence import models as m
@@ -37,8 +39,32 @@ Key = Annotated[
 ERRORS = {code: {"model": s.ErrorEnvelope} for code in (401, 403, 404, 409, 410, 413, 422, 429, 501, 503)}
 
 
-def create_app(settings: Settings | None = None, *, engine: Engine | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None, *, engine: Engine | None = None, qloo_factory=None
+) -> FastAPI:
     settings = settings or Settings()
+
+    @asynccontextmanager
+    async def lifespan(app):
+        runtime = None
+        app.state.qloo = None
+        app.state.qloo_status = "disabled"
+        if settings.qloo_enabled:
+            try:
+                runtime = await (qloo_factory or build_qloo_runtime)(settings, database())
+                app.state.qloo = runtime.port
+                app.state.qloo_status = "ready"
+            except ProviderStartupFailure as failure:
+                app.state.qloo_status = failure.code
+            except (AppError, SQLAlchemyError):
+                app.state.qloo_status = "QLOO_DATABASE_UNAVAILABLE"
+        try:
+            yield
+        finally:
+            if runtime:
+                await runtime.close()
+            app.state.qloo = None
+
     app = FastAPI(
         title="Taste Duel API",
         version="0.1.0-foundation",
@@ -48,6 +74,7 @@ def create_app(settings: Settings | None = None, *, engine: Engine | None = None
             {"url": "/api", "description": "Planned same-origin browser prefix; route paths are /v1"},
         ],
         responses=ERRORS,
+        lifespan=lifespan,
     )
     app.state.engine = engine
     app.state.settings = settings
@@ -421,7 +448,7 @@ def create_app(settings: Settings | None = None, *, engine: Engine | None = None
             revision = connection.execute(
                 text("SELECT version_num FROM tasteduel.tasteduel_alembic_version LIMIT 1")
             ).scalar_one()
-            if revision != "td0004":
+            if revision != "td0005":
                 raise AppError(503, "SCHEMA_NOT_READY", "The local schema is not ready.", retryable=True)
         return s.HealthPublic(status="ok", generation_available=False)
 

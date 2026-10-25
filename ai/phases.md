@@ -1,8 +1,8 @@
 # Taste Duel implementation phases
 
-Revision 4 - 25 October 2026 - Prompt 5 local API/database foundation; deployed services remain legacy
+Revision 5 - 25 October 2026 - Prompt 6 local transport; deployed services remain legacy
 
-**Progress:** Prompts 1, 3 and 4 preservation/visual/fixture work are complete. Prompt 5 adds the separate local domain/API/database foundation, generated contracts and owned read projections; it does not connect the fixture browser to a live game. Current checks are recorded in README/memory. Prompt 2 remains a partial live gate in the [capability matrix](qloo-capability-matrix.md). Next is Prompt 6; return to the listed MCP/coverage probes before dependent integration without resetting its exhausted budget. No cloud gate passes from local foundation work.
+**Progress:** Prompts 1, 3, 4 and 5 local preservation/fixture/foundation gates passed. Prompt 6 adds synthetic-tested private MCP transport, shared SQL admission and a packaged local runtime; the browser remains disconnected. Prompt 2 retains its partial live capability gate in the [matrix](qloo-capability-matrix.md), with twelve requests consumed and zero added here. Next is Prompt 7; genuine pool/live integration must resolve the recorded canonical Insights/order/coverage gaps first. No cloud gate passes from these local checks.
 
 ## Status and execution rules
 
@@ -96,6 +96,19 @@ Dependencies installed in the reused SQL instance need not be dropped merely bec
 **Prompt 6 owners:** MCP adapter, synthetic contracts, subprocess/security reviewer. Package pinned Node/harness, local stdio lifecycle/readiness/concurrency/shutdown and safe child environment. Normalize actual envelopes before domain/UI. Bound deadlines/retries; auth failure cannot become fake data. Any justified HTTP escape hatch is explicit and independently tested.
 
 **Prompt 6 gate:** exact request/schema/failure tests and server-only key. No runtime downloads, public MCP listener, untrusted documentation MCP or raw provider JSON in React.
+
+**Prompt 6 implemented:** typed port, six-state normalization, explicit ambiguity,
+pinned official local-stdio process and packaged Node/Python environment, strict
+child env/protocol boundaries, bounded lifecycle and per-upstream reservation.
+Additive local `td0005` supplies key-wide SQL admission/circuit controls across
+participating instances; six-request/twenty-second envelope and one eligible
+retry include harness-internal lookups. Synthetic actual-harness tests and local
+database checks exercise the boundary; no live call, Secret Manager payload read
+or infrastructure change occurs. Canonical live Insights/order/source precedence
+remain unverified (`ordering_verified=false`), not repaired by fixtures. Next is
+Prompt 7's deterministic builder; genuine pool acceptance must return to those
+explicit capability probes before dependent live integration. Legacy callers
+remain outside new quota controls until a later coordinated cutover.
 
 **Prompt 7 owners:** deterministic pool, property/scenario tests, fairness reviewer. Build roughly 10–15 pairs where supported; same target/context, identity/tie/order validation, no repeated played contestants. Version difficulty from observed distributions; randomize sides independently of upstream rank and use opaque IDs.
 

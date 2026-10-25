@@ -2,7 +2,7 @@
 
 One favourite. Five duels. Predict Qloo's ranking, discover something surprising, then challenge a friend to the same five rounds.
 
-**Status - 25 October 2026: Prompt 5 adds the local Taste Duel API/database foundation.** The separate Python domain, 19 PostgreSQL tables, immutable migrations, owned read projections and generated application contracts are implemented. The Prompt 4 browser still plays in-memory synthetic fixtures; it is not connected to this API. Live Qloo, generation, authoritative gameplay mutations and public sharing remain planned. Prompt 2 remains partial. Deployed services, containers and cloud automation remain legacy AccessLife; no cloud provisioning, deployment or repository rename occurred.
+**Status - 25 October 2026: Prompt 6 adds the private Qloo MCP transport.** Typed resolution/ranking, pinned official harness lifecycle, per-HTTP admission and an isolated Taste Duel backend image are implemented locally. PostgreSQL now has twenty tables through additive `td0005`. The browser still plays synthetic fixtures and is not connected to the API; generation, authoritative gameplay and public sharing remain planned. Live MCP ordering remains unverified. Legacy AccessLife deployment and cloud automation are unchanged; no provisioning, deployment or repository rename occurred.
 
 ## What the new product will do
 
@@ -25,6 +25,9 @@ The target interface is a mobile-first cultural game: oversized artwork, distinc
 | Taste Duel fixture frontend | Server shell, reusable tokens/primitives, React Aria confirmation, discriminated state machine and in-memory adapter; five invented rounds, accepted-answer score, save/unsave and local invitation |
 | Prompt 4 verification | 10 state/adapter/disclosure tests and TypeScript passed; 13 affected Playwright checks passed, including full keyboard games at all three widths. 39 full axe scans found zero violations; 39 captures include accepted evidence, long titles, missing art and ranking semantics. Six unaffected cancellation/state-story checks retain their earlier passes |
 | Taste Duel API/database foundation | Separate `tasteduel` domain, sessions, owned reads, private snapshots/pools/receipts, PostgreSQL constraints/RLS and separate migration/runtime roles; actual application OpenAPI generates frontend declarations |
+| Prompt 6 provider transport | Official harness `0.1.26` / Node `24.18.1`, exact discovered schemas, typed six-state normalization, ambiguity choices, bounded stdio lifecycle and shared PostgreSQL admission; no raw-HTTP fallback |
+| Prompt 6 verification boundary | Synthetic contracts, real local SQL controls and packaged offline checks; **zero live Qloo calls**, no Secret Manager payload access. Compact score precedence/default ordering remain unverified and `ordering_verified=false` |
+| Prompt 6 actual checks | 283 isolated backend tests passed, including 126 new provider/lifecycle/policy/security checks; Ruff/OpenAPI drift passed. New image built; network-none/read-only UID10001 harness discovery, API liveness/OpenAPI/unconfigured readiness and bounded SIGTERM smoke passed |
 | Prompt 5 verification | Clean PostgreSQL 16 migration chain `td0001`–`td0004`; 157 checks passed, including real database constraints and HTTP secrecy/isolation; Ruff, TypeScript and OpenAPI drift passed. Final evidence is under `.data/tasteduel-prompt5/` |
 | Live search, generation, authoritative answer/Next/save mutations, public replay and RoundCuratorAgent | Contracts declared; unconnected operations return honest `501 FOUNDATION_NOT_IMPLEMENTED`. No full game engine, durable browser gameplay or live integration claim |
 | Qloo feasibility and rights | Pinned harness `0.1.26`; offline discovery and two raw cross-domain samples passed within **12/12** requests. Canonical MCP Insights, same-domain cells, nested explanation semantics and broad coverage remain unverified; [full matrix](ai/qloo-capability-matrix.md) |
@@ -78,9 +81,51 @@ the rejected upstream Qloo meta-schema is not involved. Fixture/presentation
 types remain UI-only. [API foundation details](apps/api/README.md) distinguish
 declared success contracts from handlers still returning 501.
 
-Prompt 5 evidence belongs in ignored `.data/tasteduel-prompt5/`. This stage
-does not validate legacy containers/CI, live Qloo/Vertex, cloud connectivity,
-global provider admission, public replay or restart-safe mutation execution.
+Prompt 5 evidence belongs in ignored `.data/tasteduel-prompt5/`. Its checks do
+not validate live Qloo/Vertex, cloud connectivity, public replay or restart-safe
+mutation execution. Prompt 6's provider controls are described below.
+
+## Private Qloo runtime - Prompt 6
+
+```powershell
+npm.cmd ci --prefix runtime/qloo --ignore-scripts --no-audit --no-fund
+uv run --no-sync python scripts/tasteduel_qloo_offline.py
+docker build -f infra/containers/tasteduel-api.Dockerfile -t tasteduel-api:prompt6 .
+docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges tasteduel-api:prompt6 python scripts/tasteduel_qloo_offline.py
+```
+
+These checks need no credentials and make no upstream calls. The new image
+contains only the Taste Duel Python modules plus separately locked minimal
+Python/Node runtimes; it does not replace the legacy Compose/CI image. It runs
+as UID 10001. Default provider configuration is disabled and health does not
+claim game generation is available.
+
+When explicitly enabled server-side with `TASTEDUEL_QLOO_ENABLED=true`, API
+startup resolves the existing Secret Manager **reference**, through server ADC,
+into memory and forwards only the Qloo key to one managed child. No key value
+belongs in source, browser configuration, command arguments or an image layer.
+This credential lookup was not exercised in Prompt 6. See the
+[runtime guide](runtime/qloo/README.md) for the exact reference, lifecycle and
+remaining live gate.
+
+Callers must wrap an entire generation in `port.request_budget(...)`: at most
+six actual upstream requests and twenty seconds across resolution, hydration,
+ranking and one eligible retry. Missing budgets fail closed. PostgreSQL stores
+only key fingerprints/counters/circuit flags for admission: default thirty
+requests/minute, 200 ms minimum spacing, three transient failures opening the
+circuit for thirty seconds, and sticky authentication failure until key rotation
+or a reviewed operator repair. These are engineering limits, **not** Qloo's
+advertised quota. All Taste Duel instances must share this database. An old
+AccessLife runtime bypasses this control and must be stopped or coordinated
+before a shared-key live rollout; this stage makes no cloud changes.
+
+Raw provider payloads remain process-local; no live data/cache was retained.
+The port returns private typed values, never generic JSON to React. It withholds
+unreviewed explanations and image rights claims. Live canonical Insights,
+same-domain coverage and compact-versus-raw score semantics remain the precise
+[Prompt 2 gaps](ai/qloo-capability-matrix.md). Its budget remains **12/12**;
+Prompt 6 consumes **0** additional calls. Next: **Prompt 7**, deterministic
+pool generation; genuine pool readiness stays gated on those live checks.
 
 ## Run the development fixture game
 
@@ -161,12 +206,12 @@ before hydration. Visual review corrected desktop action placement, mobile
 headline sizing, clipped fallback content and the seam between unequal stacked
 cards. Computed enabled-action contrast is 16.70:1. Human screen-reader testing,
 actual browser zoom, other browser engines and real-user playtesting remain
-unverified. The current CI/containers are legacy and were not validated as Taste
+unverified. The Compose stack/CI are legacy and were not validated as Taste
 Duel delivery infrastructure.
 
 ## Execute one iteration at a time
 
-The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next: Prompt 6 - official Qloo transport and normalized provider port.** Resolve the recorded Prompt 2 MCP/coverage gaps under a separate small budget before dependent provider/game integration. Prompt 2 used exactly twelve Qloo requests; Prompts 3–5 make zero Qloo/Vertex/Secret Manager calls. Do not restart Prompt 2's exhausted budget on resume or in a clean clone.
+The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next: Prompt 7 - deterministic duel-generation engine.** Resolve the recorded live MCP/order/coverage gaps under a separately recorded small budget before genuine pool acceptance. Prompt 2 used exactly twelve Qloo requests; Prompts 3-6 add zero live calls or Secret Manager payload access. Do not reset the exhausted budget on resume or in a clean clone.
 
 Read its shared requirements, then paste the complete numbered prompt. Do not run all prompts as a single implementation request. Independent synthetic visual work can proceed during a provider outage, but it cannot pass the genuine integration gate.
 
@@ -185,7 +230,7 @@ Only these eight `/ai` Markdown files are eligible for publication. Original ref
 
 ## Target implementation
 
-Next.js App Router, strict TypeScript, Tailwind, React Aria and Motion; FastAPI/Pydantic, SQLAlchemy/Alembic and ordinary PostgreSQL 16. One bounded Vertex-powered `RoundCuratorAgent` will use the official Qloo harness through a normalized provider port. Deterministic validators, the game engine and database transactions own eligibility, winners and score. Motion is not installed; harness `0.1.26` was inspected only in an ignored isolated spike directory, not added to the application runtime. Vertex model access is deferred to Prompt 8.
+Next.js App Router, strict TypeScript, Tailwind, React Aria and planned Motion; FastAPI/Pydantic, SQLAlchemy/Alembic and ordinary PostgreSQL 16. One bounded Vertex-powered `RoundCuratorAgent` will use the implemented private Qloo port. Deterministic validators, the game engine and database transactions will own eligibility, winners and score. Motion is not installed. Harness `0.1.26` is now pinned in `runtime/qloo` and packaged with Node24.18.1 in the isolated backend image; its live ordering gate remains open. Vertex model access is deferred to Prompt 8.
 
 The target GCP deployment is public Cloud Run web -> same-origin forwarding -> private Cloud Run API -> Cloud SQL, Qloo and Vertex. Qloo/database secrets stay in Secret Manager; Vertex and GitHub Actions use IAM/WIF. A bounded game-generation request completes before returning a ready game; retries use durable reservations/leases. No post-response in-memory worker assumption.
 

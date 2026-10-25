@@ -1,0 +1,1091 @@
+{
+  "capabilities": {
+    "adapter": {
+      "canonical_workflow_execution": true,
+      "capabilities_tool": "qloo_capabilities",
+      "compatibility": "canonical",
+      "contract_resource": "qloo://contracts/workflows",
+      "fallback": "none",
+      "id": "qloo_harness_mcp",
+      "ready": true,
+      "supported_operation_ids": [
+        "recommend",
+        "rank",
+        "describe",
+        "where_popular",
+        "compare_audiences",
+        "entity_tags",
+        "audience_demographics",
+        "trends",
+        "find_tags"
+      ],
+      "tool_name_mapping": {
+        "audience_demographics": "qloo_audience_demographics",
+        "compare_audiences": "qloo_compare_audiences",
+        "describe": "qloo_describe",
+        "entity_tags": "qloo_entity_tags",
+        "find_tags": "qloo_find_tags",
+        "rank": "qloo_rank",
+        "recommend": "qloo_recommend",
+        "trends": "qloo_trends",
+        "where_popular": "qloo_where_popular"
+      }
+    },
+    "capabilities_tool": "qloo_capabilities",
+    "contract_checksum": "sha256:762bdcc5e14ff797b6de739d2658a83f78af35e68d7a5a3449455be6046924f5",
+    "contract_version": "1.0.0",
+    "manifest_schema_version": "1.1",
+    "operations": [
+      {
+        "behavior": {
+          "concurrency": "safe_for_independent_inputs",
+          "defaultResultBudget": 10,
+          "destructive": false,
+          "expectedLatency": "medium",
+          "idempotent": true,
+          "maximumResultBudget": 20,
+          "mutating": false,
+          "openWorld": true,
+          "readOnly": true,
+          "requiredCredential": "qloo_api",
+          "safeRetryClasses": [
+            "dns",
+            "connect",
+            "timeout",
+            "rate_limit",
+            "upstream_5xx"
+          ],
+          "supportedTransports": ["direct", "mcp"]
+        },
+        "description": "Find Qloo entities related to one combined entity, tag, location, and demographic taste profile. Signals influence affinity; filters constrain output.",
+        "documentation": [
+          "https://docs.qloo.com/reference/insights-api-deep-dive"
+        ],
+        "id": "recommend",
+        "input_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "demographic": {
+              "description": "Audience demographic in natural language, such as 'young women', 'men 25-34', or 'millennials'. It is converted to documented Qloo demographic signals.",
+              "examples": ["young women", "men 25-34", "millennials"],
+              "minLength": 1,
+              "type": "string"
+            },
+            "exclude_tags": {
+              "description": "Genres, moods, styles, traits, or other concepts, or Qloo tag URNs; not named entities.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "exclude_tags_operator": {
+              "description": "Combine tag values with union (any) or intersection (all).",
+              "enum": ["union", "intersection"],
+              "type": "string"
+            },
+            "explain": {
+              "default": true,
+              "type": "boolean"
+            },
+            "filter_location": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "include_tags": {
+              "description": "Genres, moods, styles, traits, or other concepts, or Qloo tag URNs; not named entities.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "include_tags_operator": {
+              "description": "Combine tag values with union (any) or intersection (all).",
+              "enum": ["union", "intersection"],
+              "type": "string"
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum results to return (1-20).",
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "signal_location": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "signal_tags": {
+              "description": "Genres, moods, styles, traits, or other concepts, or Qloo tag URNs; not named entities.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "signal_tags_operator": {
+              "description": "Combine tag values with union (any) or intersection (all).",
+              "enum": ["union", "intersection"],
+              "type": "string"
+            },
+            "signals": {
+              "description": "Named entities or Qloo entity UUIDs; use tag fields for abstract concepts.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "target_type": {
+              "description": "Qloo Insights entity type: artist, book, brand, movie, person, place, podcast, tv_show, videogame.",
+              "enum": [
+                "artist",
+                "book",
+                "brand",
+                "movie",
+                "person",
+                "place",
+                "podcast",
+                "tv_show",
+                "videogame"
+              ],
+              "type": "string"
+            }
+          },
+          "required": ["target_type"],
+          "type": "object"
+        },
+        "shared_tool_name": "qloo_recommend",
+        "summary": "Find entities for a taste profile, audience, or collection of signals."
+      },
+      {
+        "behavior": {
+          "concurrency": "safe_for_independent_inputs",
+          "defaultResultBudget": 10,
+          "destructive": false,
+          "expectedLatency": "medium",
+          "idempotent": true,
+          "maximumResultBudget": 20,
+          "mutating": false,
+          "openWorld": true,
+          "readOnly": true,
+          "requiredCredential": "qloo_api",
+          "safeRetryClasses": [
+            "dns",
+            "connect",
+            "timeout",
+            "rate_limit",
+            "upstream_5xx"
+          ],
+          "supportedTransports": ["direct", "mcp"]
+        },
+        "description": "Rank one supplied option set against one shared entity, location, demographic, and tag profile. Scores from separate calls are not comparable.",
+        "documentation": [
+          "https://docs.qloo.com/reference/insights-api-deep-dive"
+        ],
+        "id": "rank",
+        "input_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "demographic": {
+              "description": "Audience demographic in natural language, such as 'young women', 'men 25-34', or 'millennials'. It is converted to documented Qloo demographic signals.",
+              "examples": ["young women", "men 25-34", "millennials"],
+              "minLength": 1,
+              "type": "string"
+            },
+            "exclude_tags": {
+              "description": "Genres, moods, styles, traits, or other concepts, or Qloo tag URNs; not named entities.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "include_tags": {
+              "description": "Genres, moods, styles, traits, or other concepts, or Qloo tag URNs; not named entities.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "option_type": {
+              "description": "Qloo Insights entity type: artist, book, brand, movie, person, place, podcast, tv_show, videogame.",
+              "enum": [
+                "artist",
+                "book",
+                "brand",
+                "movie",
+                "person",
+                "place",
+                "podcast",
+                "tv_show",
+                "videogame"
+              ],
+              "type": "string"
+            },
+            "options": {
+              "description": "Named entities or Qloo entity UUIDs; use tag fields for abstract concepts.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "signal_location": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "signals": {
+              "description": "Named entities or Qloo entity UUIDs; use tag fields for abstract concepts.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": ["options", "option_type"],
+          "type": "object"
+        },
+        "shared_tool_name": "qloo_rank",
+        "summary": "Rank a supplied set of options for signals, location, or audience."
+      },
+      {
+        "behavior": {
+          "concurrency": "safe_for_independent_inputs",
+          "defaultResultBudget": 10,
+          "destructive": false,
+          "expectedLatency": "low",
+          "idempotent": true,
+          "maximumResultBudget": 20,
+          "mutating": false,
+          "openWorld": true,
+          "readOnly": true,
+          "requiredCredential": "qloo_api",
+          "safeRetryClasses": [
+            "dns",
+            "connect",
+            "timeout",
+            "rate_limit",
+            "upstream_5xx"
+          ],
+          "supportedTransports": ["direct", "mcp"]
+        },
+        "description": "Resolve one named entity or Qloo UUID and return only metadata present in Qloo.",
+        "documentation": [
+          "https://docs.qloo.com/reference/get-search",
+          "https://docs.qloo.com/reference/get-entities"
+        ],
+        "id": "describe",
+        "input_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "entity": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "description": "Qloo search entity type: artist, book, brand, movie, person, place, podcast, tv_show, videogame, locality, actor, album, author, director.",
+              "enum": [
+                "artist",
+                "book",
+                "brand",
+                "movie",
+                "person",
+                "place",
+                "podcast",
+                "tv_show",
+                "videogame",
+                "locality",
+                "actor",
+                "album",
+                "author",
+                "director"
+              ],
+              "type": "string"
+            }
+          },
+          "required": ["entity"],
+          "type": "object"
+        },
+        "shared_tool_name": "qloo_describe",
+        "summary": "Resolve and describe one Qloo entity."
+      },
+      {
+        "behavior": {
+          "concurrency": "safe_for_independent_inputs",
+          "defaultResultBudget": 10,
+          "destructive": false,
+          "expectedLatency": "low",
+          "idempotent": true,
+          "maximumResultBudget": 20,
+          "mutating": false,
+          "openWorld": true,
+          "readOnly": true,
+          "requiredCredential": "qloo_api",
+          "safeRetryClasses": [
+            "dns",
+            "connect",
+            "timeout",
+            "rate_limit",
+            "upstream_5xx"
+          ],
+          "supportedTransports": ["direct", "mcp"]
+        },
+        "description": "Find geographic areas where one entity has strong query-relative affinity. This is distinct from filtering recommendations to a place.",
+        "documentation": ["https://docs.qloo.com/reference/heatmaps-use-case"],
+        "id": "where_popular",
+        "input_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "entity": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "entity_type": {
+              "description": "Qloo search entity type: artist, book, brand, movie, person, place, podcast, tv_show, videogame, locality, actor, album, author, director.",
+              "enum": [
+                "artist",
+                "book",
+                "brand",
+                "movie",
+                "person",
+                "place",
+                "podcast",
+                "tv_show",
+                "videogame",
+                "locality",
+                "actor",
+                "album",
+                "author",
+                "director"
+              ],
+              "type": "string"
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum results to return (1-20).",
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "within": {
+              "description": "Required geographic area that constrains the heatmap.",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["entity", "within"],
+          "type": "object"
+        },
+        "shared_tool_name": "qloo_where_popular",
+        "summary": "Find geographic areas where an entity has comparatively strong affinity."
+      },
+      {
+        "behavior": {
+          "concurrency": "safe_for_independent_inputs",
+          "defaultResultBudget": 10,
+          "destructive": false,
+          "expectedLatency": "medium",
+          "idempotent": true,
+          "maximumResultBudget": 20,
+          "mutating": false,
+          "openWorld": true,
+          "readOnly": true,
+          "requiredCredential": "qloo_api",
+          "safeRetryClasses": [
+            "dns",
+            "connect",
+            "timeout",
+            "rate_limit",
+            "upstream_5xx"
+          ],
+          "supportedTransports": ["direct", "mcp"]
+        },
+        "description": "Compare two complete groups of entity signals in one Qloo analysis request.",
+        "documentation": ["https://docs.qloo.com/reference/analysis-compare"],
+        "id": "compare_audiences",
+        "input_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "group_a": {
+              "description": "Named entities or Qloo entity UUIDs; use tag fields for abstract concepts.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "group_b": {
+              "description": "Named entities or Qloo entity UUIDs; use tag fields for abstract concepts.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum results to return (1-20).",
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "target_type": {
+              "description": "Qloo Insights entity type: artist, book, brand, movie, person, place, podcast, tv_show, videogame.",
+              "enum": [
+                "artist",
+                "book",
+                "brand",
+                "movie",
+                "person",
+                "place",
+                "podcast",
+                "tv_show",
+                "videogame"
+              ],
+              "type": "string"
+            }
+          },
+          "required": ["group_a", "group_b"],
+          "type": "object"
+        },
+        "shared_tool_name": "qloo_compare_audiences",
+        "summary": "Contrast two signal groups and identify shared or differentiating affinities."
+      },
+      {
+        "behavior": {
+          "concurrency": "safe_for_independent_inputs",
+          "defaultResultBudget": 10,
+          "destructive": false,
+          "expectedLatency": "medium",
+          "idempotent": true,
+          "maximumResultBudget": 20,
+          "mutating": false,
+          "openWorld": true,
+          "readOnly": true,
+          "requiredCredential": "qloo_api",
+          "safeRetryClasses": [
+            "dns",
+            "connect",
+            "timeout",
+            "rate_limit",
+            "upstream_5xx"
+          ],
+          "supportedTransports": ["direct", "mcp"]
+        },
+        "description": "Retrieve Qloo concepts that jointly characterize one or more entities using the documented urn:tag Insights workflow.",
+        "documentation": ["https://docs.qloo.com/reference/taste-analysis"],
+        "id": "entity_tags",
+        "input_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "entities": {
+              "description": "Named entities or Qloo entity UUIDs; use tag fields for abstract concepts.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "entity_type": {
+              "description": "Qloo search entity type: artist, book, brand, movie, person, place, podcast, tv_show, videogame, locality, actor, album, author, director.",
+              "enum": [
+                "artist",
+                "book",
+                "brand",
+                "movie",
+                "person",
+                "place",
+                "podcast",
+                "tv_show",
+                "videogame",
+                "locality",
+                "actor",
+                "album",
+                "author",
+                "director"
+              ],
+              "type": "string"
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum results to return (1-20).",
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": ["entities"],
+          "type": "object"
+        },
+        "shared_tool_name": "qloo_entity_tags",
+        "summary": "Retrieve concepts and tags that characterize entities."
+      },
+      {
+        "behavior": {
+          "concurrency": "safe_for_independent_inputs",
+          "defaultResultBudget": 10,
+          "destructive": false,
+          "expectedLatency": "medium",
+          "idempotent": true,
+          "maximumResultBudget": 20,
+          "mutating": false,
+          "openWorld": true,
+          "readOnly": true,
+          "requiredCredential": "qloo_api",
+          "safeRetryClasses": [
+            "dns",
+            "connect",
+            "timeout",
+            "rate_limit",
+            "upstream_5xx"
+          ],
+          "supportedTransports": ["direct", "mcp"]
+        },
+        "description": "Retrieve aggregate demographic distributions associated with one entity through the documented urn:demographics Insights workflow.",
+        "documentation": [
+          "https://docs.qloo.com/reference/demographics-use-case"
+        ],
+        "id": "audience_demographics",
+        "input_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "entity": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "entity_type": {
+              "description": "Qloo search entity type: artist, book, brand, movie, person, place, podcast, tv_show, videogame, locality, actor, album, author, director.",
+              "enum": [
+                "artist",
+                "book",
+                "brand",
+                "movie",
+                "person",
+                "place",
+                "podcast",
+                "tv_show",
+                "videogame",
+                "locality",
+                "actor",
+                "album",
+                "author",
+                "director"
+              ],
+              "type": "string"
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum results to return (1-20).",
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": ["entity"],
+          "type": "object"
+        },
+        "shared_tool_name": "qloo_audience_demographics",
+        "summary": "Retrieve aggregate audience segments associated with an entity."
+      },
+      {
+        "behavior": {
+          "concurrency": "safe_for_independent_inputs",
+          "defaultResultBudget": 10,
+          "destructive": false,
+          "expectedLatency": "medium",
+          "idempotent": true,
+          "maximumResultBudget": 20,
+          "mutating": false,
+          "openWorld": true,
+          "readOnly": true,
+          "requiredCredential": "qloo_api",
+          "safeRetryClasses": [
+            "dns",
+            "connect",
+            "timeout",
+            "rate_limit",
+            "upstream_5xx"
+          ],
+          "supportedTransports": ["direct", "mcp"]
+        },
+        "description": "Retrieve Qloo time-series popularity metrics for one to five resolved entities over an ISO date range.",
+        "documentation": ["https://docs.qloo.com/reference/get-trending"],
+        "id": "trends",
+        "input_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "end_date": {
+              "description": "Inclusive end date in YYYY-MM-DD format.",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            "entities": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 5,
+              "minItems": 1,
+              "type": "array"
+            },
+            "entity_type": {
+              "description": "Qloo Insights entity type: artist, book, brand, movie, person, place, podcast, tv_show, videogame.",
+              "enum": [
+                "artist",
+                "book",
+                "brand",
+                "movie",
+                "person",
+                "place",
+                "podcast",
+                "tv_show",
+                "videogame"
+              ],
+              "type": "string"
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum results to return (1-20).",
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "start_date": {
+              "description": "Inclusive start date in YYYY-MM-DD format.",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            }
+          },
+          "required": ["entities", "entity_type", "start_date", "end_date"],
+          "type": "object"
+        },
+        "shared_tool_name": "qloo_trends",
+        "summary": "Retrieve interest or trend information over a time range."
+      },
+      {
+        "behavior": {
+          "concurrency": "safe_for_independent_inputs",
+          "defaultResultBudget": 10,
+          "destructive": false,
+          "expectedLatency": "low",
+          "idempotent": true,
+          "maximumResultBudget": 20,
+          "mutating": false,
+          "openWorld": true,
+          "readOnly": true,
+          "requiredCredential": "qloo_api",
+          "safeRetryClasses": [
+            "dns",
+            "connect",
+            "timeout",
+            "rate_limit",
+            "upstream_5xx"
+          ],
+          "supportedTransports": ["direct", "mcp"]
+        },
+        "description": "Search Qloo's tag ontology by natural-language concept and return stable tag URNs.",
+        "documentation": ["https://docs.qloo.com/reference/get-tags-1"],
+        "id": "find_tags",
+        "input_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "limit": {
+              "default": 10,
+              "description": "Maximum results to return (1-20).",
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "query": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "semantic": {
+              "default": true,
+              "type": "boolean"
+            }
+          },
+          "required": ["query"],
+          "type": "object"
+        },
+        "shared_tool_name": "qloo_find_tags",
+        "summary": "Search the Qloo tag ontology by natural-language concept."
+      }
+    ],
+    "result_schema": {
+      "additionalProperties": true,
+      "properties": {
+        "error": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "layer": {
+              "type": "string"
+            },
+            "recovery": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          },
+          "required": ["code", "layer", "retryable", "recovery"],
+          "type": "object"
+        },
+        "execution": {
+          "additionalProperties": false,
+          "properties": {
+            "correlation_id": {
+              "type": "string"
+            },
+            "duration_ms": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "transport": {
+              "enum": ["direct", "cli", "mcp"],
+              "type": "string"
+            },
+            "transport_name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "transport",
+            "transport_name",
+            "correlation_id",
+            "duration_ms"
+          ],
+          "type": "object"
+        },
+        "interpretation": {},
+        "operation": {
+          "type": "string"
+        },
+        "provenance": {
+          "additionalProperties": false,
+          "properties": {
+            "documentation": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string"
+            },
+            "requests": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "method": {
+                    "const": "GET",
+                    "type": "string"
+                  },
+                  "path": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "query": {}
+                },
+                "required": ["method", "path", "query"],
+                "type": "object"
+              },
+              "maxItems": 20,
+              "type": "array"
+            },
+            "source": {
+              "type": "string"
+            },
+            "transport": {
+              "type": "string"
+            }
+          },
+          "required": ["source", "endpoint", "documentation"],
+          "type": "object"
+        },
+        "query_intent": {},
+        "result_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "results": {},
+        "schema_version": {
+          "const": "1.0-preview.1",
+          "type": "string"
+        },
+        "status": {
+          "anyOf": [
+            {
+              "const": "ok",
+              "type": "string"
+            },
+            {
+              "const": "empty",
+              "type": "string"
+            },
+            {
+              "const": "needs_input",
+              "type": "string"
+            },
+            {
+              "const": "partial",
+              "type": "string"
+            },
+            {
+              "const": "degraded",
+              "type": "string"
+            },
+            {
+              "const": "error",
+              "type": "string"
+            }
+          ]
+        },
+        "summary": {
+          "type": "string"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": ["schema_version", "operation", "status", "execution"],
+      "type": "object"
+    },
+    "result_schema_version": "1.0-preview.1",
+    "upstream": {
+      "api_version": "2.0",
+      "documentation_url": "https://docs.qloo.com",
+      "documented_exceptions": [
+        {
+          "documentationUrl": "https://docs.qloo.com/reference/demographics-use-case",
+          "scope": "/v2/insights filter.type",
+          "status": "documented-but-not-enumerated",
+          "treatment": "Preserve as an explicit documentation exception; do not synthesize an endpoint payload schema from it.",
+          "value": "urn:demographics"
+        },
+        {
+          "documentationUrl": "https://docs.qloo.com/reference/taste-analysis",
+          "scope": "/v2/insights filter.type",
+          "status": "documented-but-not-enumerated",
+          "treatment": "The pinned specification mentions this value in diversify.by documentation but omits it from the filter.type enum; preserve the discrepancy for review.",
+          "value": "urn:tag"
+        }
+      ],
+      "get_paths": [
+        "/",
+        "/entities",
+        "/search",
+        "/v2/analysis/compare",
+        "/v2/audiences",
+        "/v2/audiences/types",
+        "/v2/insights",
+        "/v2/tags",
+        "/v2/tags/types",
+        "/v2/trending"
+      ],
+      "lock_sha256": "da8d4b830f2a646815d25afcaa653f81f1ad939707e2e2560d2d0b9f103076f1",
+      "openapi_version": "3.1.0",
+      "production_server": "https://api.qloo.com"
+    }
+  },
+  "tools": {
+    "tools": [
+      {
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "operation_ids": {
+              "items": {
+                "enum": [
+                  "recommend",
+                  "rank",
+                  "describe",
+                  "where_popular",
+                  "compare_audiences",
+                  "entity_tags",
+                  "audience_demographics",
+                  "trends",
+                  "find_tags"
+                ],
+                "type": "string"
+              },
+              "maxItems": 9,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "type": "object"
+        },
+        "name": "qloo_capabilities"
+      },
+      {
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "demographic": {
+              "description": "Audience demographic in natural language, such as 'young women', 'men 25-34', or 'millennials'. It is converted to documented Qloo demographic signals.",
+              "examples": ["young women", "men 25-34", "millennials"],
+              "minLength": 1,
+              "type": "string"
+            },
+            "exclude_tags": {
+              "description": "Genres, moods, styles, traits, or other concepts, or Qloo tag URNs; not named entities.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "exclude_tags_operator": {
+              "description": "Combine tag values with union (any) or intersection (all).",
+              "enum": ["union", "intersection"],
+              "type": "string"
+            },
+            "explain": {
+              "default": true,
+              "type": "boolean"
+            },
+            "filter_location": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "include_tags": {
+              "description": "Genres, moods, styles, traits, or other concepts, or Qloo tag URNs; not named entities.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "include_tags_operator": {
+              "description": "Combine tag values with union (any) or intersection (all).",
+              "enum": ["union", "intersection"],
+              "type": "string"
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum results to return (1-20).",
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "signal_location": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "signal_tags": {
+              "description": "Genres, moods, styles, traits, or other concepts, or Qloo tag URNs; not named entities.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "signal_tags_operator": {
+              "description": "Combine tag values with union (any) or intersection (all).",
+              "enum": ["union", "intersection"],
+              "type": "string"
+            },
+            "signals": {
+              "description": "Named entities or Qloo entity UUIDs; use tag fields for abstract concepts.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "target_type": {
+              "description": "Qloo Insights entity type: artist, book, brand, movie, person, place, podcast, tv_show, videogame.",
+              "enum": [
+                "artist",
+                "book",
+                "brand",
+                "movie",
+                "person",
+                "place",
+                "podcast",
+                "tv_show",
+                "videogame"
+              ],
+              "type": "string"
+            }
+          },
+          "required": ["target_type"],
+          "type": "object"
+        },
+        "name": "qloo_recommend"
+      },
+      {
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "entity": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "description": "Qloo search entity type: artist, book, brand, movie, person, place, podcast, tv_show, videogame, locality, actor, album, author, director.",
+              "enum": [
+                "artist",
+                "book",
+                "brand",
+                "movie",
+                "person",
+                "place",
+                "podcast",
+                "tv_show",
+                "videogame",
+                "locality",
+                "actor",
+                "album",
+                "author",
+                "director"
+              ],
+              "type": "string"
+            }
+          },
+          "required": ["entity"],
+          "type": "object"
+        },
+        "name": "qloo_describe"
+      }
+    ]
+  }
+}

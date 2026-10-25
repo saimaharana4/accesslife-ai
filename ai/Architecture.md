@@ -1,6 +1,6 @@
 # Taste Duel architecture
 
-Revision 6 — 25 October 2026 — Prompt 5 local API/database foundation. **Five-round fixture UI and a separate local backend foundation exist; no live Taste Duel game service or cloud deployment exists.**
+Revision 7 - 25 October 2026 - Prompt 6 private MCP transport. **Fixture UI and local provider/database foundation exist; no live Taste Duel game or cloud deployment exists.**
 
 The web entry point is a fresh Taste Duel fixture frontend. `apps/api/src/tasteduel` now contains the independent local domain/API/read foundation; legacy backend entry points, containers and recorded deployment remain AccessLife. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate live Taste Duel gameplay, its agent, data rights or cloud migration. [prompts.md](prompts.md) controls later iterations.
 
@@ -15,7 +15,7 @@ The web entry point is a fresh Taste Duel fixture frontend. `apps/api/src/tasted
 - `features/reveal/WhyThisDuel` accepts an **accepted-round-only** presentation contract: source label, factual ranking-context sentence, optional supported explanation/attribution and discovery action. `fixtureDisclosure` produces this only for the current revealed/advancing answer. No unsupported explanation is supplied.
 - `features/curation/CurationSummary` explicitly projects typed domain/mode/count/path facts; it accepts no raw receipt, private reasoning, scores, contestant list or pair/answer data. Here it is nested inside the post-answer disclosure with unmistakable synthetic/no-agent labels. Later allowlisted API DTOs replace fixture facts; these UI types do not define the API.
 
-Fixture tests prove local behavior only. Prompt 5 adds owned read isolation and storage checks below; authoritative gameplay mutations, adaptive pools, MCP/Vertex and exact two-session challenge replay remain future gates. Production exclusion is a build boundary, not proof of future server secrecy.
+Fixture tests prove local behavior only. Prompt 5 adds owned read isolation and storage checks below; authoritative gameplay mutations, adaptive pools, live MCP/Vertex and exact two-session challenge replay remain future gates. Prompt 6's private transport is described separately below. Production exclusion is a build boundary, not proof of future server secrecy.
 
 ### Prompt 5 backend foundation
 
@@ -30,6 +30,47 @@ Only sessions, health and owned game/round/result/discovery reads are connected.
 **Prompt 2 evidence:** the [dated source/capability matrix](qloo-capability-matrix.md) pins harness `0.1.26` and official source commits. Twelve counted requests proved two raw cross-domain samples with five-pair numeric feasibility; canonical MCP Insights and same-domain cells remain unverified. No live payload or generated API client is committed. The advertised OpenAPI file is a meta-schema without endpoint paths and is rejected for code generation. This is a partial feasibility gate, not an implemented provider or game.
 
 ## 1. Product flow and decisions
+
+### Prompt 6 implemented provider boundary
+
+`ports/qloo.py` defines frozen private resolution/candidate/evidence values.
+`adapters/qloo/` owns schema validation, six-envelope normalization and the
+managed MCP child; `adapters/qloo_policy.py` owns shared admission and budgets.
+`api/provider_runtime.py` is the composition root: explicit Secret Manager
+reference lookup through server ADC, adapter wiring and API lifespan teardown.
+Domain/application consumers receive typed values, never provider dictionaries;
+no new provider route or browser forwarding is connected in this stage.
+
+`runtime/qloo` pins Node 24.18.1 / harness 0.1.26 with npm lock and the offline
+discovered three-workflow schema snapshot. Startup verifies exact schemas and
+checksum; the runner injects a one-attempt QlooClient rather than using CLI/home
+configuration. Every GET to the fixed event host first requests parent admission,
+including hydration. Child env is limited to PATH/SystemRoot/TEMP/TMP plus the
+explicit key; stdout is MCP only and arbitrary stderr is discarded. One child
+per API lifespan serializes workflows; queue+call deadlines, bounded restart
+and kill/reap on active cancellation handle the harness cancellation gap.
+
+The additive `td0005` creates the twentieth table, `ProviderControl`, scoped by
+private key fingerprint under forced RLS. Atomic SQL admission shares minute
+counts, spacing, circuit and authentication blocks across instances. No guest
+can select its scope through HTTP. Like session GUCs, the scope GUC is trusted
+backend context, not cryptographic SQL identity. Runtime has SELECT/INSERT/UPDATE
+only; no public API exposes this table. Existing applied migrations are unchanged.
+
+A required request context caps all workflows/retries at six upstream requests
+and twenty seconds. Default admission is thirty/minute with 200 ms spacing;
+three eligible transient failures open thirty seconds, authentication is sticky,
+and only one eligible transient retry is allowed. These application limits do
+not establish event quota. Legacy services bypassing this store remain outside
+its protection and require coordination before any live cutover.
+
+The isolated [backend image](../infra/containers/tasteduel-api.Dockerfile) uses
+digest-pinned bases and separate minimal Python/npm locks. Legacy images and CI
+are unchanged. No raw HTTP fallback or live call was added. Normalization keeps
+compact affinity private and `ordering_verified=false`; image rights are false,
+supported explanation absent. The [runtime guide](../runtime/qloo/README.md)
+records the remaining canonical Insights/order/type-context gate before genuine
+pool claims. Offline transport completion is not live-game completion.
 
 A guest selects one favourite cultural entity, predicts five Qloo comparisons, receives a score out of five, saves discoveries and challenges a friend to the same five rounds. Initial seed/target domains are music artists and movies, subject to Prompt 2's live coverage and rights gates. Book/person support is later; a director's name must not silently resolve as a movie.
 

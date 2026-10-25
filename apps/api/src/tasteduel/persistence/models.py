@@ -484,6 +484,28 @@ class MutationReceipt(Owned, Created, Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class ProviderControl(Base):
+    """Service-private per-key counters; scoped by app.provider_scope, not a guest."""
+
+    __tablename__ = "provider_controls"
+    __table_args__ = (
+        CheckConstraint("scope_hash ~ '^[a-f0-9]{64}$'", name="scope_hash"),
+        CheckConstraint("used >= 0", name="used"),
+        CheckConstraint("limit_value BETWEEN 1 AND 120", name="limit_value"),
+        CheckConstraint("failures BETWEEN 0 AND 1000", name="failures"),
+    )
+    scope_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    window_start: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=text("clock_timestamp()")
+    )
+    used: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
+    limit_value: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("30"))
+    next_allowed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    failures: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
+    open_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    auth_blocked: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
+
+
 # Descriptive aliases used by repository callers; no second set of mapped tables.
 GuestSession = Session
 AcceptedAnswer = Answer

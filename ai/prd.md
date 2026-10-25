@@ -1,6 +1,6 @@
 # Taste Duel product requirements
 
-Revision 4 - 25 October 2026 - Prompt 5 local API/database foundation; live-product requirements remain targets
+Revision 5 - 25 October 2026 - Prompt 6 private transport; live-product requirements remain targets
 
 ## Delivery status and authority
 
@@ -15,6 +15,15 @@ Prompt 2's [capability record](qloo-capability-matrix.md) establishes sample raw
 **Prompt 5 foundation contract:** guest sessions and authorized read projections operate against separate local PostgreSQL storage. Private pools/receipts never serialize directly. Reload may retrieve an already accepted current reveal; this is proven with synthetic database fixtures, not an implemented answer endpoint. Live search, generation, answer/advance/save handlers and public challenge replay return explicit unimplemented responses. Schema constraints and read isolation are foundation evidence; they do not pass the full durability/live acceptance requirements below.
 
 ## 1. Product and problem
+
+**Prompt 6 actual delivery:** the server has a typed Qloo resolution/ranking port,
+official pinned local-stdio harness and bounded private runtime. All six result
+states and useful ambiguity choices are synthetic-tested. This does not connect
+the fixture UI or establish live ranking/coverage: compact affinity ordering
+remains explicitly unverified. No live Qloo calls, credential payload access or
+cloud changes occurred. Original-art fallback remains the supported baseline;
+unreviewed explanation text and unlicensed image use are withheld. Prompt 7 is
+the next implementation stage, with live pool acceptance still gated.
 
 **Choose one favourite, predict five Qloo comparisons, discover something surprising, then challenge a friend to the same five rounds.**
 

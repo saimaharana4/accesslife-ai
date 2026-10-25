@@ -1,6 +1,6 @@
 # Taste Duel engineering rules
 
-Revision 6 — 25 October 2026 — Prompt 5 local foundation. **The web remains a five-round fixture; a separate local Taste Duel API/schema exists. Deployed services/cloud remain AccessLife.** Foundation checks do not complete live gameplay, provider verification or a GCP migration.
+Revision 7 - 25 October 2026 - Prompt 6 private MCP transport. **Web remains synthetic; local provider controls do not establish live gameplay or a GCP migration.**
 
 ## 1. Authority, scope and preservation
 
@@ -21,6 +21,26 @@ Use available Codex agents with explicit independent file ownership, coordinated
 Preserve original `/ai` reference bytes and a recoverable AccessLife source checkpoint/history. Publish only specifically allowlisted AI documents: the six maintained specs, ai/prompts.md and the dated [Qloo capability matrix](qloo-capability-matrix.md); originals remain local/ignored. Never broad-stage credential history, private captures, state or original references. Keep dated short factual [memory.md](memory.md) entries and mark historical AccessLife evidence clearly. Do not edit external user memory without a direct request.
 
 ## 2. Approved stack and dependencies
+
+**Prompt 6 enforced runtime:** use the separately locked `runtime/qloo` npm
+package and `runtime/python` uv project for the new backend image; no runtime
+downloads, inherited NODE_OPTIONS/HOME/ADC or CLI credential discovery in the
+MCP child. Only describe/recommend/capabilities workflows may run. Exact packaged
+schema/checksum mismatch fails startup. Every actual fetch requires parent
+admission; do not substitute a count per MCP invocation. Required request context
+is six requests/twenty seconds maximum including hydration and eligible retry.
+Default thirty/minute and 200 ms spacing are local engineering limits, not
+documented Qloo quota. Shared SQL controls cover only participating runtimes;
+overlapping legacy callers must be coordinated before rollout.
+
+Provider mode stays disabled by default. Resolve only the configured existing
+Secret Manager reference server-side; never add payloads to env examples or
+images. Unknown/malformed envelopes fail closed, material ambiguity stays
+selectable, authentication never retries/falls back, and at most one eligible
+transient retry is permitted. Stderr is discarded and stdout reserved for MCP.
+Keep compact ordering unverified until the actual remaining live gate passes;
+no inferred explanation or image licence. Prompt 6's zero-live-call tests do
+not extend or reset Prompt 2's exhausted budget.
 
 | Layer | Use | Avoid or defer |
 |---|---|---|

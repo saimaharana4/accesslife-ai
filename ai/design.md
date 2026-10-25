@@ -1,6 +1,6 @@
 # Taste Duel design specification
 
-Revision 4 · 25 October 2026 · Fixture visual system preserved; Prompt 5 wire contracts added
+Revision 5 - 25 October 2026 - Fixture visual system preserved; private provider handoff documented
 
 ## Status and visual goal
 
@@ -19,6 +19,15 @@ Prompt 2 found image metadata in both cross-domain samples but established no as
 The experience should feel like **a cultural fight-night editorial**: one favourite, two oversized opponents, a quick prediction and a revealing result. Type and artwork create impact. The game must be understandable before explaining infrastructure.
 
 ## 1. Art direction and tokens
+
+**Prompt 6 presentation handoff:** the private provider returns normalized
+statuses/typed ambiguity choices; it does not send MCP/provider JSON, scores or
+raw warnings to components. The fixture UI is unchanged and keeps its synthetic
+label. Later integration must make `needs_input` an explicit user selection and
+preserve empty/partial/degraded/unavailable/retry states without implying a
+fallback called Qloo. Compact ordering, explanation support and image rights
+are unverified; use owned artwork and factual accepted-round context only.
+No new screenshots or frontend acceptance claims arise from this backend work.
 
 Use an original typographic wordmark, near-black canvas, warm paper text and electric chartreuse actions. A narrow DUEL seam between large choices is the signature composition. Five round pips create continuity; the result resembles a collectible printed ticket rather than dashboard statistics.
 
