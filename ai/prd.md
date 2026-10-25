@@ -1,14 +1,14 @@
 # Taste Duel product requirements
 
-Revision 1 · 24 October 2026 · Prompt 1: specification pivot only
+Revision 2 - 25 October 2026 - Prompt 3 visual prototype; full-product requirements remain targets
 
 ## Delivery status and authority
 
-Taste Duel is the selected new product. This document defines requirements; it does not report implemented Taste Duel features. Application source and the previously documented GCP deployment still belong to AccessLife at this checkpoint. Its old test results, venue smoke checks and live URL do not validate this game. No Taste Duel application code, database migration, repository rename or cloud change is part of Prompt 1.
+Taste Duel is the selected new product. This document defines full-product requirements. Prompt 3 implements only a fresh synthetic frontend visual prototype; the Python backend and GCP deployment remain AccessLife. Old test results, venue smoke checks and the old live URL do not validate this game. No database migration, repository rename or cloud change occurred in Prompt 3.
 
 The execution sequence is [prompts.md](prompts.md). Use [Architecture.md](Architecture.md), [rules.md](rules.md), [design.md](design.md) and [phases.md](phases.md) together. Record actual results separately in [memory.md](memory.md). Preserve the original three reference files unchanged; their legacy planner requirements do not govern this pivot.
 
-Prompt 2's [capability record](qloo-capability-matrix.md) establishes sample raw artist→movie and movie→artist numeric five-pair feasibility, not general coverage or game quality. Canonical MCP Insights and same-domain cells remain unverified within the exhausted twelve-request budget. The product requirements below remain acceptance targets; no Taste Duel feature or cloud resource is complete.
+Prompt 2's [capability record](qloo-capability-matrix.md) establishes sample raw artist→movie and movie→artist numeric five-pair feasibility, not general coverage or game quality. Canonical MCP Insights and same-domain cells remain unverified within the exhausted twelve-request budget. Prompt 3 adds no live calls. Its five visual states use invented names/rankings and original artwork; the result's 3/5 and invitation are specimens, not a completed game or actual shared challenge. The functional requirements below remain future gates.
 
 ## 1. Product and problem
 

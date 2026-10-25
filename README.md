@@ -2,7 +2,7 @@
 
 One favourite. Five duels. Predict Qloo's ranking, discover something surprising, then challenge a friend to the same five rounds.
 
-**Status - 24 October 2026: Prompt 1 preservation is complete; Prompt 2 has a partial capability gate. Taste Duel application development has not started.** Two genuine cross-domain samples prove a five-round numeric pool is feasible for tested artist/movie seeds, using an explicit raw diagnostic. Canonical MCP Insights and same-domain rankings remain unverified. Application code, containers, deployment configuration and the existing deployment still belong to AccessLife AI; the new isolated probe/tests do not replace them. No cloud provisioning, deployment or repository rename occurred.
+**Status - 25 October 2026: Taste Duel has a local visual prototype (Prompt 3), using explicitly fictional content.** It includes seed selection, one sample duel/reveal, a result-ticket specimen, a challenge invitation and loading/error designs. It is not a complete five-round game or live Qloo integration. Prompt 2 remains partial: raw cross-domain samples passed, while canonical MCP Insights and same-domain cells remain unverified. Backend, containers and GCP deployment remain legacy AccessLife; no cloud provisioning, deployment or repository rename occurred.
 
 ## What the new product will do
 
@@ -21,19 +21,69 @@ The target interface is a mobile-first cultural game: oversized artwork, distinc
 | Item | Actual status |
 |---|---|
 | Taste Duel requirements, architecture, rules, design and sequence | Rewritten for the pivot in Prompt 1 |
-| Existing AccessLife source | Preserved unchanged at the checkpoint below; no new active copy added |
-| Taste Duel UI, API, game engine, database and RoundCuratorAgent | Planned; not implemented or tested |
+| Existing AccessLife source | Recoverable at the checkpoint below; unused old planner/map web modules removed after replacement checks. Legacy backend/cloud unchanged |
+| Taste Duel UI | New server shell, local fonts, original SVG art, React Aria synthetic seed chooser and one interactive sample reveal; result/invitation are labelled specimens |
+| Taste Duel API, five-round engine, persistence, real sharing and RoundCuratorAgent | Planned; not implemented or tested |
 | Qloo feasibility and rights | Pinned harness `0.1.26`; offline discovery and two raw cross-domain samples passed within **12/12** requests. Canonical MCP Insights, same-domain cells, nested explanation semantics and broad coverage remain unverified; [full matrix](ai/qloo-capability-matrix.md) |
 | Prompt 2 synthetic verification | 22 tests passed; Ruff passed. No production game, accessibility, restart or cloud readiness claim |
-| Taste Duel images and fonts | Proposed sources; usage/licence and rendered checks remain pending |
+| Prompt 3 local production-build verification | 12 Playwright tests passed across 1440×1000, 390×844 and 320×844; 27 full axe scans found zero violations; 30 screenshots captured, with core states and layout edge cases visually reviewed |
+| Taste Duel images and fonts | Four original SVGs; locally hosted Barlow Condensed/Manrope with OFL notices and immutable provenance. [Asset manifest](third_party/taste-duel-assets.md) |
 | Taste Duel live URL, repository rename and GCP cutover | Not performed; reserved for later migration prompts |
 | Historical AccessLife verification | Recorded in [memory](ai/memory.md); not rerun or relabelled as Taste Duel verification |
 
-There is no Taste Duel production URL yet. The previously recorded [AccessLife endpoint](https://accesslife-web-dfthmgvvaa-el.a.run.app) is a legacy deployment reference, not the new game; its current health was not rechecked in this documentation-only iteration.
+There is no Taste Duel production URL yet. Local preview: **http://127.0.0.1:3001**. The previously recorded [AccessLife endpoint](https://accesslife-web-dfthmgvvaa-el.a.run.app) remains a legacy deployment reference; its health was not rechecked in this frontend iteration.
+
+## Run the visual prototype
+
+Node 24 with Corepack is sufficient; no Docker, database, ADC or API key is needed.
+
+```powershell
+corepack pnpm install --frozen-lockfile
+corepack pnpm dev:prototype
+# Open http://127.0.0.1:3001 ; Ctrl+C stops the preview.
+```
+
+Preview routes: `/`, `/g/demo`, `/results/demo`, `/c/demo`, `/how-it-works`,
+`/prototype/loading` and `/prototype/error`. Use
+`/g/demo?variant=long-title-missing-image` for the long-title/fallback specimen.
+Selecting another fictional seed updates the arena context. The result's 3/5 is
+an illustrative specimen, not a score calculated from the sample round.
+
+```powershell
+corepack pnpm typecheck
+corepack pnpm build
+corepack pnpm test:prototype
+# Tests require the preview already running on port 3001.
+# For a local production-build preview, stop dev first, then:
+corepack pnpm start:prototype
+```
+
+Prototype tests use only local assets and reject browser requests to external
+hosts or `/api/`. The old forwarding route now returns `503 PROTOTYPE_ONLY` and
+cannot contact AccessLife/Qloo/GCP. Answer and reveal state are disposable local
+UI state; refresh resets the specimen. There is no saved game, real score,
+challenge link or production answer-secrecy claim. The full fixture journey is
+Prompt 4; genuine backend integration comes later.
+
+Screenshots/axe/geometry/font evidence: `test-results/tasteduel-prototype/`;
+HTML report: `playwright-report/tasteduel-prototype/index.html`.
+First/second visual passes and final review notes are under ignored
+`.data/tasteduel-prompt3/`. Verification outcomes below distinguish automated
+text scaling from actual browser zoom and screen-reader user testing.
+
+The final standalone build passes. Checks cover keyboard seed selection/reveal,
+focus transfer, local font loading, reduced motion, 48px interactive targets,
+320px overflow, 200% root-font text scaling and an actual aborted SVG request
+before hydration. Visual review corrected desktop action placement, mobile
+headline sizing, clipped fallback content and the seam between unequal stacked
+cards. Computed enabled-action contrast is 16.70:1. Human screen-reader testing,
+actual browser zoom, other browser engines and real-user playtesting remain
+unverified. The current CI/containers are legacy and were not validated as Taste
+Duel delivery infrastructure.
 
 ## Execute one iteration at a time
 
-The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next independent step: Prompt 3 - original visual prototype with labelled synthetic data.** Resolve the recorded Prompt 2 MCP/coverage gaps under a separate small budget before dependent provider/game integration. The current iteration used exactly twelve Qloo requests and zero Vertex calls; do not restart its exhausted budget on resume or in a clean clone.
+The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next: Prompt 4 - complete five-round fixture frontend.** Resolve the recorded Prompt 2 MCP/coverage gaps under a separate small budget before dependent provider/game integration. Prompt 2 used exactly twelve Qloo requests; Prompt 3 makes zero Qloo/Vertex/Secret Manager calls. Do not restart Prompt 2's exhausted budget on resume or in a clean clone.
 
 Read its shared requirements, then paste the complete numbered prompt. Do not run all prompts as a single implementation request. Independent synthetic visual work can proceed during a provider outage, but it cannot pass the genuine integration gate.
 
@@ -58,7 +108,7 @@ The target GCP deployment is public Cloud Run web -> same-origin forwarding -> p
 
 Pre-answer DTOs contain only playable choices. After a server-accepted answer, a separate reveal DTO can disclose that answered round only. Neither public invitations nor HTML/RSC/JavaScript/social previews expose future winners, rankings or private pools. Answer/Next/replay use stored evidence and make no new Qloo/LLM calls.
 
-The new game needs no RAG, ingestion/chunking, embeddings, vector database, maps, transport or separate planning worker. Existing dependencies and runtime files remain until their replacement gates pass; the exact [removal plan](ai/phases.md) prevents breaking the preserved app halfway through the pivot.
+The new game needs no RAG, ingestion/chunking, embeddings, vector database, maps, transport or separate planning worker. Prompt 3 removes six unused legacy web modules and seven obsolete direct web dependencies, after the new shell's checks. Legacy Python/runtime/container files remain until their later replacement gates; the [removal plan](ai/phases.md) records this boundary.
 
 ## Data and artwork boundaries
 
@@ -84,17 +134,9 @@ git show accesslife-before-taste-duel-2026-10-24:README.md
 git rev-parse 'accesslife-before-taste-duel-2026-10-24^{commit}'
 ```
 
-The existing startup script still launches **AccessLife**, not Taste Duel:
+The existing `scripts/dev.ps1`, Compose stack, application E2E suite and cloud workflows still describe legacy backend integration and are **not** the new prototype's startup/verification path. Use the commands above. Legacy CI has not been migrated or run as Taste Duel CI; use the isolated `test:prototype` suite. Container/CI replacement remains Prompt 14.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1
-# Existing AccessLife web: http://localhost:3000
-# Existing AccessLife API docs: http://localhost:8000/docs
-docker compose down
-# Preserve the database volume; do not add -v.
-```
-
-These commands were inspected, not executed as Taste Duel verification. For a later source rollback, inspect the tag or use an explicitly isolated worktree outside the new build context; do not hard-reset user work or roll back a live database automatically. [Legacy operations](infra/README.md) and [legacy cost review](infra/COST_REVIEW.md) remain AccessLife baseline documents until their migration stages.
+For source rollback, inspect the tag or use an explicitly isolated worktree outside the new build context; do not hard-reset user work or roll back a live database automatically. [Legacy operations](infra/README.md) and [legacy cost review](infra/COST_REVIEW.md) remain AccessLife baseline documents until their migration stages.
 
 Original local reference preservation manifest (SHA-256):
 

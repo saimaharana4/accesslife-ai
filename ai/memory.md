@@ -2,7 +2,7 @@
 
 Keep each dated entry to one or two lines. Record completed work and verified outcomes; distinguish requirements, measurements and blockers. Never include secrets, personal profiles or unverified success claims.
 
-**Current direction - 24 October 2026:** Taste Duel. Prompt 1 preservation is complete; Prompt 2 has a partial capability gate with two raw cross-domain samples and unresolved MCP/same-domain checks. The current application and deployment remain AccessLife. Historical results below are not Taste Duel verification and were not rerun for this pivot.
+**Current direction - 25 October 2026:** Taste Duel. Prompt 3 is a local synthetic visual prototype; backend/cloud remain AccessLife. Prompt 2 retains its partial live gate with unresolved MCP/same-domain checks. Historical AccessLife results below are not Taste Duel verification.
 
 ## Historical AccessLife milestones (recorded at the time)
 
@@ -52,3 +52,6 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 - **2026-10-24 - Prompt 2 live:** Exactly 12/12 sequential Qloo HTTP requests, no retries; two raw artist/movie cross-domain samples each returned twenty unique ordered candidates, sufficient for five numeric disjoint comparisons. Canonical MCP Insights, same-domain cells and nested explanation semantics remain unverified; Vertex deferred, no infrastructure mutation.
 - **2026-10-24 - Prompt 2 review:** Independent score/rights review retained lower-bound/sample limitations and original-art fallback; no universal score scale, image licence, numerical quota or key-expiry claim. Synthetic tests/Ruff and preservation checks are recorded at final verification; next independent step is Prompt 3, with live gaps due before dependent integration.
 - **2026-10-24 - Prompt 2 verification:** 22 synthetic tests and Ruff passed; 70 local links, JSON/fences, 19 keep/21 ignore cases, original hashes and the checkpoint tag passed. Independent final review found no blocking inconsistency; the 14-file publication scope includes prior Prompt 1 docs plus this spike/contracts, with no live payloads or credential-pattern matches.
+
+- **2026-10-25 - Prompt 3:** Built a fresh local Taste Duel visual shell with fictional seed selection, one sample reveal, result/invitation specimens, original SVG/OFL type and loading/error/fallback states; removed unused planner web modules/dependencies. No Qloo, Vertex, Secret Manager or cloud changes; full five-round play remains Prompt 4.
+- **2026-10-25 - Prompt 3 verification:** Standalone build and 12 Playwright tests passed; 27 full axe scans had zero violations and 30 desktop/mobile/320px captures were reviewed/refined. Fixed real-image hydration fallback and stacked seam; preserved references/tag/history; human screen-reader and actual browser zoom remain unverified. Preview: http://127.0.0.1:3001; audit: `.data/tasteduel-prompt3/verification.json`.

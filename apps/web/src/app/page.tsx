@@ -1,4 +1,4 @@
-import Application from "@/features/planner/application";
+import { LandingStage } from "@/features/seed/landing-stage";
 export default function Page() {
-  return <Application />;
+  return <LandingStage />;
 }

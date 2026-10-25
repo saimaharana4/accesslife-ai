@@ -1,14 +1,16 @@
 # Taste Duel design specification
 
-Revision 1 · 24 October 2026 · Planned visual system; no Taste Duel UI implemented
+Revision 2 · 25 October 2026 · Synthetic visual prototype implemented; full game remains planned
 
 ## Status and visual goal
 
-This is a fresh design brief, not a description of the current AccessLife UI. Prompt 1 changes specifications only. Application source and cloud deployment remain AccessLife; its planner screenshots and accessibility results cannot satisfy this game's gates. Preserve original reference files unchanged.
+The fresh Taste Duel shell now implements this direction as a local synthetic prototype. It replaces the planner's web entry point; backend/cloud remain AccessLife. Planner screenshots and historical accessibility results cannot satisfy this game's gates. Preserve original reference files unchanged.
 
 Follow [prompts.md](prompts.md), [prd.md](prd.md), [Architecture.md](Architecture.md) and [rules.md](rules.md); record real results in [memory.md](memory.md).
 
-Prompt 2 found image metadata in both cross-domain samples but established no asset display/mirroring/social rights. Original title-based artwork is sufficient for the upcoming synthetic prototype; no optional image provider is required. Use rank wording rather than automatically turning decimal affinity into a percentage. The [capability matrix](qloo-capability-matrix.md) records the partial live gate; no rendered Taste Duel UI exists yet.
+Prompt 2 found image metadata in both cross-domain samples but established no asset display/mirroring/social rights. Prompt 3 uses four original geometric SVGs and local Barlow Condensed 700/Manrope 400–600 with OFL notices and pinned provenance; see the [asset manifest](../third_party/taste-duel-assets.md). No optional image provider is needed. Use rank wording rather than automatically turning decimal affinity into a percentage. The [capability matrix](qloo-capability-matrix.md) records the unchanged partial live gate.
+
+**Prompt 3 render refinement:** the first desktop render exposed a third grid child pushing the second poster into another row and the CTA below the fold. The second pass positions the registration star independently, restores paired covers and keeps the form/action visible. Mobile uses a smaller deliberate two-line headline at 390px and stacked choices at 320px. Titles stay outside the artwork, failed images receive an original title card, and reveal moves focus to its outcome heading. Loading/error pages disclose their static specimen status. This is one sample round, not the five-round fixture journey of Prompt 4. Actual captures/checks are recorded in memory and README; no human screen-reader or real-user enjoyment claim is made.
 
 The experience should feel like **a cultural fight-night editorial**: one favourite, two oversized opponents, a quick prediction and a revealing result. Type and artwork create impact. The game must be understandable before explaining infrastructure.
 

@@ -1,0 +1,4 @@
+# Keep upstream font/notice bytes identical to the recorded provenance on Windows.
+apps/web/public/fonts/*.ttf -text -diff
+# The unmodified upstream OFL notices contain trailing whitespace.
+apps/web/public/fonts/*-OFL.txt -text -whitespace

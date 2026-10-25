@@ -1,8 +1,8 @@
 # Taste Duel implementation phases
 
-Revision 1 · 24 October 2026 · Prompt 1 documentation pivot; application remains AccessLife
+Revision 2 - 25 October 2026 - Prompt 3 local visual prototype; backend/cloud remain legacy
 
-**Verified progress:** Prompt 1 preservation/specification work is complete. Prompt 2 research and the bounded 12-request spike are recorded in the [capability matrix](qloo-capability-matrix.md): two raw cross-domain samples prove numeric five-pair feasibility, while canonical MCP Insights, same-domain rankings and nested explanation semantics remain unverified. Its gate is partial, not passed. Prompts 3–21 remain unexecuted; Prompt 3 may begin independent synthetic visual work. Return to the listed Prompt 2 probes before dependent integration, without resetting its exhausted budget.
+**Verified progress:** Prompt 1 preservation is complete; Prompt 2 remains a partial live gate in the [capability matrix](qloo-capability-matrix.md). Prompt 3 implements independent synthetic visual work: fresh shell, fictional seed selection, one interactive reveal, result/invitation specimens and loading/error screens, original SVG/local licensed type and responsive screenshots. Full five-round fixture play is Prompt 4; no backend/cloud gate passes from this visual work. Return to the listed Prompt 2 probes before dependent integration without resetting its exhausted budget. Current visual verification is recorded in README/memory.
 
 ## Status and execution rules
 
@@ -56,6 +56,8 @@ Remove dependencies only after their replacement passes and remaining imports/co
 | 14 | Compose worker/ingest/model-cache services, Docker ONNX download, old smoke/CI commands | New clean runtime/CI passes without them |
 | 14 | Retrieval extras (`onnxruntime`, `tokenizers`, `numpy`, `huggingface-hub`), `langgraph`, Cloud Tasks, `pgvector`, `beautifulsoup4` dependencies and obsolete model notices | Verify actual package/import names, remove only unused imports, update locks/licences and rebuild; any justified retained dependency is documented |
 | 16–20 | Old cloud workers/jobs/queue/scheduler/release identities | Reviewed resource map, preserved shared Terraform ownership, healthy cutover and rollback/retention conditions; no global resource rename |
+
+**Prompt 3 removal completed:** removed unchanged legacy `features/{planner,places,trips,map}`, the unused old UI Button and API client (six files), after the replacement shell's checks. Removed seven unused direct web dependencies: MapLibre, React Hook Form/resolvers, TanStack Query, Zod, Lucide and Google Auth. Future features may add an approved dependency when needed; unused declarations are not a reason to ship it now. The old provider forwarding route is locally disabled. Generated legacy API declarations remain unused until Prompt 5; Python, containers, migrations and cloud resources are untouched. Source recovery uses the existing annotated AccessLife tag, without an active second app copy.
 
 Dependencies installed in the reused SQL instance need not be dropped merely because new game tables do not use them. Never remove original references, the Git checkpoint, secret/state ownership or unrelated workloads as cleanup.
 

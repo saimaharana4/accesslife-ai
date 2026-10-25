@@ -1,8 +1,10 @@
 # Taste Duel architecture
 
-Revision 3 — 24 October 2026 — Prompt 1 specification reset. **This is a target architecture; Taste Duel has not been implemented or deployed.**
+Revision 4 — 25 October 2026 — Prompt 3 frontend prototype. **The full architecture remains a target; only the synthetic visual shell is implemented. No Taste Duel backend or deployment exists.**
 
-Current application code, containers and recorded deployment remain AccessLife AI. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate Taste Duel gameplay, its agent, data rights or cloud migration. Prompt 1 changes specifications/preservation only. [prompts.md](prompts.md) controls later iterations.
+The web entry point is now a fresh Taste Duel prototype. Python backend, containers and recorded cloud deployment remain AccessLife AI. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate Taste Duel gameplay, its agent, data rights or cloud migration. [prompts.md](prompts.md) controls later iterations.
+
+**Implemented boundary in Prompt 3:** Next.js server layout/pages, two local licensed font families, original SVG art, a React Aria synthetic seed chooser and a client-only single-round reveal island. Result/challenge/loading/error pages are labelled specimens. No provider, database, session, model, score service or share link is involved. `/api/v1/*` returns a local `503 PROTOTYPE_ONLY` response instead of forwarding to the old planner; the real forwarding contract below is future work. The synthetic winner in this visual specimen is public fixture code, not the production secrecy implementation. Six unused legacy web modules and seven direct dependencies were removed after replacement checks; old source stays in the preservation tag. Legacy generated OpenAPI declarations remain until Prompt 5, unused by the prototype.
 
 **Prompt 2 evidence:** the [dated source/capability matrix](qloo-capability-matrix.md) pins harness `0.1.26` and official source commits. Twelve counted requests proved two raw cross-domain samples with five-pair numeric feasibility; canonical MCP Insights and same-domain cells remain unverified. No live payload or generated API client is committed. The advertised OpenAPI file is a meta-schema without endpoint paths and is rejected for code generation. This is a partial feasibility gate, not an implemented provider or game.
 

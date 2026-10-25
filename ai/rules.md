@@ -1,12 +1,14 @@
 # Taste Duel engineering rules
 
-Revision 3 — 24 October 2026 — Prompt 1 specification reset. **These rules describe the Taste Duel target. Existing code/runtime remains AccessLife AI.** Rewriting specifications does not complete game development, provider verification or a GCP migration.
+Revision 4 — 25 October 2026 — Prompt 3 visual prototype. **These rules describe the Taste Duel target. The web shell is now a synthetic prototype; backend/cloud remain AccessLife AI.** Prototype checks do not complete gameplay, provider verification or a GCP migration.
 
 ## 1. Authority, scope and preservation
 
 Follow the user's explicit Taste Duel pivot, [prompts.md](prompts.md) and the maintained [PRD](prd.md), [Architecture](Architecture.md), [phases](phases.md) and [design](design.md). Execute only the selected numbered prompt. Complete its checks or report the specific blocker; do not skip into later implementation/deployment. Routine reversible decisions do not require repeated approval. Prompt 1 authorizes documentation/preservation, not cloud mutations or application replacement.
 
 Build a guest web game: seed search, five Qloo-backed comparisons, honest score, discoveries and exact friend challenge. Initial artist/movie coverage is a live gate; book/person support is later. Remove the old five-city/planner requirement. Native apps, accounts, global leaderboards, maps, transport, multi-city travel and extra domains are outside this MVP.
+
+Prompt 3 is explicitly an isolated visual specimen: fictional local seed options, one disposable reveal and illustrative result/challenge pages. Its client-side sample outcome cannot be reused as production answer authority. No external/browser API calls, real scoring, saved session, sharing or fake provider progress. Keep the prototype disclosure visible. Use `dev:prototype`/`test:prototype`; old Compose, backend journeys and cloud workflows have not been migrated. Direct web dependencies are pinned, font notices remain with local files, and original SVG sources are retained in the [asset manifest](../third_party/taste-duel-assets.md).
 
 Use available Codex agents with explicit independent file ownership, coordinated contracts and an independent reviewer. Those build roles are not deployed agents. The application starts with one bounded RoundCuratorAgent; extra frameworks/agents/services are not evidence of quality.
 
