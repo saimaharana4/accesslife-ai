@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s · Taste Duel",
   },
   description:
-    "A cultural prediction game in development. Live games are not connected.",
+    "One favourite. Five Qloo-ranked cultural duels. Predict connections and discover something new.",
   robots: { index: false, follow: false },
 };
 export default function RootLayout({
@@ -59,8 +59,8 @@ export default function RootLayout({
                   </>
                 ) : (
                   <>
-                    <strong>In development</strong> — live games are not
-                    connected.
+                    <strong>Local preview</strong> — Qloo ranking and curator
+                    mode are identified in each game.
                   </>
                 )}
               </span>
@@ -86,7 +86,7 @@ export default function RootLayout({
               <span>
                 {fixturesEnabled ? "Local fixture play" : "Taste Duel"}{" "}
                 <span aria-hidden="true">/</span>{" "}
-                <Link href="/how-it-works">About this prototype</Link>
+                <Link href="/how-it-works">About the game</Link>
               </span>
             </footer>
           </div>

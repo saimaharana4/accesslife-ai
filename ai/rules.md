@@ -1,6 +1,24 @@
 # Taste Duel engineering rules
 
-Revision 10 - 26 October 2026 - Prompt 9 transactional authority. **Live corrective value, browser integration and deployment remain unproven.**
+Revision 11 - 26 October 2026 - Prompt 10 browser/private API boundary; deployment remains unproven.
+
+Current browser rules: forward only explicitly supported methods/paths/query keys,
+the own session cookie and required idempotency key. Validate request/response
+allowlists against exported application OpenAPI, including dictionary property
+names; bound streamed bytes and deadlines. Never forward browser Authorization,
+upstream diagnostic headers, arbitrary error strings or private-pool fields.
+Require exact mutation origins and secure host-scoped HttpOnly cookies; explicit
+loopback HTTP is a development exception. Metadata IAM is server-only and its
+audience comes from fixed configuration. No arbitrary asset URL is fetched.
+
+Preserve uncertain request identity; never automatically guess again on reload.
+Use accepted public evidence only for reveals, completion-only allowlisted facts
+for curation disclosure, and server score. Label fixture/genuine/deterministic
+modes truthfully. The Prompt 10 live check has its own persistent 8-Qloo/6-Vertex
+iteration ceiling; prior ledgers remain closed. All calls, retries and harness
+lookups count; answer/Next must add none. Never renew a spent budget on resume.
+See [browser integration rules](../apps/web/INTEGRATION.md). Historical statements
+below describe their named delivery, not a direction to disable the new proxy.
 
 ## 1. Authority, scope and preservation
 
@@ -72,18 +90,18 @@ Keep compact ordering unverified until the actual remaining live gate passes;
 no inferred explanation or image licence. Prompt 6's zero-live-call tests do
 not extend or reset Prompt 2's exhausted budget.
 
-| Layer | Use | Avoid or defer |
-|---|---|---|
-| Web | Next.js App Router, strict TypeScript, Server Components for shell/layout | Whole-app client rendering, old planner reskin, new Pages Router flow |
-| Style/controls | Tailwind, semantic tokens, React Aria primitives, Lucide where useful | Mixed UI bases, copied trade dress, improvised focus/combobox behavior |
-| Interaction | Motion for focused choice/reveal; explicit frontend state machine | Forced animation/audio, GSAP/WebGL without a measured need |
-| Contracts | Generated application OpenAPI types and compatible Zod forms | Conflicting handwritten wire schemas, private payloads in public global stores |
-| API | FastAPI, Pydantic, SQLAlchemy, Alembic, psycopg | SQL interpolation, import-time requests, create_all instead of migrations |
-| Qloo | Pinned official harness/Python stdio MCP client behind QlooPort | Browser keys/calls, docs MCP as production API, guessed tool arguments |
-| Agent/model | One Google Gen AI Vertex tool loop and typed model port | Inherited RAG supervisor/swarm, unbounded loops, guessed model IDs |
-| Storage | PostgreSQL 16 ordinary relational tables | RAG/PDF ingestion/chunking/embeddings/MiniLM/vector/spatial requirements, Redis by default |
-| Runtime/release | Node 24, Python 3.12, Docker, Terraform, GitHub Actions WIF | Runtime npx installs, unpinned latest, Kubernetes, CI service-account key files |
-| Checks | pytest, meaningful frontend checks, real DB integration, Playwright/axe | Weakened assertions/scans, fixture success presented as live evidence |
+| Layer           | Use                                                                       | Avoid or defer                                                                             |
+| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Web             | Next.js App Router, strict TypeScript, Server Components for shell/layout | Whole-app client rendering, old planner reskin, new Pages Router flow                      |
+| Style/controls  | Tailwind, semantic tokens, React Aria primitives, Lucide where useful     | Mixed UI bases, copied trade dress, improvised focus/combobox behavior                     |
+| Interaction     | Motion for focused choice/reveal; explicit frontend state machine         | Forced animation/audio, GSAP/WebGL without a measured need                                 |
+| Contracts       | Generated application OpenAPI types and compatible Zod forms              | Conflicting handwritten wire schemas, private payloads in public global stores             |
+| API             | FastAPI, Pydantic, SQLAlchemy, Alembic, psycopg                           | SQL interpolation, import-time requests, create_all instead of migrations                  |
+| Qloo            | Pinned official harness/Python stdio MCP client behind QlooPort           | Browser keys/calls, docs MCP as production API, guessed tool arguments                     |
+| Agent/model     | One Google Gen AI Vertex tool loop and typed model port                   | Inherited RAG supervisor/swarm, unbounded loops, guessed model IDs                         |
+| Storage         | PostgreSQL 16 ordinary relational tables                                  | RAG/PDF ingestion/chunking/embeddings/MiniLM/vector/spatial requirements, Redis by default |
+| Runtime/release | Node 24, Python 3.12, Docker, Terraform, GitHub Actions WIF               | Runtime npx installs, unpinned latest, Kubernetes, CI service-account key files            |
+| Checks          | pytest, meaningful frontend checks, real DB integration, Playwright/axe   | Weakened assertions/scans, fixture success presented as live evidence                      |
 
 Use pnpm/uv, compatible exact dependencies/images and committed lockfiles. Verify harness/runtime versions in Prompt 2; the Python backend image also needs the tested Node runtime. Do not retain unused retrieval/map/chart packages because they already exist. Remove dependencies only after replacement stages pass and imports/build/runtime checks establish they are unused. Reused SQL extensions can remain installed harmlessly.
 
@@ -156,18 +174,18 @@ Persist session/operation idempotency key, canonical body hash, stable game ID, 
 
 Answer/advance use transactions, unique acceptance and expected revisions. Identical retries return saved outcomes; conflicting choices/bodies return 409. Future/out-of-order IDs fail. Session clear blocks late publication. Expired games do not silently become new games. Release permits/resources on cancellation/failure.
 
-| Condition | Required handling |
-|---|---|
-| Invalid/ambiguous input | Actionable validation/selection, no guessed identity |
-| Qloo auth/permission failure | No blind retry, silent transport/provider switch or fixture success |
-| Timeout/eligible 429/temporary 5xx | Bounded idempotent retry within deadline/quota; Retry-After where feasible |
-| Partial/degraded harness result | Explicit normalized status; normal deterministic quality gates still apply |
-| Malformed order or weak pool | Reject unsupported pairs and offer another seed |
-| Vertex unavailable | Label deterministic Qloo curation only where verified evidence permits; retain failed model attempts and incomplete usage |
-| Malformed model/tool output or unsupported override | Fail closed; no fixture success or silently narrated fallback |
-| Artwork failure | Preserve title and deliberate owned fallback |
-| Internal/database error | Stable safe envelope/correlation ID; no traceback/query/payload |
-| Lost answer/advance response | Saved outcome/round; no duplicate score or reshuffle |
+| Condition                                           | Required handling                                                                                                         |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Invalid/ambiguous input                             | Actionable validation/selection, no guessed identity                                                                      |
+| Qloo auth/permission failure                        | No blind retry, silent transport/provider switch or fixture success                                                       |
+| Timeout/eligible 429/temporary 5xx                  | Bounded idempotent retry within deadline/quota; Retry-After where feasible                                                |
+| Partial/degraded harness result                     | Explicit normalized status; normal deterministic quality gates still apply                                                |
+| Malformed order or weak pool                        | Reject unsupported pairs and offer another seed                                                                           |
+| Vertex unavailable                                  | Label deterministic Qloo curation only where verified evidence permits; retain failed model attempts and incomplete usage |
+| Malformed model/tool output or unsupported override | Fail closed; no fixture success or silently narrated fallback                                                             |
+| Artwork failure                                     | Preserve title and deliberate owned fallback                                                                              |
+| Internal/database error                             | Stable safe envelope/correlation ID; no traceback/query/payload                                                           |
+| Lost answer/advance response                        | Saved outcome/round; no duplicate score or reshuffle                                                                      |
 
 Normalize ok, empty, needs_input, partial, degraded and error envelopes. Unknown structures fail safely. No broad exception swallowing, busy polling, infinite retry or repeated authentication retries. Docs MCP is reference only; no execute-request or key. Test throttling/deadlines synthetically rather than deliberately exhausting live quota.
 

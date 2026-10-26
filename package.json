@@ -18,6 +18,10 @@
     "dev:fixtures": "node scripts/dev-fixtures.mjs",
     "test:fixtures": "playwright test --config playwright.fixtures.config.ts",
     "test:fixture-state": "node --experimental-strip-types --test apps/web/src/features/fixtures/*.test.ts",
+    "dev:live": "node scripts/dev-live.mjs",
+    "start:live": "node scripts/start-live.mjs",
+    "test:web-integration": "playwright test --config playwright.live.config.ts",
+    "test:web-contracts": "node --experimental-strip-types --test apps/web/src/lib/api/*.test.ts apps/web/src/features/gameplay/*.test.ts",
     "check:fixture-production": "node scripts/check-fixture-production.mjs"
   },
   "devDependencies": {

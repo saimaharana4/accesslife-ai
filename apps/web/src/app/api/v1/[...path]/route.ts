@@ -1,22 +1,28 @@
-// The prototype never forwards to the legacy planner or a live provider.
-// Authenticated Taste Duel forwarding is implemented in Prompt 10.
-function unavailable() {
-  return Response.json(
-    {
-      error: {
-        code: "PROTOTYPE_ONLY",
-        message:
-          "This visual prototype uses local synthetic content. Live game APIs are not connected.",
-      },
-    },
-    { status: 503, headers: { "Cache-Control": "no-store" } },
-  );
+import { forwardApi } from "@/lib/api/forward";
+import { metadataIdentityToken } from "@/lib/api/identity-token";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+function handler(request: Request) {
+  return forwardApi(request, {
+    apiUrl: process.env.TASTEDUEL_API_URL ?? "",
+    allowedOrigins: (process.env.TASTEDUEL_WEB_ORIGINS ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+    allowLocalHttp: process.env.TASTEDUEL_ALLOW_LOCAL_HTTP === "true",
+    identityToken:
+      process.env.TASTEDUEL_API_IAM === "true"
+        ? metadataIdentityToken
+        : undefined,
+  });
 }
 
 export {
-  unavailable as GET,
-  unavailable as POST,
-  unavailable as PUT,
-  unavailable as PATCH,
-  unavailable as DELETE,
+  handler as GET,
+  handler as POST,
+  handler as DELETE,
+  handler as PUT,
+  handler as PATCH,
 };

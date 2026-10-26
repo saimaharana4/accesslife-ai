@@ -39,7 +39,6 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 - **2026-10-24 - Final audit:** All four active credential payloads are absent from 90 tracked files and remote Terraform state; deployed services have no sensitive literal settings. Three original reference hashes match and 43 local documentation links resolve.
 - **2026-10-24 - Open acceptance:** Outings remain provisional; complete evidence-backed routes, Cloud SQL backup restore, real-user screen-reader review and hackathon qualification are pending. Optional earlier provider keys remain unconfigured; the reviewed US$78.48 forecast is not a spending cap.
 
-
 ## Taste Duel pivot
 
 - **2026-10-24 - Baseline:** Prompt 1 started on clean tracked `main` at `86d4ef677ae7dba93bf0211e4348d7c29284a948` (90 tracked files); the existing `ai/prompts.md` was ignored. No physical AGENTS.md was found; supplied conversation instructions apply.
@@ -74,3 +73,6 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 
 - **2026-10-26 - Prompt 9:** Implemented awaited fenced generation, atomic private pool/full receipt, authoritative idempotent answers/Next, typed search persistence and safe lease status; added `td0006` without changing earlier migrations. Unfinished games withhold global summaries; browser/discoveries/challenges remain later work, no live provider or cloud calls.
 - **2026-10-26 - Prompt 9 verification:** 587 tests passed from an empty local database plus two synthetic curator/SQL bridge tests; a real API process restart preserved five-round play and the exact receipt. Final full suite: 589 passed; contracts/types, Ruff and isolated image smoke passed; original DB restored and both datasets retained. Artifacts: `.data/tasteduel-prompt9/`; next Prompt 10, with Prompt 8 live corrective evidence still pending.
+
+- **2026-10-26 - Prompt 10:** Connected strict same-origin forwarding, typed seed selection and server-owned five-round/reveal/result recovery; added completion-only curation facts and owned title-card fallback. Fixed production Host normalization and replaced inaccessible live search overlay; original references/migrations and user prompts remain unchanged, with no cloud deployment/push.
+- **2026-10-26 - Prompt 10 verification:** 52 Node checks, 23 distinct browser cases (28 passing invocations), 38 full axe scans and production/type/OpenAPI/Ruff/fixture-exclusion checks passed. One genuine Radiohead-to-movie browser game used 2 Qloo/2 Vertex calls with zero on answer/Next; 12 live captures and audits in `.data/tasteduel-prompt10/`. Next Prompt 11; broader coverage, live corrective value, human AT/playtesting and cloud release remain open.

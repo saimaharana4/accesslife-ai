@@ -1,6 +1,18 @@
 # Taste Duel implementation phases
 
-Revision 8 - 26 October 2026 - Prompt 9 local authoritative flow; next frontend integration
+Revision 9 - 26 October 2026 - Prompt 10 browser integration; next Prompt 11
+
+**Current Prompt 10 delivery:** generated-contract search/session forwarding and
+authoritative game/reveal/result presentation replace the disconnected default
+shell. Strict origin/cookie/path/header/schema boundaries, uncertain-request
+recovery and owned artwork policy precede the bounded live browser gate. Agent
+ownership covers forwarding/search, gameplay and independent keyboard/mobile/
+security review; the lead integrates and verifies. Actual check results and live
+counts are recorded in README/memory and the integration guide. No cloud resource
+was changed. Prompt 11 is next, while historical corrective-value/canonical MCP/
+broad coverage gates remain explicit rather than silently claimed complete.
+
+The following named prompt outcomes are historical at their delivery dates.
 
 **Prompt 9 completed locally:** fenced reservation/recovery, atomic full receipt
 and pool, authoritative idempotent answers/Next, safe generation observation and
@@ -23,29 +35,29 @@ A gate needs evidence. Fix failure or state its exact blocker, continuing indepe
 
 ## 1. Ordered dependency and completion gates
 
-| Prompt | Deliverable | Prerequisite | Completion gate |
-|---|---|---|---|
-| 1 | Inventory, preservation and rewritten specs | Existing repo/pivot | Old work recoverable; references unchanged; actual/planned distinction |
-| 2 | Qloo/source/rights matrix | 1 | Genuine bounded cross-domain capability and score/rights gaps recorded |
-| 3 | Original visual prototype | 1; 2 where available | Inspected mobile/desktop composition in five main states |
-| 4 | Five-round fixture frontend | 3 | Polished keyboard/reduced-motion journey, explicit fixture mode |
-| 5 | Domain/API/database foundation | 1/frontend contract needs | Clean migrations, generated types, real constraints/isolation |
-| 6 | Official Qloo MCP adapter | 2, 5 | Pinned real schemas/lifecycle/contracts, no browser key |
-| 7 | Deterministic duel pool | 2, 5, 6 | Five-round no-repeat path, correct context and fair presentation |
-| 8 | Bounded curator agent | 6, 7 | Real tool use/budgets, deterministic veto preserved |
-| 9 | Authoritative durable APIs | 5, 7, 8 | Retry/fencing/score/session/secrecy scenarios pass |
-| 10 | Real game integration | 4, 9 | Search → five genuine rounds → actual result |
-| 11 | Adaptation/recovery/discoveries | 10 | Stable score/resume through interruption/restart |
-| 12 | Exact challenges and sharing | 11 | Two guests replay the creator's identical five rounds |
-| 13 | Accessibility/security/performance | 12 | Full audits, screenshots and measurements; serious defects resolved |
-| 14 | Containers/preflight/remote CI | 13 | Clean runtime and actual remote CI for current app SHA |
-| 15 | Round tuning/playtest evidence | 14 | Technical matrix and honest human validation status |
-| 16 | GCP migration/cost plan | 14, 15 status | Non-destructive validated plan fits total US$80 gate |
-| 17 | Repo/WIF/cloud foundation | Passing 16 | Restricted auth, scoped secrets/new logical DB; no product cutover |
-| 18 | Candidate/recovery checks | 17/published images | Actual external game/private connectivity/restore/cost evidence |
-| 19 | Production cutover | Passing 18 | Canonical public Taste Duel, compatible rollback evidence |
-| 20 | Controlled legacy retirement | 19/retention conditions | No old runtime dependency; shared recovery/state protected |
-| 21 | Handoff/submission materials | 19/resolved 20 status | Factual production/source/CI/runbook record and open limitations |
+| Prompt | Deliverable                                 | Prerequisite              | Completion gate                                                        |
+| ------ | ------------------------------------------- | ------------------------- | ---------------------------------------------------------------------- |
+| 1      | Inventory, preservation and rewritten specs | Existing repo/pivot       | Old work recoverable; references unchanged; actual/planned distinction |
+| 2      | Qloo/source/rights matrix                   | 1                         | Genuine bounded cross-domain capability and score/rights gaps recorded |
+| 3      | Original visual prototype                   | 1; 2 where available      | Inspected mobile/desktop composition in five main states               |
+| 4      | Five-round fixture frontend                 | 3                         | Polished keyboard/reduced-motion journey, explicit fixture mode        |
+| 5      | Domain/API/database foundation              | 1/frontend contract needs | Clean migrations, generated types, real constraints/isolation          |
+| 6      | Official Qloo MCP adapter                   | 2, 5                      | Pinned real schemas/lifecycle/contracts, no browser key                |
+| 7      | Deterministic duel pool                     | 2, 5, 6                   | Five-round no-repeat path, correct context and fair presentation       |
+| 8      | Bounded curator agent                       | 6, 7                      | Real tool use/budgets, deterministic veto preserved                    |
+| 9      | Authoritative durable APIs                  | 5, 7, 8                   | Retry/fencing/score/session/secrecy scenarios pass                     |
+| 10     | Real game integration                       | 4, 9                      | Search → five genuine rounds → actual result                           |
+| 11     | Adaptation/recovery/discoveries             | 10                        | Stable score/resume through interruption/restart                       |
+| 12     | Exact challenges and sharing                | 11                        | Two guests replay the creator's identical five rounds                  |
+| 13     | Accessibility/security/performance          | 12                        | Full audits, screenshots and measurements; serious defects resolved    |
+| 14     | Containers/preflight/remote CI              | 13                        | Clean runtime and actual remote CI for current app SHA                 |
+| 15     | Round tuning/playtest evidence              | 14                        | Technical matrix and honest human validation status                    |
+| 16     | GCP migration/cost plan                     | 14, 15 status             | Non-destructive validated plan fits total US$80 gate                   |
+| 17     | Repo/WIF/cloud foundation                   | Passing 16                | Restricted auth, scoped secrets/new logical DB; no product cutover     |
+| 18     | Candidate/recovery checks                   | 17/published images       | Actual external game/private connectivity/restore/cost evidence        |
+| 19     | Production cutover                          | Passing 18                | Canonical public Taste Duel, compatible rollback evidence              |
+| 20     | Controlled legacy retirement                | 19/retention conditions   | No old runtime dependency; shared recovery/state protected             |
+| 21     | Handoff/submission materials                | 19/resolved 20 status     | Factual production/source/CI/runbook record and open limitations       |
 
 If Prompt 2 is externally blocked, independently continue synthetic visual Prompts 3–4 while recording the failed live gate. Fixtures cannot satisfy later provider/game integration. Independent contracts/security planning can continue without claiming capability passed.
 
@@ -53,16 +65,16 @@ If Prompt 2 is externally blocked, independently continue synthetic visual Promp
 
 Remove dependencies only after their replacement passes and remaining imports/commands are verified. Preserve old source/migrations in the checkpoint; do not keep an active second legacy app in new build contexts.
 
-| Stage | Replace or retire | Required condition |
-|---|---|---|
-| 3–4 | Old web planner/places/trips/map features and page/layout/CSS; then `maplibre-gl` | New game shell/fixture journey works and old imports are gone |
-| 5 | AccessLife domain and migration entry points | Fresh `tasteduel` domain and separate migration boundary; historical migrations remain recoverable |
-| 6 | Old Qloo provider coupling; Python-only API runtime assumptions | Normalized MCP port and tested packaged Node 24/harness lifecycle |
-| 7–9 | Old graph/worker/run orchestration | Deterministic engine, fenced creation claims and authoritative game state pass |
-| 10 | Planner proxy allowlists, generated OpenAPI and client calls | New game contracts and same-origin forwarding pass secrecy/isolation checks |
-| 14 | Compose worker/ingest/model-cache services, Docker ONNX download, old smoke/CI commands | New clean runtime/CI passes without them |
-| 14 | Retrieval extras (`onnxruntime`, `tokenizers`, `numpy`, `huggingface-hub`), `langgraph`, Cloud Tasks, `pgvector`, `beautifulsoup4` dependencies and obsolete model notices | Verify actual package/import names, remove only unused imports, update locks/licences and rebuild; any justified retained dependency is documented |
-| 16–20 | Old cloud workers/jobs/queue/scheduler/release identities | Reviewed resource map, preserved shared Terraform ownership, healthy cutover and rollback/retention conditions; no global resource rename |
+| Stage | Replace or retire                                                                                                                                                          | Required condition                                                                                                                                 |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3–4   | Old web planner/places/trips/map features and page/layout/CSS; then `maplibre-gl`                                                                                          | New game shell/fixture journey works and old imports are gone                                                                                      |
+| 5     | AccessLife domain and migration entry points                                                                                                                               | Fresh `tasteduel` domain and separate migration boundary; historical migrations remain recoverable                                                 |
+| 6     | Old Qloo provider coupling; Python-only API runtime assumptions                                                                                                            | Normalized MCP port and tested packaged Node 24/harness lifecycle                                                                                  |
+| 7–9   | Old graph/worker/run orchestration                                                                                                                                         | Deterministic engine, fenced creation claims and authoritative game state pass                                                                     |
+| 10    | Planner proxy allowlists, generated OpenAPI and client calls                                                                                                               | New game contracts and same-origin forwarding pass secrecy/isolation checks                                                                        |
+| 14    | Compose worker/ingest/model-cache services, Docker ONNX download, old smoke/CI commands                                                                                    | New clean runtime/CI passes without them                                                                                                           |
+| 14    | Retrieval extras (`onnxruntime`, `tokenizers`, `numpy`, `huggingface-hub`), `langgraph`, Cloud Tasks, `pgvector`, `beautifulsoup4` dependencies and obsolete model notices | Verify actual package/import names, remove only unused imports, update locks/licences and rebuild; any justified retained dependency is documented |
+| 16–20 | Old cloud workers/jobs/queue/scheduler/release identities                                                                                                                  | Reviewed resource map, preserved shared Terraform ownership, healthy cutover and rollback/retention conditions; no global resource rename          |
 
 **Prompt 3 removal completed:** removed unchanged legacy `features/{planner,places,trips,map}`, the unused old UI Button and API client (six files), after the replacement shell's checks. Removed seven unused direct web dependencies: MapLibre, React Hook Form/resolvers, TanStack Query, Zod, Lucide and Google Auth. Future features may add an approved dependency when needed; unused declarations are not a reason to ship it now. The old provider forwarding route is locally disabled. Generated legacy API declarations remain unused until Prompt 5; Python, containers, migrations and cloud resources are untouched. Source recovery uses the existing annotated AccessLife tag, without an active second app copy.
 

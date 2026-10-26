@@ -23,11 +23,11 @@ export default function HowItWorksPage() {
         </p>
         <h2>What you are predicting</h2>
         <p>
-          The future game will use aggregate, request-specific Qloo rankings.
-          They are cultural connections, not a probability that you will enjoy
-          something. A different favourite or query can produce a different
-          ranking. Correct and incorrect guesses measure game performance: how
-          well you predicted that ranking. They do not tell us which choice you
+          Live games use aggregate, request-specific Qloo rankings. They are
+          cultural connections, not a probability that you will enjoy something.
+          A different favourite or query can produce a different ranking.
+          Correct and incorrect guesses measure game performance: how well you
+          predicted that ranking. They do not tell us which choice you
           personally like or dislike. Saving a discovery is your explicit choice
           to explore it, independent of your prediction.
         </p>
@@ -35,19 +35,20 @@ export default function HowItWorksPage() {
         <p>
           {fixturesEnabled
             ? "This development-only fixture game uses invented entities and rankings, original artwork and five local rounds. Your score counts accepted sample answers out of five. It makes no Qloo calls and creates no real share link. Progress lasts only in this tab's current app session; reloading resets it."
-            : "Live games are not connected. The development-only fixture game is excluded from this production build. No live Qloo integration, accounts or shared game service is available yet."}
+            : "When the private game service is configured, search resolves real Qloo entities and a bounded curator prepares five evidence-backed rounds. Each game identifies whether its curator used a genuine agent or deterministic Qloo mode. The server stores accepted answers and your score. Friend challenges and discovery saves are later work. The synthetic fixture game is excluded from production builds."}
         </p>
         <h2>Built to be played your way.</h2>
         <p>
           No time pressure, sound or animation is required. Use the keyboard to
           search and choose. Reduced-motion preferences are respected. Real
-          server authority, durable progress, exact friend replay and live
-          ranking will be built in later iterations.
+          games restore accepted progress when you reload in the same guest
+          session. Friend replay will be built in a later iteration.
         </p>
         <h2>Artwork and type</h2>
         <p>
-          All displayed cover compositions are original SVG design assets for
-          fictional works. No film poster or artist photography was copied.
+          Cover compositions are original SVG title cards, used as clearly
+          labelled fallback art for real entities in live games. No film poster
+          or artist photography was copied. Provider image URLs are not fetched.
           Barlow Condensed and Manrope are served locally with their font
           licence notices.
         </p>

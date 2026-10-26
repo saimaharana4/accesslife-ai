@@ -1,6 +1,33 @@
 # Taste Duel design specification
 
-Revision 8 - 26 October 2026 - Existing visual direction unchanged; authoritative API states available
+Revision 9 - 26 October 2026 - Prompt 10 connected fight-night arena
+
+**Current Prompt 10 composition:** preserve the oversized title, owned artwork-led
+choices, single DUEL seam, five pips and result ticket. Add compact artist/film
+selection and identity disambiguation; disable the field until its keyboard
+handlers are hydrated. Immediate press feedback precedes server-confirmed
+correctness. Accepted reveal restores after reload and keeps Next explicit.
+Preparing/error/expired views use honest saved state, without animated invented
+agent work. New-round focus moves to the question; accepted outcome receives
+focus once. Respect reduced motion and preserve titles through image failure.
+
+“Why this duel?” states only the accepted Qloo comparison in its frozen context;
+optional richer explanation remains withheld. The secondary “Curated with Qloo”
+disclosure appears only with the completion summary and identifies actual mode,
+domain, aggregate findings/corrections and no-repeat verification. It is reading
+copy, not a dashboard. Project-owned art is an explicitly labelled title-card
+fallback for real entities, never an official poster. No provider image URL is
+fetched. Original type/font notices remain unchanged. Actual captures and checks
+are recorded in README/memory; historical boundaries below are dated milestones.
+
+The live combobox uses native nonmodal ARIA semantics and explicit Arrow/Enter/
+Escape/Tab behavior. The pinned React Aria combobox hid outside page content
+during suggestions and failed the open-menu full-page scan; its fixture usage
+is historical. The replacement keeps the page available and is checked with
+suggestions open. Mobile options stack title and identity description so neither
+is clipped. Original fallback composition varies only by opaque choice ID,
+without ranks or winner information. The skip link is clipped while unfocused
+and remains keyboard-focusable; ticket rows/disclosures retain reading margins.
 
 ## Status and visual goal
 
@@ -62,18 +89,18 @@ Use an original typographic wordmark, near-black canvas, warm paper text and ele
 
 No enterprise sidebar, generic recommendation grid, statistics tiles, chat, decorative agent graph, gradient blobs, heavy glass, perpetual confetti or mandatory WebGL. Do not decorate the AccessLife planner. Inspiration does not license another product's trade dress or imagery.
 
-| Token | Starting value | Use |
-|---|---|---|
-| `canvas` | `#101014` | Full-page ink background |
-| `surface` | `#1B1B23` | Opaque reading/reveal/control surfaces |
-| `text` | `#F4F1EA` | Main warm paper text |
-| `text-muted` | `#B9B7C3` | Secondary readable labels |
-| `primary` | `#DBFF5E` | Main action/selected emphasis |
-| `on-primary` | `#101014` | Text on chartreuse |
-| `secondary` | `#B9A9FF` | Restrained supporting accent |
-| `incorrect` | `#FF9A9A` | Incorrect outcome with icon/text |
-| `focus` | `#DBFF5E` | Focus ring, with dark offset where necessary |
-| `control-border` | `#858191` | Necessary dark-surface boundaries |
+| Token            | Starting value | Use                                          |
+| ---------------- | -------------- | -------------------------------------------- |
+| `canvas`         | `#101014`      | Full-page ink background                     |
+| `surface`        | `#1B1B23`      | Opaque reading/reveal/control surfaces       |
+| `text`           | `#F4F1EA`      | Main warm paper text                         |
+| `text-muted`     | `#B9B7C3`      | Secondary readable labels                    |
+| `primary`        | `#DBFF5E`      | Main action/selected emphasis                |
+| `on-primary`     | `#101014`      | Text on chartreuse                           |
+| `secondary`      | `#B9A9FF`      | Restrained supporting accent                 |
+| `incorrect`      | `#FF9A9A`      | Incorrect outcome with icon/text             |
+| `focus`          | `#DBFF5E`      | Focus ring, with dark offset where necessary |
+| `control-border` | `#858191`      | Necessary dark-surface boundaries            |
 
 Verify actual rendered combinations: ≥4.5:1 normal text and ≥3:1 large text/necessary nontext boundaries. This table is not a blanket contrast pass. Essential text sits on a readable surface, not an uncertain artwork gradient. Colour never solely communicates correctness, selection or failure.
 
@@ -136,31 +163,31 @@ Social image uses original branding/title art and authorized score. External ima
 
 ## 3. Responsive composition
 
-| Viewport | Intended composition |
-|---|---|
-| 1440×1000 desktop | Central arena, two substantial artwork cards, narrow seam, readable question/pips/feedback; no dashboard rails. |
-| 390×844 mobile | Compact header, large choices; two columns only if titles and 48px targets stay readable; Next never obscures content. |
-| 320 CSS px/reflow | Stack where necessary, preserve comparison/question, no horizontal page scroll or required landscape. |
-| High zoom/long names | Natural wrap/vertical scroll, no clipped title or fixed arena height hiding controls. |
+| Viewport             | Intended composition                                                                                                   |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 1440×1000 desktop    | Central arena, two substantial artwork cards, narrow seam, readable question/pips/feedback; no dashboard rails.        |
+| 390×844 mobile       | Compact header, large choices; two columns only if titles and 48px targets stay readable; Next never obscures content. |
+| 320 CSS px/reflow    | Stack where necessary, preserve comparison/question, no horizontal page scroll or required landscape.                  |
+| High zoom/long names | Natural wrap/vertical scroll, no clipped title or fixed arena height hiding controls.                                  |
 
 Sticky controls cannot obscure feedback or focus. Reserve artwork aspect ratios to avoid layout shifts. Permitted responsive images fall back to intentional branded title cards on slow/failure paths, never broken-image gaps. Displaying an image URL does not establish its licence.
 
 ## 4. State and interaction matrix
 
-| State | Required behavior |
-|---|---|
-| Initial | Clear task, seed input and next action |
-| Search loading/empty/ambiguous | Stable space, preserved query, useful identity/refine action |
-| Preparing | Truthful stages or neutral wait; no invented percentage/agent activity |
-| Unanswered | Two identifiable choices; no delivered winner/rank/affinity |
-| Submitting | Immediate pressed state, safe pending lock and retained round |
-| Revealed | Accepted outcome/evidence, optional save, explicit Next |
-| Recovering | Retained content and same request identity, reconcile with server state |
-| Insufficient coverage | Explain unavailable five-round set, choose another seed; no fake result |
-| Provider unavailable | Useful retry/new-seed action; preserve accepted progress where valid |
-| Expired/revoked | Explain what expired and offer fresh play; no silent answer refresh |
-| Image failure | Intentional original title-card fallback with full identity |
-| Fixture/deterministic mode | Visible honest mode, no claim of live agent execution |
+| State                          | Required behavior                                                       |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| Initial                        | Clear task, seed input and next action                                  |
+| Search loading/empty/ambiguous | Stable space, preserved query, useful identity/refine action            |
+| Preparing                      | Truthful stages or neutral wait; no invented percentage/agent activity  |
+| Unanswered                     | Two identifiable choices; no delivered winner/rank/affinity             |
+| Submitting                     | Immediate pressed state, safe pending lock and retained round           |
+| Revealed                       | Accepted outcome/evidence, optional save, explicit Next                 |
+| Recovering                     | Retained content and same request identity, reconcile with server state |
+| Insufficient coverage          | Explain unavailable five-round set, choose another seed; no fake result |
+| Provider unavailable           | Useful retry/new-seed action; preserve accepted progress where valid    |
+| Expired/revoked                | Explain what expired and offer fresh play; no silent answer refresh     |
+| Image failure                  | Intentional original title-card fallback with full identity             |
+| Fixture/deterministic mode     | Visible honest mode, no claim of live agent execution                   |
 
 Use a discriminated state machine. Lost creation response keeps the same idempotency key. Lost answer/Next responses cannot duplicate animations or points. Refresh restores the accepted reveal via an authorized reveal DTO; pre-answer DTO never contains hidden answers. Winner-independent choice ordering and opaque IDs are backend requirements, not something visual randomness alone proves.
 

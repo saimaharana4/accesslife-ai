@@ -2,11 +2,34 @@
 
 One favourite. Five duels. Predict Qloo's ranking, discover something surprising, then challenge a friend to the same five rounds.
 
-**Status - 26 October 2026: Prompt 9 implements authoritative local gameplay APIs.** Awaited generation uses transactional reservations, expiring fenced claims, atomic private pool/receipt publication, idempotent answers and explicit Next. The clean-database gate passed with synthetic data, including a real API process restart midway through five rounds. The browser is still the separate development fixture; public sharing, frontend integration and deployment remain later work.
+**Status - 26 October 2026: Prompt 10 connects the Taste Duel browser to authoritative gameplay.** Typed seed search, explicit identity selection, awaited preparation, accepted-only Qloo reveal, manual Next and the server-scored result ticket use the generated contracts through a strict same-origin boundary. Reload and uncertain-response recovery retain request identity and restore saved state. Local verification is described below; there is no Taste Duel cloud deployment.
+
+Run `corepack pnpm dev:live` for **http://127.0.0.1:3001**; its bounded private live API uses **127.0.0.1:8004**, separate from the unconfigured foundation API on 8002. See [browser integration setup, security, checks and limits](apps/web/INTEGRATION.md). Live checks require the existing server-side Secret Manager reference/ADC and a reviewed persistent budget; credentials are never copied into files. The development fixture still has its explicit mode and is excluded from production.
+
+Prompt 10 preserves the fight-night visual direction and uses original title-card artwork only. The game identifies Qloo as cultural ranking source and genuine-agent versus deterministic mode. The post-answer disclosure states which entity ranked higher in the frozen context; a small completion-only curation disclosure exposes permitted aggregate facts. No inferred psychology, raw affinities, future contestants or private reasoning are displayed. Discovery saves/adaptive solo behavior are **Prompt 11**; public friend replay and deployment follow later. Prompt 8's stronger live corrective-value gate remains open.
+
+**Prompt 10 verified:** 52 Node contract/state checks, 23 distinct browser cases and
+38 successful full axe scans passed, including targeted search and navigation
+reruns after fixes. TypeScript, production build, exported-OpenAPI drift,
+Ruff and fixture exclusion across 268 emitted files passed. The genuine production-
+build journey completed Radiohead → five film rounds → server result using
+**2 Qloo / 2 Vertex requests**, including all observed upstream dispatches, within
+the **8 / 6** iteration ceiling. Answer/Next made none. Twelve live captures cover
+1440×1000, 390×844 and 320px; actual renders were inspected. Screenshots/audits are
+private ignored `.data/tasteduel-prompt10/`; synthetic reports are in
+`test-results/tasteduel-integration{,-artwork,-search,-generation,-navigation}/`.
+
+The running local preview retains the remaining metered allowance; it is not an
+unlimited demo. No cloud provisioning, deployment, remote CI or push occurred.
+Local source remains separate from the legacy deployment workflow.
+
+### Historical Prompt 9 outcome
+
+Prompt 9 implemented transactional reservations, expiring fenced claims, atomic private pool/receipt publication, idempotent answers and explicit Next. Its clean-database gate used synthetic data, including a real API process restart midway through five rounds. The disconnected fixture described in that milestone has now been superseded by the default connected shell.
 
 Prompt 9 checks: **589 tests passed in the final backend suite** (587 also ran on an empty database migrated through `td0006`, followed by two additional curator/SQL bridge cases); TypeScript, generated contracts and Ruff passed. No new live Qloo/Vertex calls, provider credential reads or cloud changes. Original local data was retained and its database restored after the clean check. See [gameplay implementation, commands and limits](apps/api/GAMEPLAY.md); evidence is ignored `.data/tasteduel-prompt9/`.
 
-Full receipts remain server-private. Unfinished games withhold global curation summaries even after an earlier reveal, protecting future comparisons. Search and genuine generation require explicit provider configuration; defaults load no credentials. Discovery mutations, challenges and browser forwarding remain unconnected. Next: **Prompt 10**, carrying the unresolved live adaptive-value gate below into dependent integration.
+Full receipts remain server-private. Unfinished games withhold global curation summaries even after an earlier reveal, protecting future comparisons. Search and genuine generation require explicit provider configuration; defaults load no credentials. Discovery mutations and challenges remain unconnected. Next: **Prompt 11**, carrying the unresolved live adaptive-value gate below into later work.
 
 **Historical Prompt 8 evidence:** a genuine live tool run built a Qloo-grounded 15-pair pool with a complete five-round path in 5.36 seconds. Live adaptive correction remains unverified; Prompt 9's synthetic checks do not close that gate.
 
@@ -30,27 +53,28 @@ The target interface is a mobile-first cultural game: oversized artwork, distinc
 
 ## Planned versus implemented
 
-| Item | Actual status |
-|---|---|
-| Taste Duel requirements, architecture, rules, design and sequence | Rewritten for the pivot in Prompt 1 |
-| Existing AccessLife source | Recoverable at the checkpoint below; unused old planner/map web modules removed after replacement checks. Legacy backend/cloud unchanged |
-| Taste Duel fixture frontend | Server shell, reusable tokens/primitives, React Aria confirmation, discriminated state machine and in-memory adapter; five invented rounds, accepted-answer score, save/unsave and local invitation |
-| Prompt 4 verification | 10 state/adapter/disclosure tests and TypeScript passed; 13 affected Playwright checks passed, including full keyboard games at all three widths. 39 full axe scans found zero violations; 39 captures include accepted evidence, long titles, missing art and ranking semantics. Six unaffected cancellation/state-story checks retain their earlier passes |
-| Taste Duel API/database foundation | Separate `tasteduel` domain, sessions, owned reads, private snapshots/pools/receipts, PostgreSQL constraints/RLS and separate migration/runtime roles; actual application OpenAPI generates frontend declarations |
-| Prompt 6 provider transport | Official harness `0.1.26` / Node `24.18.1`, exact discovered schemas, typed six-state normalization, ambiguity choices, bounded stdio lifecycle and shared PostgreSQL admission; no raw-HTTP fallback |
-| Prompt 6 verification boundary | Synthetic contracts, real local SQL controls and packaged offline checks; **zero live Qloo calls**, no Secret Manager payload access. Compact score precedence/default ordering remain unverified and `ordering_verified=false` |
-| Prompt 6 actual checks | 283 isolated backend tests passed, including 126 new provider/lifecycle/policy/security checks; Ruff/OpenAPI drift passed. New image built; network-none/read-only UID10001 harness discovery, API liveness/OpenAPI/unconfigured readiness and bounded SIGTERM smoke passed |
-| Prompt 7 offline pool | Validated frozen-context candidates, exact five-round/continuation feasibility, bounded category/band objective, stable sides/IDs and private feedback; no new endpoint or game mutation |
-| Prompt 7 real-data gate at delivery | Was blocked; Prompt 8 now validates one real artist-to-movie snapshot through explicit HTTP. Canonical compact ordering and broader coverage remain unverified |
-| Prompt 7 actual checks | 159 targeted tests passed: 99 new engine/bridge/fairness checks plus 60 existing provider contracts; Ruff and application OpenAPI drift passed. No new visual/runtime/cloud acceptance claim |
-| Prompt 5 verification | Clean PostgreSQL 16 migration chain `td0001`–`td0004`; 157 checks passed, including real database constraints and HTTP secrecy/isolation; Ruff, TypeScript and OpenAPI drift passed. Final evidence is under `.data/tasteduel-prompt5/` |
-| Prompt 9 APIs | Search/awaited generation when explicitly configured; authoritative answer/Next/result and private receipt storage verified locally. Browser integration, discovery writes and public replay remain later stages |
-| Qloo feasibility and rights | Pinned harness `0.1.26`; offline discovery and two raw cross-domain samples passed within **12/12** requests. Canonical MCP Insights, same-domain cells, nested explanation semantics and broad coverage remain unverified; [full matrix](ai/qloo-capability-matrix.md) |
-| Prompt 2 synthetic verification | 22 tests passed; Ruff passed. No production game, accessibility, restart or cloud readiness claim |
-| Prompt 3 local production-build verification | 12 Playwright tests passed across 1440×1000, 390×844 and 320×844; 27 full axe scans found zero violations; 30 screenshots captured, with core states and layout edge cases visually reviewed |
-| Taste Duel images and fonts | Four original SVGs; locally hosted Barlow Condensed/Manrope with OFL notices and immutable provenance. [Asset manifest](third_party/taste-duel-assets.md) |
-| Taste Duel live URL, repository rename and GCP cutover | Not performed; reserved for later migration prompts |
-| Historical AccessLife verification | Recorded in [memory](ai/memory.md); not rerun or relabelled as Taste Duel verification |
+| Item                                                              | Actual status                                                                                                                                                                                                                                                                                                                                                |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Prompt 10 browser                                                 | Generated-contract same-origin forwarding, typed artist/movie selection, authoritative five-round play/reveal/result, reconnect recovery, explicit source/mode and completion-only curation disclosure; no cloud cutover                                                                                                                                     |
+| Taste Duel requirements, architecture, rules, design and sequence | Rewritten for the pivot in Prompt 1                                                                                                                                                                                                                                                                                                                          |
+| Existing AccessLife source                                        | Recoverable at the checkpoint below; unused old planner/map web modules removed after replacement checks. Legacy backend/cloud unchanged                                                                                                                                                                                                                     |
+| Taste Duel fixture frontend                                       | Server shell, reusable tokens/primitives, React Aria confirmation, discriminated state machine and in-memory adapter; five invented rounds, accepted-answer score, save/unsave and local invitation                                                                                                                                                          |
+| Prompt 4 verification                                             | 10 state/adapter/disclosure tests and TypeScript passed; 13 affected Playwright checks passed, including full keyboard games at all three widths. 39 full axe scans found zero violations; 39 captures include accepted evidence, long titles, missing art and ranking semantics. Six unaffected cancellation/state-story checks retain their earlier passes |
+| Taste Duel API/database foundation                                | Separate `tasteduel` domain, sessions, owned reads, private snapshots/pools/receipts, PostgreSQL constraints/RLS and separate migration/runtime roles; actual application OpenAPI generates frontend declarations                                                                                                                                            |
+| Prompt 6 provider transport                                       | Official harness `0.1.26` / Node `24.18.1`, exact discovered schemas, typed six-state normalization, ambiguity choices, bounded stdio lifecycle and shared PostgreSQL admission; no raw-HTTP fallback                                                                                                                                                        |
+| Prompt 6 verification boundary                                    | Synthetic contracts, real local SQL controls and packaged offline checks; **zero live Qloo calls**, no Secret Manager payload access. Compact score precedence/default ordering remain unverified and `ordering_verified=false`                                                                                                                              |
+| Prompt 6 actual checks                                            | 283 isolated backend tests passed, including 126 new provider/lifecycle/policy/security checks; Ruff/OpenAPI drift passed. New image built; network-none/read-only UID10001 harness discovery, API liveness/OpenAPI/unconfigured readiness and bounded SIGTERM smoke passed                                                                                  |
+| Prompt 7 offline pool                                             | Validated frozen-context candidates, exact five-round/continuation feasibility, bounded category/band objective, stable sides/IDs and private feedback; no new endpoint or game mutation                                                                                                                                                                     |
+| Prompt 7 real-data gate at delivery                               | Was blocked; Prompt 8 now validates one real artist-to-movie snapshot through explicit HTTP. Canonical compact ordering and broader coverage remain unverified                                                                                                                                                                                               |
+| Prompt 7 actual checks                                            | 159 targeted tests passed: 99 new engine/bridge/fairness checks plus 60 existing provider contracts; Ruff and application OpenAPI drift passed. No new visual/runtime/cloud acceptance claim                                                                                                                                                                 |
+| Prompt 5 verification                                             | Clean PostgreSQL 16 migration chain `td0001`–`td0004`; 157 checks passed, including real database constraints and HTTP secrecy/isolation; Ruff, TypeScript and OpenAPI drift passed. Final evidence is under `.data/tasteduel-prompt5/`                                                                                                                      |
+| Prompt 9 APIs                                                     | Search/awaited generation when explicitly configured; authoritative answer/Next/result and private receipt storage verified locally. Prompt 10 connects the browser; discovery writes and public replay remain later stages                                                                                                                                  |
+| Qloo feasibility and rights                                       | Pinned harness `0.1.26`; offline discovery and two raw cross-domain samples passed within **12/12** requests. Canonical MCP Insights, same-domain cells, nested explanation semantics and broad coverage remain unverified; [full matrix](ai/qloo-capability-matrix.md)                                                                                      |
+| Prompt 2 synthetic verification                                   | 22 tests passed; Ruff passed. No production game, accessibility, restart or cloud readiness claim                                                                                                                                                                                                                                                            |
+| Prompt 3 local production-build verification                      | 12 Playwright tests passed across 1440×1000, 390×844 and 320×844; 27 full axe scans found zero violations; 30 screenshots captured, with core states and layout edge cases visually reviewed                                                                                                                                                                 |
+| Taste Duel images and fonts                                       | Four original SVGs; locally hosted Barlow Condensed/Manrope with OFL notices and immutable provenance. [Asset manifest](third_party/taste-duel-assets.md)                                                                                                                                                                                                    |
+| Taste Duel live URL, repository rename and GCP cutover            | Not performed; reserved for later migration prompts                                                                                                                                                                                                                                                                                                          |
+| Historical AccessLife verification                                | Recorded in [memory](ai/memory.md); not rerun or relabelled as Taste Duel verification                                                                                                                                                                                                                                                                       |
 
 There is no Taste Duel production URL yet. Local preview: **http://127.0.0.1:3001**. The previously recorded [AccessLife endpoint](https://accesslife-web-dfthmgvvaa-el.a.run.app) remains a legacy deployment reference; its health was not rechecked in this frontend iteration.
 
@@ -82,10 +106,10 @@ real provider keys. Runtime has DML/RLS privileges; the separate migration owner
 owns schema changes. See the [migration guide](apps/api/tasteduel_migrations/README.md).
 
 Actual private routes use `/v1`; the declared browser base `/api` gives
-`/api/v1`. The web forwarding boundary remains disabled until integration.
+`/api/v1`. Prompt 10 enables the strict configured web forwarding boundary.
 Sessions, health and owned game/current-round/result/discovery reads are
 implemented. Prompt 9 now adds awaited generation, answers and explicit Next.
-Tests use synthetic providers/private graphs; this is not live browser integration. Asking for an already answered
+Foundation tests use synthetic providers/private graphs; live browser checks are separate. Asking for an already answered
 playable round returns 409; an owned game read restores that accepted reveal.
 Other guests receive uniform 404s. Receipts, future pools, ranks, affinities and
 raw cache payloads never become public response models.
@@ -244,26 +268,26 @@ Duel delivery infrastructure.
 
 ## Execute one iteration at a time
 
-The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next numbered step: Prompt 8 - bounded curator**, with the real-sample/canonical-order gate still blocked before dependent live integration. Prompt 7's offline deterministic checks do not close it. Prompt 2 used exactly twelve Qloo requests; Prompts 3-7 add zero live calls or Secret Manager payload access. Do not reset the exhausted budget on resume or in a clean clone.
+The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next numbered step: Prompt 11 — adaptive solo selection and discoveries.** Prompt 8's stronger live corrective-value gate and broader coverage remain open. Historical Prompt 2 used exactly twelve Qloo requests; Prompts 3–7 added zero live calls or Secret Manager payload access. Prompt 8 and Prompt 10 have separately recorded non-renewing budgets. Do not reset an exhausted or closed ledger on resume or in a clean clone.
 
 Read its shared requirements, then paste the complete numbered prompt. Do not run all prompts as a single implementation request. Independent synthetic visual work can proceed during a provider outage, but it cannot pass the genuine integration gate.
 
-| Document | Purpose |
-|---|---|
-| [prd.md](ai/prd.md) | Audience, game journeys, MVP requirements, acceptance and later scope |
-| [Architecture.md](ai/Architecture.md) | Fresh modules, contracts, agent/data boundaries and GCP migration target |
-| [rules.md](ai/rules.md) | Stack, winner authority, secrecy, source rights, failures and testing |
-| [phases.md](ai/phases.md) | All 21 iterations, dependencies, gates and legacy-removal schedule |
-| [design.md](ai/design.md) | Visual tokens, screen hierarchy, interactions and accessibility |
-| [memory.md](ai/memory.md) | Historical AccessLife outcomes and dated Taste Duel progress |
-| [prompts.md](ai/prompts.md) | Copy/paste execution instructions from scratch through production |
+| Document                                                  | Purpose                                                                             |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| [prd.md](ai/prd.md)                                       | Audience, game journeys, MVP requirements, acceptance and later scope               |
+| [Architecture.md](ai/Architecture.md)                     | Fresh modules, contracts, agent/data boundaries and GCP migration target            |
+| [rules.md](ai/rules.md)                                   | Stack, winner authority, secrecy, source rights, failures and testing               |
+| [phases.md](ai/phases.md)                                 | All 21 iterations, dependencies, gates and legacy-removal schedule                  |
+| [design.md](ai/design.md)                                 | Visual tokens, screen hierarchy, interactions and accessibility                     |
+| [memory.md](ai/memory.md)                                 | Historical AccessLife outcomes and dated Taste Duel progress                        |
+| [prompts.md](ai/prompts.md)                               | Copy/paste execution instructions from scratch through production                   |
 | [qloo-capability-matrix.md](ai/qloo-capability-matrix.md) | Dated provider/source pins, bounded capability evidence and rights/retention policy |
 
-Only these eight `/ai` Markdown files are eligible for publication. Original references, environment values, private provider responses, state, datasets and artifacts remain ignored. Keep dependency lockfiles. Do not force-add ignored credential or capture files.
+These maintained `/ai` files and the allowlisted [Prompt 8 curator record](ai/prompt8-curator.md) are eligible for publication. Original references, environment values, private provider responses, state, datasets and artifacts remain ignored. Keep dependency lockfiles. Do not force-add ignored credential or capture files.
 
 ## Target implementation
 
-Next.js App Router, strict TypeScript, Tailwind, React Aria and planned Motion; FastAPI/Pydantic, SQLAlchemy/Alembic and ordinary PostgreSQL 16. One bounded Vertex-powered `RoundCuratorAgent` will use the implemented private Qloo port. Deterministic validators, the game engine and database transactions will own eligibility, winners and score. Motion is not installed. Harness `0.1.26` is now pinned in `runtime/qloo` and packaged with Node24.18.1 in the isolated backend image; its live ordering gate remains open. Vertex model access is deferred to Prompt 8.
+Next.js App Router, strict TypeScript, Tailwind, accessible controls; FastAPI/Pydantic, SQLAlchemy/Alembic and ordinary PostgreSQL 16. One bounded Vertex-powered `RoundCuratorAgent` uses the private Qloo port. Deterministic validators, the game engine and database transactions own eligibility, winners and score. Motion is not installed. React Aria remains in the fixture; live seed search uses an explicitly keyboard-tested nonmodal combobox after its pinned implementation hid other page content during suggestions. Harness `0.1.26` / Node24.18.1 are packaged in the isolated backend image. Canonical typed MCP resolution is still gated; live runs explicitly select the tested HTTP search/ranking transport. Vertex model access was verified in Prompt 8.
 
 The target GCP deployment is public Cloud Run web -> same-origin forwarding -> private Cloud Run API -> Cloud SQL, Qloo and Vertex. Qloo/database secrets stay in Secret Manager; Vertex and GitHub Actions use IAM/WIF. A bounded game-generation request completes before returning a ready game; retries use durable reservations/leases. No post-response in-memory worker assumption.
 
@@ -279,14 +303,14 @@ Retention and challenge expiry must follow applicable source/event terms. Store 
 
 ## AccessLife checkpoint and source recovery
 
-| Baseline | Value |
-|---|---|
-| Branch / origin | `main` / `https://github.com/saimaharana4/accesslife-ai.git` |
-| Preserved HEAD | `86d4ef677ae7dba93bf0211e4348d7c29284a948` |
-| Local annotated tag | `accesslife-before-taste-duel-2026-10-24` |
-| Last application-code commit | `f6236dbc12d75e4c549ec65059ebcb8e8a014c30` |
+| Baseline                      | Value                                                                                                                        |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Branch / origin               | `main` / `https://github.com/saimaharana4/accesslife-ai.git`                                                                 |
+| Preserved HEAD                | `86d4ef677ae7dba93bf0211e4348d7c29284a948`                                                                                   |
+| Local annotated tag           | `accesslife-before-taste-duel-2026-10-24`                                                                                    |
+| Last application-code commit  | `f6236dbc12d75e4c549ec65059ebcb8e8a014c30`                                                                                   |
 | Prior application CI evidence | [Run 40071609074](https://github.com/saimaharana4/accesslife-ai/actions/runs/40071609074), historical result; not rerun here |
-| Initial tracked working tree | Clean, 90 tracked files; existing `ai/prompts.md` was ignored and is now allowlisted |
+| Initial tracked working tree  | Clean, 90 tracked files; existing `ai/prompts.md` was ignored and is now allowlisted                                         |
 
 The checkpoint tag is local and has not been pushed in Prompt 1. Git history contains the old implementation; no parallel active copy or extra application build context was created. Inspect its original README without changing the checkout:
 
@@ -301,11 +325,11 @@ For source rollback, inspect the tag or use an explicitly isolated worktree outs
 
 Original local reference preservation manifest (SHA-256):
 
-| Ignored reference under `ai/` | SHA-256 |
-|---|---|
+| Ignored reference under `ai/`           | SHA-256                                                            |
+| --------------------------------------- | ------------------------------------------------------------------ |
 | `AccessLife_AI_Design_Document_v4.docx` | `e61c32f86982a7ba9c6e435c2bf79c2aaac1d302153c2e5fdb5cde0222698a2a` |
-| `deep-research-report.md` | `5f930e822f27902129f797e69155a40196ba956428895f5cc023f5562105b52b` |
-| `qloo_rules.md` | `335c8f41138f01dca034376855fec08ece3d603b4d295018beeba7dbd95b5a33` |
+| `deep-research-report.md`               | `5f930e822f27902129f797e69155a40196ba956428895f5cc023f5562105b52b` |
+| `qloo_rules.md`                         | `335c8f41138f01dca034376855fec08ece3d603b4d295018beeba7dbd95b5a33` |
 
 They remain local and byte-for-byte preserved. Runtime must not depend on these ignored files.
 

@@ -1,6 +1,20 @@
 # Taste Duel product requirements
 
-Revision 8 - 26 October 2026 - Prompt 9 authoritative local gameplay; live/frontend gates retained
+Revision 9 - 26 October 2026 - Prompt 10 connected browser journey; no deployment
+
+**Current Prompt 10 implementation:** typed real seed selection, awaited preparation,
+current-round delivery, server-accepted reveal, explicit Next and a server-scored
+result ticket now use the generated API contracts. Reload/Back/reconnect recover
+owned server state and preserve uncertain request identity. Actual source and
+curator mode stay visible; Why-this-duel uses only accepted frozen-context facts,
+and curation aggregates wait until five answers. Original title cards are the
+supported asset fallback, without third-party imagery or unsupported explanations.
+
+Verification results are recorded in README/memory and the [integration guide](../apps/web/INTEGRATION.md).
+Historical prompt-status paragraphs below describe their delivery dates. Adaptive
+solo selection and discoveries (Prompt 11), friend replay, human discovery-value
+validation, broad artist/movie coverage and GCP launch remain later work. Prompt
+8's stronger live corrective-strategy evidence is still a distinct open gate.
 
 ## Delivery status and authority
 
@@ -61,10 +75,10 @@ Taste Duel makes cultural connections playable. Rather than browsing another rec
 
 Core question: **“Which ranks higher for this seed in Qloo's taste graph?”** A player predicts an aggregate ranking. Their own preferences are never right or wrong. Affinity is not a probability of individual enjoyment, proof of causation or universal cultural truth.
 
-| Audience | Job | Product implication |
-|---|---|---|
-| Music and film fans | Find an interesting connection quickly | One favourite, large visual choices, immediate reveal |
-| Friends | Compare predictions on the same questions | Fixed five-round snapshot, actual score, guest replay |
+| Audience                   | Job                                                | Product implication                                                              |
+| -------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Music and film fans        | Find an interesting connection quickly             | One favourite, large visual choices, immediate reveal                            |
+| Friends                    | Compare predictions on the same questions          | Fixed five-round snapshot, actual score, guest replay                            |
 | Qloo developers and judges | See cultural intelligence cause a product decision | Genuine Qloo ranking determines answers; bounded agent decisions are inspectable |
 
 Enjoyment, discovery value and repeat use are hypotheses until observed with real participants. API success, Codex review and synthetic playthroughs are not human validation. No worldwide uniqueness claim is made.
@@ -106,25 +120,25 @@ Refresh restores the saved current state, including an accepted reveal. Lost cre
 
 Every acceptance criterion below is a **future gate**, not a pass recorded by this specification.
 
-| ID | Requirement | Acceptance criterion |
-|---|---|---|
-| FR-01 | Guest launch | A fresh browser reaches gameplay without signup; session clearing revokes owned private access. |
-| FR-02 | Typed seed search | Real IDs/types and useful identity metadata; ambiguous results require selection; stale responses cannot overwrite a newer search. |
-| FR-03 | Qloo evidence | Each pair has same-type contestants from a single verified affinity-ordering context, timestamp and immutable evidence reference. |
-| FR-04 | Cross-domain experience | The release path demonstrates genuine cross-domain rounds. Musician-to-musician results alone do not establish this capability. |
-| FR-05 | Complete pool | Generation proves a five-round path without repeated contestants, not merely five pairs that exhaust each other. |
-| FR-06 | Pair validation | Reject self/duplicate/ambiguous entities, ties/near-ties, missing required metadata, nonfinite scores and contradictory ordering under a versioned verified policy. |
-| FR-07 | Adaptive solo | Select unused saved pairs using versioned heuristic difficulty; scarce-band fallback is explicit and existing winners never change. |
-| FR-08 | Authoritative answer | Transactional ownership/state/one-answer checks; identical duplicates return the accepted answer, conflicts fail. |
-| FR-09 | Honest reveal/score | Expose only the accepted round's evidence; recompute actual score from saved answers. No fabricated percentile or client total. |
-| FR-10 | Explicit advancement | Next is sequential/idempotent and cannot skip an unanswered round; refresh restores current accepted reveal or unanswered state. |
-| FR-11 | Exact challenge | Two isolated sessions replay the creator's exact five rounds/order/sides/rules with zero Qloo/Vertex calls. |
-| FR-12 | Safe sharing | Invitation/OG contain only permitted seed/title/actual score and rights-cleared art, without future choices, private answers or session data. |
-| FR-13 | Discoveries | Session-owned save/unsave, useful empty/expired states and evidence/session retention; no inferred personal preference claims. |
-| FR-14 | Durability | Creation/answer/advance duplicates, lost responses, fenced lease expiry, restart, competing tabs and clearing during generation preserve correct state. |
-| FR-15 | Provider honesty | Distinguish genuine agent-curated Qloo, deterministic Qloo curator and development fixtures; insufficient coverage never becomes invented gameplay. |
-| FR-16 | Inclusive flow | Keyboard, screen-reader-oriented semantics, reduced motion, 200% zoom and 320px reflow; no reliance on sound/colour/animation. |
-| FR-17 | External release | Public GCP web app and licensed public source match the verified release SHA; direct unauthenticated private API access is rejected. |
+| ID    | Requirement             | Acceptance criterion                                                                                                                                                |
+| ----- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-01 | Guest launch            | A fresh browser reaches gameplay without signup; session clearing revokes owned private access.                                                                     |
+| FR-02 | Typed seed search       | Real IDs/types and useful identity metadata; ambiguous results require selection; stale responses cannot overwrite a newer search.                                  |
+| FR-03 | Qloo evidence           | Each pair has same-type contestants from a single verified affinity-ordering context, timestamp and immutable evidence reference.                                   |
+| FR-04 | Cross-domain experience | The release path demonstrates genuine cross-domain rounds. Musician-to-musician results alone do not establish this capability.                                     |
+| FR-05 | Complete pool           | Generation proves a five-round path without repeated contestants, not merely five pairs that exhaust each other.                                                    |
+| FR-06 | Pair validation         | Reject self/duplicate/ambiguous entities, ties/near-ties, missing required metadata, nonfinite scores and contradictory ordering under a versioned verified policy. |
+| FR-07 | Adaptive solo           | Select unused saved pairs using versioned heuristic difficulty; scarce-band fallback is explicit and existing winners never change.                                 |
+| FR-08 | Authoritative answer    | Transactional ownership/state/one-answer checks; identical duplicates return the accepted answer, conflicts fail.                                                   |
+| FR-09 | Honest reveal/score     | Expose only the accepted round's evidence; recompute actual score from saved answers. No fabricated percentile or client total.                                     |
+| FR-10 | Explicit advancement    | Next is sequential/idempotent and cannot skip an unanswered round; refresh restores current accepted reveal or unanswered state.                                    |
+| FR-11 | Exact challenge         | Two isolated sessions replay the creator's exact five rounds/order/sides/rules with zero Qloo/Vertex calls.                                                         |
+| FR-12 | Safe sharing            | Invitation/OG contain only permitted seed/title/actual score and rights-cleared art, without future choices, private answers or session data.                       |
+| FR-13 | Discoveries             | Session-owned save/unsave, useful empty/expired states and evidence/session retention; no inferred personal preference claims.                                      |
+| FR-14 | Durability              | Creation/answer/advance duplicates, lost responses, fenced lease expiry, restart, competing tabs and clearing during generation preserve correct state.             |
+| FR-15 | Provider honesty        | Distinguish genuine agent-curated Qloo, deterministic Qloo curator and development fixtures; insufficient coverage never becomes invented gameplay.                 |
+| FR-16 | Inclusive flow          | Keyboard, screen-reader-oriented semantics, reduced motion, 200% zoom and 320px reflow; no reliance on sound/colour/animation.                                      |
+| FR-17 | External release        | Public GCP web app and licensed public source match the verified release SHA; direct unauthenticated private API access is rejected.                                |
 
 ## 5. Fairness, secrecy and semantic limits
 
@@ -136,14 +150,14 @@ Qloo/LLM requests are forbidden during answer acceptance and Next. Preserve chal
 
 ## 6. Data, artwork and agent boundaries
 
-| Source/component | Role | Gate |
-|---|---|---|
-| Official pinned Qloo harness | Resolve entities; rank candidates; supported explainability/metadata | Inspect real tools, limits, semantics, permissions and cross-domain coverage |
-| Original CSS/SVG/title artwork | Fallback covers, branding, safe social cards | Retain sources/font licences; never impersonate real promotional art |
-| Optional TMDB | Film metadata/artwork enrichment | Verify credentials, terms, attribution and separate social-reuse permission |
-| Optional Wikidata | External IDs/type/date enrichment | Bounded queries and matching provenance |
-| Optional Commons | Small rights-cleared image set | Check each file's licence, attribution and additional restrictions |
-| Vertex `RoundCuratorAgent` | Bounded tool choices and optional grounded copy | Verify model access; deterministic validators can veto |
+| Source/component               | Role                                                                 | Gate                                                                         |
+| ------------------------------ | -------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Official pinned Qloo harness   | Resolve entities; rank candidates; supported explainability/metadata | Inspect real tools, limits, semantics, permissions and cross-domain coverage |
+| Original CSS/SVG/title artwork | Fallback covers, branding, safe social cards                         | Retain sources/font licences; never impersonate real promotional art         |
+| Optional TMDB                  | Film metadata/artwork enrichment                                     | Verify credentials, terms, attribution and separate social-reuse permission  |
+| Optional Wikidata              | External IDs/type/date enrichment                                    | Bounded queries and matching provenance                                      |
+| Optional Commons               | Small rights-cleared image set                                       | Check each file's licence, attribution and additional restrictions           |
+| Vertex `RoundCuratorAgent`     | Bounded tool choices and optional grounded copy                      | Verify model access; deterministic validators can veto                       |
 
 An image field is not permission to mirror, transform or publish that artwork in a social card. Missing rights lead to an intentional original title card. No Google Images/Letterboxd scraping, mandatory Spotify OAuth or fake real-film posters.
 
@@ -153,15 +167,15 @@ The implemented agent chooses verified targets/candidate limits, requests bounde
 
 ## 7. Quality targets and verification
 
-| Area | Target evidence |
-|---|---|
-| Visual | Inspected 390×844, 1440×1000 and 320px screenshots, long titles and failed images; build success alone is insufficient. |
-| Accessibility | Full axe/keyboard/reduced-motion/reflow/contrast checks; no unresolved serious/critical defects. Report actual manual screen-reader checks separately. |
-| Performance | Lab LCP ≤2.5s/CLS ≤0.1; initial route JS about ≤180KB gzip/gameplay addition ≤100KB targets; pressed feedback <100ms; warm answer-handler p95 ≤500ms target. |
-| Generation | 20s acceptance/cancellation deadline; ≤6 actual Qloo HTTP requests including retries/harness lookups; normal 2 Vertex attempts, hard max 4; ≤8 tool steps/1 correction, ≤512 output tokens per request and 24,000 total-token admission. Actual latency/usage and limitations are recorded per execution. |
-| Security | Session/mutation-origin isolation, secure cookies, private API IAM, safe bounded image fetching, prompt-injection resistance and no secret/pre-answer leakage. |
-| Reproducibility | Node 24/Python 3.12 compatible pins/locks, clean migrations/container restart and actual remote CI for the application SHA. |
-| Recovery | Actual local persistence and priced disposable restore checks; logical and managed Cloud SQL restore are distinct claims. |
+| Area            | Target evidence                                                                                                                                                                                                                                                                                           |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Visual          | Inspected 390×844, 1440×1000 and 320px screenshots, long titles and failed images; build success alone is insufficient.                                                                                                                                                                                   |
+| Accessibility   | Full axe/keyboard/reduced-motion/reflow/contrast checks; no unresolved serious/critical defects. Report actual manual screen-reader checks separately.                                                                                                                                                    |
+| Performance     | Lab LCP ≤2.5s/CLS ≤0.1; initial route JS about ≤180KB gzip/gameplay addition ≤100KB targets; pressed feedback <100ms; warm answer-handler p95 ≤500ms target.                                                                                                                                              |
+| Generation      | 20s acceptance/cancellation deadline; ≤6 actual Qloo HTTP requests including retries/harness lookups; normal 2 Vertex attempts, hard max 4; ≤8 tool steps/1 correction, ≤512 output tokens per request and 24,000 total-token admission. Actual latency/usage and limitations are recorded per execution. |
+| Security        | Session/mutation-origin isolation, secure cookies, private API IAM, safe bounded image fetching, prompt-injection resistance and no secret/pre-answer leakage.                                                                                                                                            |
+| Reproducibility | Node 24/Python 3.12 compatible pins/locks, clean migrations/container restart and actual remote CI for the application SHA.                                                                                                                                                                               |
+| Recovery        | Actual local persistence and priced disposable restore checks; logical and managed Cloud SQL restore are distinct claims.                                                                                                                                                                                 |
 
 Targets remain unmeasured until implemented. Report sample sizes/network/cold-start conditions; Lighthouse cannot establish field INP/p75, and scans cannot establish zero risk or user enjoyment.
 

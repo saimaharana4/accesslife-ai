@@ -13,7 +13,13 @@ export default function configuration(phase: string): NextConfig {
   const config: NextConfig = {
     output: "standalone",
     devIndicators: false,
+    allowedDevOrigins: ["127.0.0.1", "localhost"],
     poweredByHeader: false,
+    images: {
+      unoptimized: true,
+      remotePatterns: [],
+      localPatterns: [{ pathname: "/art/**" }],
+    },
     outputFileTracingRoot: process.cwd() + "/../..",
     env: { NEXT_PUBLIC_TASTEDUEL_FIXTURES: fixturesEnabled ? "1" : "0" },
     turbopack: { resolveAlias: { "tasteduel-fixture-entry": fixtureEntry } },

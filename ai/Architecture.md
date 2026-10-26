@@ -1,8 +1,31 @@
 # Taste Duel architecture
 
-Revision 10 - 26 October 2026 - Prompt 9 durable authoritative local gameplay. **Browser integration, live corrective strategy and deployment remain unverified.**
+Revision 11 - 26 October 2026 - Prompt 10 browser integration; cloud remains unchanged.
 
-### Prompt 9 current boundary
+### Prompt 10 current boundary
+
+The default shell uses generated application contracts through a strict same-origin
+Next route. Fixed method/path/query/header allowlists, streamed byte bounds,
+origin validation, rewritten host-scoped cookies, safe diagnostic envelopes and
+optional server-only metadata IAM separate browser identity from private API access.
+The IAM path is synthetic-tested; no deployed connectivity is implied.
+
+Typed artist/movie search cancels stale results and requires explicit identity
+selection. Client generation/answer/Next intents retain the same body/key across
+uncertain responses. Owned GET restores the accepted reveal; preparation observes
+the generation lease and offers explicit recovery. Only the current two choices
+arrive before acceptance; no global summary arrives before five answers.
+`features/gameplay` contains this transport-facing presentation layer, separately
+from development-only fixtures. Server-owned score, mode and accepted evidence
+drive the result ticket and factual Why-this-duel disclosure.
+
+Original local title cards are the complete artwork policy. Exact owned IDs are
+allowlisted; unapproved provider metadata never triggers a fetch. No external
+image proxy exists. See [integration commands, security and actual verification
+boundaries](../apps/web/INTEGRATION.md). Prompt 8's live corrective-value gate,
+canonical MCP typed resolution, broad coverage and cloud rollout remain open.
+
+### Historical Prompt 9 boundary at delivery
 
 `GameplayService` owns transactional reservations, fenced claims, atomic
 publication, answers and advancement. The awaited request releases its authentication
@@ -58,11 +81,11 @@ stopped or coordinated. New in-memory receipt trace/token/feedback fields are
 private; Prompt 9 now adds SQL persistence, fencing and atomic game/receipt
 publication. Never serialize the receipt as a public status response.
 
-The web entry point is a fresh Taste Duel fixture frontend. `apps/api/src/tasteduel` now contains the independent local domain/API/read foundation; legacy backend entry points, containers and recorded deployment remain AccessLife. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate live Taste Duel gameplay, its agent, data rights or cloud migration. [prompts.md](prompts.md) controls later iterations.
+The default web entry point is now the connected Taste Duel frontend; the isolated development fixture remains available under its explicit flag. `apps/api/src/tasteduel` contains the independent local domain/API/read foundation and authoritative gameplay. Legacy entry points, Compose and recorded deployment remain AccessLife. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate cloud migration. [prompts.md](prompts.md) controls later iterations.
 
 **Implemented frontend boundary through Prompt 4:** Next.js server layout/pages, local licensed fonts/original SVG art, React Aria seed confirmation, reusable tokens/primitives and a client fixture provider/adapter. Five invented rounds compute the result from accepted answers, support save/unsave and derive a local invitation from the played sequence. No network provider, database, durable session, model, production scoring service or share link is involved in that browser flow. `/api/v1/*` still returns local `503 PROTOTYPE_ONLY`; forwarding is future work. Synthetic winners are public development code, not a secrecy implementation for real answers. Six legacy web modules/seven dependencies were removed in Prompt 3; three superseded single-round/result/invitation specimens were removed in Prompt 4. Old source stays in the preservation tag. Prompt 5 replaces unused legacy API declarations with generated Taste Duel wire types, without connecting the fixture browser.
 
-### Implemented frontend boundary
+### Historical Prompt 4 frontend boundary
 
 - `app/` keeps pages/layout as Server Components; bare `tasteduel-fixture-entry` resolves to a client fixture entry only for the explicit development-server phase/flag. Other phases use a separate unavailable entry that imports no fixtures. Normal production builds exclude fixture pools/controls, even when the flag is set; their routes return 404.
 - `app/tokens.css` and `components/ui/` own Button/ActionLink, RoundPips and StatusPanel. `features/{seed,duel,reveal,results,challenges,discoveries,curation}` own focused presentation components.
@@ -169,17 +192,17 @@ flowchart TD
     Freeze --> Friend[Friend plays identical fixed sequence]
 ```
 
-| Layer | Target | Boundary |
-|---|---|---|
-| Web | Next.js App Router, strict TypeScript, Tailwind, React Aria, Motion | Server shell, narrow search/game/reveal client boundaries; original UI |
-| API | FastAPI, Pydantic, SQLAlchemy, Alembic | Modular application, not a deployed service per tool |
-| Agent | One bounded RoundCuratorAgent through Google Gen AI/Vertex | Genuine tool decisions; never model-written winners/scores |
-| Culture | Official pinned Qloo harness through local stdio MCP | Trusted backend only, normalized QlooPort |
-| Rules | Deterministic validators, DuelPoolBuilder, GameEngine, ChallengeService | Server-authoritative eligibility, scoring, adaptation and replay |
-| Storage | PostgreSQL 16 ordinary relational tables | No RAG, embeddings, spatial/vector requirement or Redis |
-| Execution | Bounded awaited request plus persisted reservation/lease | No unowned post-response generation or required queue worker |
-| Runtime | Node 24, Python 3.12, exact compatible dependencies/lockfiles | Backend image also includes tested Node/harness; no runtime npx |
-| Cloud | Cloud Run web/private API, reused dedicated SQL, migration job | Terraform and GitHub Actions WIF; optional storage only if needed |
+| Layer     | Target                                                                  | Boundary                                                               |
+| --------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Web       | Next.js App Router, strict TypeScript, Tailwind, React Aria, Motion     | Server shell, narrow search/game/reveal client boundaries; original UI |
+| API       | FastAPI, Pydantic, SQLAlchemy, Alembic                                  | Modular application, not a deployed service per tool                   |
+| Agent     | One bounded RoundCuratorAgent through Google Gen AI/Vertex              | Genuine tool decisions; never model-written winners/scores             |
+| Culture   | Official pinned Qloo harness through local stdio MCP                    | Trusted backend only, normalized QlooPort                              |
+| Rules     | Deterministic validators, DuelPoolBuilder, GameEngine, ChallengeService | Server-authoritative eligibility, scoring, adaptation and replay       |
+| Storage   | PostgreSQL 16 ordinary relational tables                                | No RAG, embeddings, spatial/vector requirement or Redis                |
+| Execution | Bounded awaited request plus persisted reservation/lease                | No unowned post-response generation or required queue worker           |
+| Runtime   | Node 24, Python 3.12, exact compatible dependencies/lockfiles           | Backend image also includes tested Node/harness; no runtime npx        |
+| Cloud     | Cloud Run web/private API, reused dedicated SQL, migration job          | Terraform and GitHub Actions WIF; optional storage only if needed      |
 
 LangGraph, Cloud Tasks and extra services require a measured missing capability. They are not inherited because AccessLife already used them.
 
@@ -249,33 +272,33 @@ This is the target tree with the current frontend boundary included. Existing `a
 
 Dependency direction: API/UI → application → domain/ports. Adapters implement ports and are selected at a composition root. Domain code imports no FastAPI/provider SDK/React or raw Qloo JSON. Construction/import must not call networks, migrate data or mutate infrastructure. Pydantic owns application wire schemas; generate frontend TypeScript from actual exported FastAPI OpenAPI. Inspect upstream advertised specs before use: a generic OpenAPI meta-schema without endpoint paths is not a Qloo client contract.
 
-| Port/service | Responsibility | Output |
-|---|---|---|
-| QlooPort | Typed seed resolution; same-context ranked retrieval | Normalized status, IDs/types, ordering/score semantics, warnings, attribution/time |
-| CuratorModelPort | Typed bounded tool decisions and optional grounded wording | Known tool/ID references or explicit unavailability |
-| ArtworkPort | Permitted asset or owned fallback | Source/licence/attribution, allowed uses and fallback status |
-| CandidateValidator | Identity/type/order/score/rights/duplicate checks | Accepted candidates and reason-coded rejection |
-| DuelPoolBuilder | Diverse pairs/bands, feasible no-repeat continuation | Versioned private pool and snapshot references |
-| GameEngine | Delivery, answer acceptance, score and deterministic selection | Transactional changes with expected revisions |
-| ChallengeService | Freeze completed path and fixed replay | Immutable five-round definition and guest-owned replay |
-| Persistence ports | Session/reservation/game/snapshot/cache/usage transactions | Owned domain records, expiry and concurrency guarantees |
+| Port/service       | Responsibility                                                 | Output                                                                             |
+| ------------------ | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| QlooPort           | Typed seed resolution; same-context ranked retrieval           | Normalized status, IDs/types, ordering/score semantics, warnings, attribution/time |
+| CuratorModelPort   | Typed bounded tool decisions and optional grounded wording     | Known tool/ID references or explicit unavailability                                |
+| ArtworkPort        | Permitted asset or owned fallback                              | Source/licence/attribution, allowed uses and fallback status                       |
+| CandidateValidator | Identity/type/order/score/rights/duplicate checks              | Accepted candidates and reason-coded rejection                                     |
+| DuelPoolBuilder    | Diverse pairs/bands, feasible no-repeat continuation           | Versioned private pool and snapshot references                                     |
+| GameEngine         | Delivery, answer acceptance, score and deterministic selection | Transactional changes with expected revisions                                      |
+| ChallengeService   | Freeze completed path and fixed replay                         | Immutable five-round definition and guest-owned replay                             |
+| Persistence ports  | Session/reservation/game/snapshot/cache/usage transactions     | Owned domain records, expiry and concurrency guarantees                            |
 
 ## 4. Data ownership and retention
 
-| Record | Important fields/invariants |
-|---|---|
-| GuestSession | Token hash, expiry, revocation; no account requirement |
-| GenerationReservation | Session/idempotency key, body hash, stable game ID, status, fenced lease/expiry, attempts and usage |
-| EntityMetadata | Minimal used Qloo ID/type, title, approved artwork and source policy |
-| RankingSnapshot | Seed/signals, target/filter context/hash, retrieval time, provider/harness version, verified order, permitted scores, expiry |
-| PrivatePool | Pair references, private answers, bands, validator version and feasible five-round path |
-| Game | Owner, solo/fixed mode, phase, revision, delivered rounds, scoring version and expiry |
-| DeliveredRound | Opaque ID, ordinal, immutable pair/context, stored sides and private winner; no repeated contestant |
-| AcceptedAnswer | Unique game/round acceptance, selected choice, time and saved reveal |
-| Challenge | High-entropy slug; actual five/order/sides/context/answers, creator score, versions, expiry/revocation; no public creator identity |
-| ChallengePlay | New guest-owned fixed game and independent score |
-| Discovery | Explicit guest save/unsave of an allowed encountered entity |
-| ProviderCache/UsageCounter | Minimal private scope, rights/version/expiry and shared per-key admission counters |
+| Record                     | Important fields/invariants                                                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| GuestSession               | Token hash, expiry, revocation; no account requirement                                                                             |
+| GenerationReservation      | Session/idempotency key, body hash, stable game ID, status, fenced lease/expiry, attempts and usage                                |
+| EntityMetadata             | Minimal used Qloo ID/type, title, approved artwork and source policy                                                               |
+| RankingSnapshot            | Seed/signals, target/filter context/hash, retrieval time, provider/harness version, verified order, permitted scores, expiry       |
+| PrivatePool                | Pair references, private answers, bands, validator version and feasible five-round path                                            |
+| Game                       | Owner, solo/fixed mode, phase, revision, delivered rounds, scoring version and expiry                                              |
+| DeliveredRound             | Opaque ID, ordinal, immutable pair/context, stored sides and private winner; no repeated contestant                                |
+| AcceptedAnswer             | Unique game/round acceptance, selected choice, time and saved reveal                                                               |
+| Challenge                  | High-entropy slug; actual five/order/sides/context/answers, creator score, versions, expiry/revocation; no public creator identity |
+| ChallengePlay              | New guest-owned fixed game and independent score                                                                                   |
+| Discovery                  | Explicit guest save/unsave of an allowed encountered entity                                                                        |
+| ProviderCache/UsageCounter | Minimal private scope, rights/version/expiry and shared per-key admission counters                                                 |
 
 Opaque IDs do not replace authorization. Store instants in UTC; transmit RFC 3339 timestamps. Answer-defining versions are immutable. Foreign keys/unique constraints together with transactional ownership and expected-revision checks enforce ownership relationships, one answer per round and sequential delivery. No DB transaction/connection stays open during provider/model IO.
 
@@ -285,27 +308,27 @@ Qloo is the sole ranking source. Original title-based SVG/CSS cards are an alway
 
 ## 5. Public API and disclosure contracts
 
-These are the declared application contracts, exported in Prompt 5. Private paths use `/v1`; the planned same-origin browser base `/api` gives `/api/v1`, while forwarding remains disabled. Sessions, owned reads, typed search, awaited generation and authoritative answer/Next handlers are implemented locally. Discovery writes, challenge execution and invitations remain 501. The table includes both implemented contracts and later share/discovery contracts. `Idempotency-Key` is scoped to session/operation and a canonical typed-body signature; Prompt 9 proves changed-body 409 and stable retry execution against PostgreSQL.
+These are the declared application contracts, exported in Prompt 5. Private paths use `/v1`; the implemented same-origin browser base `/api` gives `/api/v1`. Prompt 10 forwards the session/search/game/health allowlist only. Sessions, owned reads, typed search, awaited generation and authoritative answer/Next handlers are implemented locally. Discovery writes, challenge execution and invitations remain 501. The table includes both implemented contracts and later share/discovery contracts. `Idempotency-Key` is scoped to session/operation and a canonical typed-body signature; Prompt 9 proves changed-body 409 and stable retry execution against PostgreSQL.
 
-| Method/path without prefix | Request | Successful behavior |
-|---|---|---|
-| POST /sessions | Empty object | 201, host cookie and safe expiry |
-| GET /sessions/current | Cookie | Safe state and owned resumable game references |
-| DELETE /sessions/current | Cookie/allowed Origin | 204, revoke session/outstanding publication/owned live shares; clear cookie |
-| GET /entities/search | q, allowed seed type, bounded limit | Typed candidates/ambiguity/status and permitted artwork |
-| POST /games | Confirmed seed_entity_id/seed_type, mode=solo, idempotency key | 201 after pool commit; 200 for same ready request; reservation behavior below |
-| GET /games/{id} | Owner cookie | Safe phase/revision/ordinal/score; current accepted reveal only after answer; no future pool |
-| GET /games/{id}/round | Owner cookie | Current unanswered DTO; answered-but-unadvanced gives 409 ROUND_AWAITING_ADVANCE |
-| POST /games/{id}/answer | round_id, choice_id, expected_revision, idempotency key | Stable accepted reveal/score; conflicting answer 409 |
-| POST /games/{id}/advance | answered_round_id, expected_revision, idempotency key | Next public round or completed state exactly once; no provider IO |
-| GET /games/{id}/results | Owner cookie | Completed score/discoveries/challenge action; incomplete 409 |
-| POST /discoveries | Allowed encountered entity_id, idempotency key | 201/200 owned save |
-| GET /discoveries | Owner cookie | Owned unexpired permitted entries |
-| DELETE /discoveries/{entity_id} | Owner cookie | 204 idempotent unsave |
-| POST /challenges | Completed owned game_id, idempotency key | 201/200 exact frozen five, canonical share URL and expiry |
-| GET /challenges/{slug} | Public slug | Seed/creator score/five-round count/expiry; no choices/keys/creator identity |
-| POST /challenges/{slug}/plays | Guest cookie, idempotency key | 201/200 owned fixed game, no Qloo/model calls |
-| GET /health/live and /health/ready | None | Minimal sanitized status; detailed diagnostics protected |
+| Method/path without prefix         | Request                                                        | Successful behavior                                                                          |
+| ---------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| POST /sessions                     | Empty object                                                   | 201, host cookie and safe expiry                                                             |
+| GET /sessions/current              | Cookie                                                         | Safe state and owned resumable game references                                               |
+| DELETE /sessions/current           | Cookie/allowed Origin                                          | 204, revoke session/outstanding publication/owned live shares; clear cookie                  |
+| GET /entities/search               | q, allowed seed type, bounded limit                            | Typed candidates/ambiguity/status and permitted artwork                                      |
+| POST /games                        | Confirmed seed_entity_id/seed_type, mode=solo, idempotency key | 201 after pool commit; 200 for same ready request; reservation behavior below                |
+| GET /games/{id}                    | Owner cookie                                                   | Safe phase/revision/ordinal/score; current accepted reveal only after answer; no future pool |
+| GET /games/{id}/round              | Owner cookie                                                   | Current unanswered DTO; answered-but-unadvanced gives 409 ROUND_AWAITING_ADVANCE             |
+| POST /games/{id}/answer            | round_id, choice_id, expected_revision, idempotency key        | Stable accepted reveal/score; conflicting answer 409                                         |
+| POST /games/{id}/advance           | answered_round_id, expected_revision, idempotency key          | Next public round or completed state exactly once; no provider IO                            |
+| GET /games/{id}/results            | Owner cookie                                                   | Completed score/discoveries/challenge action; incomplete 409                                 |
+| POST /discoveries                  | Allowed encountered entity_id, idempotency key                 | 201/200 owned save                                                                           |
+| GET /discoveries                   | Owner cookie                                                   | Owned unexpired permitted entries                                                            |
+| DELETE /discoveries/{entity_id}    | Owner cookie                                                   | 204 idempotent unsave                                                                        |
+| POST /challenges                   | Completed owned game_id, idempotency key                       | 201/200 exact frozen five, canonical share URL and expiry                                    |
+| GET /challenges/{slug}             | Public slug                                                    | Seed/creator score/five-round count/expiry; no choices/keys/creator identity                 |
+| POST /challenges/{slug}/plays      | Guest cookie, idempotency key                                  | 201/200 owned fixed game, no Qloo/model calls                                                |
+| GET /health/live and /health/ready | None                                                           | Minimal sanitized status; detailed diagnostics protected                                     |
 
 Illustrative synthetic unanswered DTO:
 
@@ -317,13 +340,36 @@ Illustrative synthetic unanswered DTO:
   "ordinal": 2,
   "total": 5,
   "revision": 4,
-  "seed": {"id": "30000000-0000-4000-8000-000000000001", "name": "Synthetic seed", "type": "artist", "source": "fixture"},
+  "seed": {
+    "id": "30000000-0000-4000-8000-000000000001",
+    "name": "Synthetic seed",
+    "type": "artist",
+    "source": "fixture"
+  },
   "target_type": "movie",
   "question": "Which movie ranks higher in this synthetic fixture?",
   "source": "fixture",
   "choices": [
-    {"id": "40000000-0000-4000-8000-000000000001", "entity": {"id": "50000000-0000-4000-8000-000000000001", "name": "Synthetic Film A", "type": "movie", "source": "fixture", "artwork": {"kind": "owned_fallback", "asset_id": "afterlight"}}},
-    {"id": "40000000-0000-4000-8000-000000000002", "entity": {"id": "50000000-0000-4000-8000-000000000002", "name": "Synthetic Film B", "type": "movie", "source": "fixture", "artwork": {"kind": "owned_fallback", "asset_id": "blue-hour"}}}
+    {
+      "id": "40000000-0000-4000-8000-000000000001",
+      "entity": {
+        "id": "50000000-0000-4000-8000-000000000001",
+        "name": "Synthetic Film A",
+        "type": "movie",
+        "source": "fixture",
+        "artwork": { "kind": "owned_fallback", "asset_id": "afterlight" }
+      }
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000002",
+      "entity": {
+        "id": "50000000-0000-4000-8000-000000000002",
+        "name": "Synthetic Film B",
+        "type": "movie",
+        "source": "fixture",
+        "artwork": { "kind": "owned_fallback", "asset_id": "blue-hour" }
+      }
+    }
   ]
 }
 ```
@@ -374,19 +420,19 @@ Solo mode adapts among valid unused stored pairs. Shared mode freezes the creato
 
 This is a documented baseline to re-inventory in Prompt 16, not a Prompt 1 live inventory/mutation. Project `project-bb13ecd8-9d67-408d-9a7`, default region `asia-south1`; PharmaGuard resources are unrelated/out of scope.
 
-| Historical resource | Target/action | Preservation requirement |
-|---|---|---|
-| saimaharana4/accesslife-ai | Rename to saimaharana4/taste-duel in Prompt 17 if available | Preserve history/tag/licence and coordinate WIF trust first |
-| accesslife-web/api | New tasteduel-web/api | Candidate verification before service cutover, no random cross-product traffic |
-| Dedicated accesslife-db SQL instance | Reuse same billed PostgreSQL instance | Keep legacy physical name; no second instance for branding |
-| accesslife logical DB/user | New tasteduel DB; migration-owner/runtime-DML split | Old resources stay at stable/moved Terraform addresses until deliberate retirement |
-| accesslife Artifact Registry | Reuse compatible registry or reviewed migration | Digest releases, priced retention and documented name exception |
-| accesslife-qloo-api-key | Scoped retained reference or deliberate name migration | Copying key is not rotation; preserve required old readers |
-| DB/password/worker-token secrets | Fresh new DB credentials where needed; retire old worker token later | Direct Secret Manager handling, reader/rollback checks before disable |
-| Docs/backups buckets | No RAG docs needed; retain authorized backups/state | Lifecycle/rights checks, no cosmetic data deletion |
-| Worker/tasks/reconcile/ingest/scheduler | Drain/retire in Prompt 20 | No accepted old work abandoned or inherited old jobs |
-| SAs/WIF/monitoring/labels | New scoped identities, repo trust and Taste Duel operations | Both-label cost coverage and verified trust/readers |
-| gs://accesslife-tfstate-project-bb13ecd8-9d67-408d-9a7/accesslife/state | Preserve existing bucket/prefix/ownership | Reviewed moved/import handling; no empty-state recreation |
+| Historical resource                                                     | Target/action                                                        | Preservation requirement                                                           |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| saimaharana4/accesslife-ai                                              | Rename to saimaharana4/taste-duel in Prompt 17 if available          | Preserve history/tag/licence and coordinate WIF trust first                        |
+| accesslife-web/api                                                      | New tasteduel-web/api                                                | Candidate verification before service cutover, no random cross-product traffic     |
+| Dedicated accesslife-db SQL instance                                    | Reuse same billed PostgreSQL instance                                | Keep legacy physical name; no second instance for branding                         |
+| accesslife logical DB/user                                              | New tasteduel DB; migration-owner/runtime-DML split                  | Old resources stay at stable/moved Terraform addresses until deliberate retirement |
+| accesslife Artifact Registry                                            | Reuse compatible registry or reviewed migration                      | Digest releases, priced retention and documented name exception                    |
+| accesslife-qloo-api-key                                                 | Scoped retained reference or deliberate name migration               | Copying key is not rotation; preserve required old readers                         |
+| DB/password/worker-token secrets                                        | Fresh new DB credentials where needed; retire old worker token later | Direct Secret Manager handling, reader/rollback checks before disable              |
+| Docs/backups buckets                                                    | No RAG docs needed; retain authorized backups/state                  | Lifecycle/rights checks, no cosmetic data deletion                                 |
+| Worker/tasks/reconcile/ingest/scheduler                                 | Drain/retire in Prompt 20                                            | No accepted old work abandoned or inherited old jobs                               |
+| SAs/WIF/monitoring/labels                                               | New scoped identities, repo trust and Taste Duel operations          | Both-label cost coverage and verified trust/readers                                |
+| gs://accesslife-tfstate-project-bb13ecd8-9d67-408d-9a7/accesslife/state | Preserve existing bucket/prefix/ownership                            | Reviewed moved/import handling; no empty-state recreation                          |
 
 SQL instance/bucket/secret IDs are not all renameable in place. Document immutable-name exceptions. Never change old logical DB/user resource names into destructive replacement or remove deletion protection for branding. Keep state migration separate from app identity changes.
 
@@ -406,14 +452,14 @@ Target freeze: 30 October. Submission target: 31 October 2026, 09:15 IST, subjec
 
 ## 10. Replacement and verification gates
 
-| Stage | Remove from active product when replacement passes | Required evidence |
-|---|---|---|
-| Prompts 3–4 | Planner/map/trip UI, unused MapLibre/chart/agent-graph imports | Original five-round fixture UI, visual/accessibility gate |
-| Prompts 5–9 | AccessLife domain/schema/route/transport/weather/planning imports | New DB/contracts/engine/agent, concurrency and ownership checks |
-| Prompts 6–10 | Place-specific Qloo and old generation composition | Typed MCP and genuine Taste Duel flow |
-| Prompt 14 | MiniLM/ONNX/retrieval/ingestion assets, spatial/vector image requirement, old Compose worker | Reproducible new containers/CI, no remaining product imports/jobs |
-| Prompts 16–19 | Old release commands and active branding | Cost/plan/WIF/candidate/public-release gates |
-| Prompt 20 | Old worker/jobs/queue/scheduler/IAM and unused billed resources | Drain/readers/retention/rollback verified; shared SQL/state/secrets preserved |
+| Stage         | Remove from active product when replacement passes                                           | Required evidence                                                             |
+| ------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Prompts 3–4   | Planner/map/trip UI, unused MapLibre/chart/agent-graph imports                               | Original five-round fixture UI, visual/accessibility gate                     |
+| Prompts 5–9   | AccessLife domain/schema/route/transport/weather/planning imports                            | New DB/contracts/engine/agent, concurrency and ownership checks               |
+| Prompts 6–10  | Place-specific Qloo and old generation composition                                           | Typed MCP and genuine Taste Duel flow                                         |
+| Prompt 14     | MiniLM/ONNX/retrieval/ingestion assets, spatial/vector image requirement, old Compose worker | Reproducible new containers/CI, no remaining product imports/jobs             |
+| Prompts 16–19 | Old release commands and active branding                                                     | Cost/plan/WIF/candidate/public-release gates                                  |
+| Prompt 20     | Old worker/jobs/queue/scheduler/IAM and unused billed resources                              | Drain/readers/retention/rollback verified; shared SQL/state/secrets preserved |
 
 Never delete original references, Git history, user data, installed reused-instance extensions or unrelated workloads for tidiness. Active product eventually stops importing accesslife; recovery stays in checkpoint/history and reviewed cloud policy.
 
