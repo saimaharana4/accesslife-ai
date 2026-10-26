@@ -2,7 +2,7 @@
 
 One favourite. Five duels. Predict Qloo's ranking, discover something surprising, then challenge a friend to the same five rounds.
 
-**Status - 25 October 2026: Prompt 6 adds the private Qloo MCP transport.** Typed resolution/ranking, pinned official harness lifecycle, per-HTTP admission and an isolated Taste Duel backend image are implemented locally. PostgreSQL now has twenty tables through additive `td0005`. The browser still plays synthetic fixtures and is not connected to the API; generation, authoritative gameplay and public sharing remain planned. Live MCP ordering remains unverified. Legacy AccessLife deployment and cloud automation are unchanged; no provisioning, deployment or repository rename occurred.
+**Status - 26 October 2026: Prompt 7 implements the private deterministic duel-pool engine offline.** It proves complete five-round no-repeat paths, enforces versioned quality/diversity and returns bounded curator feedback. The real-normalized-sample gate is blocked: Prompt 2 retained aggregates only and canonical MCP ordering remains unverified. The browser still uses synthetic fixtures; live gameplay, agent and public release are pending. No provider/model/credential/cloud calls or database changes occurred in Prompt 7.
 
 ## What the new product will do
 
@@ -28,6 +28,9 @@ The target interface is a mobile-first cultural game: oversized artwork, distinc
 | Prompt 6 provider transport | Official harness `0.1.26` / Node `24.18.1`, exact discovered schemas, typed six-state normalization, ambiguity choices, bounded stdio lifecycle and shared PostgreSQL admission; no raw-HTTP fallback |
 | Prompt 6 verification boundary | Synthetic contracts, real local SQL controls and packaged offline checks; **zero live Qloo calls**, no Secret Manager payload access. Compact score precedence/default ordering remain unverified and `ordering_verified=false` |
 | Prompt 6 actual checks | 283 isolated backend tests passed, including 126 new provider/lifecycle/policy/security checks; Ruff/OpenAPI drift passed. New image built; network-none/read-only UID10001 harness discovery, API liveness/OpenAPI/unconfigured readiness and bounded SIGTERM smoke passed |
+| Prompt 7 offline pool | Validated frozen-context candidates, exact five-round/continuation feasibility, bounded category/band objective, stable sides/IDs and private feedback; no new endpoint or game mutation |
+| Prompt 7 real-data gate | Blocked: no retained normalized candidate samples and no verified canonical MCP ordering. No new provider/model/Secret Manager calls or cloud/DB changes |
+| Prompt 7 actual checks | 159 targeted tests passed: 99 new engine/bridge/fairness checks plus 60 existing provider contracts; Ruff and application OpenAPI drift passed. No new visual/runtime/cloud acceptance claim |
 | Prompt 5 verification | Clean PostgreSQL 16 migration chain `td0001`–`td0004`; 157 checks passed, including real database constraints and HTTP secrecy/isolation; Ruff, TypeScript and OpenAPI drift passed. Final evidence is under `.data/tasteduel-prompt5/` |
 | Live search, generation, authoritative answer/Next/save mutations, public replay and RoundCuratorAgent | Contracts declared; unconnected operations return honest `501 FOUNDATION_NOT_IMPLEMENTED`. No full game engine, durable browser gameplay or live integration claim |
 | Qloo feasibility and rights | Pinned harness `0.1.26`; offline discovery and two raw cross-domain samples passed within **12/12** requests. Canonical MCP Insights, same-domain cells, nested explanation semantics and broad coverage remain unverified; [full matrix](ai/qloo-capability-matrix.md) |
@@ -87,6 +90,9 @@ mutation execution. Prompt 6's provider controls are described below.
 
 ## Private Qloo runtime - Prompt 6
 
+Prompt 7 adds a pure deterministic engine behind this boundary; it does not
+enable provider mode or connect the browser. See the [pool guide](apps/api/DUEL_POOL.md).
+
 ```powershell
 npm.cmd ci --prefix runtime/qloo --ignore-scripts --no-audit --no-fund
 uv run --no-sync python scripts/tasteduel_qloo_offline.py
@@ -124,8 +130,23 @@ The port returns private typed values, never generic JSON to React. It withholds
 unreviewed explanations and image rights claims. Live canonical Insights,
 same-domain coverage and compact-versus-raw score semantics remain the precise
 [Prompt 2 gaps](ai/qloo-capability-matrix.md). Its budget remains **12/12**;
-Prompt 6 consumes **0** additional calls. Next: **Prompt 7**, deterministic
-pool generation; genuine pool readiness stays gated on those live checks.
+Prompt 6 consumes **0** additional calls. Prompt 7 now supplies the offline
+deterministic engine; genuine pool readiness stays gated on those live checks.
+
+## Check the deterministic engine - Prompt 7
+
+```powershell
+uv run --no-sync python scripts/tasteduel_pool_check.py --synthetic
+uv run --no-sync python -m pytest -c pytest.tasteduel.ini --confcutdir=tests/tasteduel tests/tasteduel/duel_pool tests/tasteduel/duel_pool_review -q
+```
+
+No database, credentials, model or network is needed. The demonstration clearly
+labels invented data and prints aggregate validation facts. Local artifacts are
+`.data/tasteduel-prompt7/{synthetic-report.json,tests.xml,verification.json}`.
+The [engine guide](apps/api/DUEL_POOL.md) specifies policy, rejection accounting,
+safe feedback and the blocked real-sample gate. No frontend/screenshots changed.
+Next numbered step is Prompt 8; live capability/sample proof is still required
+before dependent genuine-agent integration.
 
 ## Run the development fixture game
 
@@ -211,7 +232,7 @@ Duel delivery infrastructure.
 
 ## Execute one iteration at a time
 
-The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next: Prompt 7 - deterministic duel-generation engine.** Resolve the recorded live MCP/order/coverage gaps under a separately recorded small budget before genuine pool acceptance. Prompt 2 used exactly twelve Qloo requests; Prompts 3-6 add zero live calls or Secret Manager payload access. Do not reset the exhausted budget on resume or in a clean clone.
+The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next numbered step: Prompt 8 - bounded curator**, with the real-sample/canonical-order gate still blocked before dependent live integration. Prompt 7's offline deterministic checks do not close it. Prompt 2 used exactly twelve Qloo requests; Prompts 3-7 add zero live calls or Secret Manager payload access. Do not reset the exhausted budget on resume or in a clean clone.
 
 Read its shared requirements, then paste the complete numbered prompt. Do not run all prompts as a single implementation request. Independent synthetic visual work can proceed during a provider outage, but it cannot pass the genuine integration gate.
 

@@ -1,6 +1,6 @@
 # Taste Duel design specification
 
-Revision 5 - 25 October 2026 - Fixture visual system preserved; private provider handoff documented
+Revision 6 - 26 October 2026 - Existing visual direction unchanged; private pool projection boundary documented
 
 ## Status and visual goal
 
@@ -19,6 +19,14 @@ Prompt 2 found image metadata in both cross-domain samples but established no as
 The experience should feel like **a cultural fight-night editorial**: one favourite, two oversized opponents, a quick prediction and a revealing result. Type and artwork create impact. The game must be understandable before explaining infrastructure.
 
 ## 1. Art direction and tokens
+
+**Prompt 7 private-engine boundary:** pre-answer screens receive neither gap
+bands nor ranking evidence, pool statistics or oriented private pairs. Choice
+projection uses original owned fallback artwork without embedding rank/winner in
+URLs or IDs; a provider rights boolean never licenses a public image. The UI,
+fixture labels and prior screenshots remain unchanged. Private curator feedback
+is not a dashboard/public disclosure, and synthetic category variation is not
+proof of human discovery value. No new visual acceptance claim is made.
 
 **Prompt 6 presentation handoff:** the private provider returns normalized
 statuses/typed ambiguity choices; it does not send MCP/provider JSON, scores or

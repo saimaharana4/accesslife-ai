@@ -1,6 +1,6 @@
 # Taste Duel engineering rules
 
-Revision 7 - 25 October 2026 - Prompt 6 private MCP transport. **Web remains synthetic; local provider controls do not establish live gameplay or a GCP migration.**
+Revision 8 - 26 October 2026 - Prompt 7 deterministic policy and private feedback. **Synthetic engine checks do not pass the live-data gate.**
 
 ## 1. Authority, scope and preservation
 
@@ -60,6 +60,21 @@ Use pnpm/uv, compatible exact dependencies/images and committed lockfiles. Verif
 Every new dependency needs a missing capability, compatible licence and acceptable browser/image/maintenance cost. No second orchestration framework/model provider/cache/chart kit/account system by default. Optional old generation providers remain disabled unless deliberately configured with rotated credentials; the target uses Vertex IAM.
 
 ## 3. Modules and contracts
+
+Prompt 7 policy `duel-pool-v1` pins relative near-tie rejection at 5% of the
+accepted snapshot spread; this is a versioned engineering heuristic, not human
+difficulty/surprise. Store the full effective policy plus fingerprint, not its
+name alone. Require a five-edge no-repeat matching and continuation proof;
+category/band requirements cannot be weakened by a model. Unknown sourced
+categories stay unavailable. A search limit is `evaluation_limited`, not proof
+of insufficient coverage, and must not trigger unbounded retries.
+
+Pool/choice planning objects remain private. Project only the selected choice
+through the allowlisted DTO; ownership/current-round delivery is still later.
+Do not expose private bands, RNG seeds, pairs, provider URLs or raw feedback.
+Candidate rejection incidences overlap and are not directly interchangeable
+with public curation rejection totals. Never promote Prompt 6's unverified
+ordering flag or reconstruct live candidate evidence from aggregate counts.
 
 - Fresh backend domain: apps/api/src/tasteduel. Frontend features: seed, duel, reveal, results, challenges, discoveries. Do not simply rename old planner modules.
 - API/UI call application use cases; domain imports pure types/ports, not FastAPI/provider SDKs/raw Qloo JSON/React. Wire adapters at a composition root.

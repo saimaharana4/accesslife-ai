@@ -1,8 +1,8 @@
 # Taste Duel implementation phases
 
-Revision 5 - 25 October 2026 - Prompt 6 local transport; deployed services remain legacy
+Revision 6 - 26 October 2026 - Prompt 7 offline engine; real-sample gate blocked
 
-**Progress:** Prompts 1, 3, 4 and 5 local preservation/fixture/foundation gates passed. Prompt 6 adds synthetic-tested private MCP transport, shared SQL admission and a packaged local runtime; the browser remains disconnected. Prompt 2 retains its partial live capability gate in the [matrix](qloo-capability-matrix.md), with twelve requests consumed and zero added here. Next is Prompt 7; genuine pool/live integration must resolve the recorded canonical Insights/order/coverage gaps first. No cloud gate passes from these local checks.
+**Progress:** Prompts 1, 3-6 local preservation/fixture/foundation/transport checks passed. Prompt 7 adds the synthetic-tested deterministic pool and private feedback, without connecting browser gameplay. Its real-normalized-sample gate remains blocked: Prompt 2 retained aggregates only and canonical MCP ordering remains unverified. Next numbered step is Prompt 8; resolve the capability/sample gate before dependent live agent integration. No model/cloud changes occurred.
 
 ## Status and execution rules
 
@@ -105,14 +105,25 @@ participating instances; six-request/twenty-second envelope and one eligible
 retry include harness-internal lookups. Synthetic actual-harness tests and local
 database checks exercise the boundary; no live call, Secret Manager payload read
 or infrastructure change occurs. Canonical live Insights/order/source precedence
-remain unverified (`ordering_verified=false`), not repaired by fixtures. Next is
-Prompt 7's deterministic builder; genuine pool acceptance must return to those
+remain unverified (`ordering_verified=false`), not repaired by fixtures. The
+subsequent Prompt 7 builder is now implemented offline; genuine acceptance must return to those
 explicit capability probes before dependent live integration. Legacy callers
 remain outside new quota controls until a later coordinated cutover.
 
 **Prompt 7 owners:** deterministic pool, property/scenario tests, fairness reviewer. Build roughly 10–15 pairs where supported; same target/context, identity/tie/order validation, no repeated played contestants. Version difficulty from observed distributions; randomize sides independently of upstream rank and use opaque IDs.
 
 **Prompt 7 gate:** complete five-round no-repeat path; explicit insufficient coverage/scarce-band fallback; permutations, tiny pools, malformed data, exhaustion and side-bias tests. Never invent rounds or silently loosen constraints.
+
+**Prompt 7 offline implementation:** pure snapshot validation, fixed/fingerprinted
+v1 quality policy, exact matching/continuation and bounded category-first
+journey optimization, with independent opaque IDs/balanced sides. Added strict
+typed provider bridge, safe private curator feedback and choice-only owned-art
+projection; no gameplay handler, agent or browser connection. Synthetic scenario
+and independent fairness checks pass. **Full gate remains partial:** only
+aggregate evidence was retained in Prompt 2, and canonical live ordering stays
+unverified; no live normalized sample can honestly be replayed here. Resolve
+that capability/sample gate under a new finite budget before dependent live
+Prompt 8 integration; do not relabel fixtures as a pass.
 
 **Prompt 8 owners:** Vertex/tool loop, failure contracts, grounding reviewer. One bounded `RoundCuratorAgent` chooses verified targets, fetches/evaluates data and optionally makes a useful correction. Verified model/IAM access, actual tool decisions and deterministic veto authority.
 

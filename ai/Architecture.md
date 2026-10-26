@@ -1,6 +1,6 @@
 # Taste Duel architecture
 
-Revision 7 - 25 October 2026 - Prompt 6 private MCP transport. **Fixture UI and local provider/database foundation exist; no live Taste Duel game or cloud deployment exists.**
+Revision 8 - 26 October 2026 - Prompt 7 private deterministic engine. **Fixture UI remains disconnected; live sample, agent, gameplay and deployment gates remain open.**
 
 The web entry point is a fresh Taste Duel fixture frontend. `apps/api/src/tasteduel` now contains the independent local domain/API/read foundation; legacy backend entry points, containers and recorded deployment remain AccessLife. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate live Taste Duel gameplay, its agent, data rights or cloud migration. [prompts.md](prompts.md) controls later iterations.
 
@@ -30,6 +30,25 @@ Only sessions, health and owned game/round/result/discovery reads are connected.
 **Prompt 2 evidence:** the [dated source/capability matrix](qloo-capability-matrix.md) pins harness `0.1.26` and official source commits. Twelve counted requests proved two raw cross-domain samples with five-pair numeric feasibility; canonical MCP Insights and same-domain cells remain unverified. No live payload or generated API client is committed. The advertised OpenAPI file is a meta-schema without endpoint paths and is rejected for code generation. This is a partial feasibility gate, not an implemented provider or game.
 
 ## 1. Product flow and decisions
+
+### Prompt 7 deterministic engine, implemented offline
+
+`domain/duel_pool/` owns typed private snapshots, validation, fingerprinted v1
+policy, exact matching and continuation-safe options. `application/pool_preparation.py`
+binds typed Qloo evidence to confirmed seed/request/time context without
+promoting unverified ordering. `pool_feedback.py` explicitly projects private
+aggregate tool feedback. `api/pool_projection.py` projects one choice through
+existing DTOs and owned artwork only; no HTTP delivery/mutation is connected.
+There are no schema/migration/frontend changes or provider/model/cloud calls.
+
+The five-round matching is hard; sourced category then gap-band variation is a
+bounded journey objective. Unknown categories remain unknown. The 25,000-state
+limit distinguishes unproved evaluation from proven insufficient coverage;
+objective limits never revoke a valid witness or claim global optimality.
+Persist full policy/fingerprint/private server RNG seed in Prompt 9. Detailed
+semantics, safe feedback and tests are in the [pool guide](../apps/api/DUEL_POOL.md).
+The real-sample gate remains blocked: Prompt 2 retained aggregates only, while
+MCP ordering/score precedence are still unverified. No additional calls occur.
 
 ### Prompt 6 implemented provider boundary
 

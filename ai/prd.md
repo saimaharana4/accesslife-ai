@@ -1,6 +1,6 @@
 # Taste Duel product requirements
 
-Revision 5 - 25 October 2026 - Prompt 6 private transport; live-product requirements remain targets
+Revision 6 - 26 October 2026 - Prompt 7 offline deterministic pool; real-sample gate pending
 
 ## Delivery status and authority
 
@@ -16,14 +16,22 @@ Prompt 2's [capability record](qloo-capability-matrix.md) establishes sample raw
 
 ## 1. Product and problem
 
+**Prompt 7 status:** the pure deterministic pool now validates identity/context,
+scores/ties, a full five-round no-repeat path and required diversity. Its
+feedback distinguishes insufficient coverage from a bounded evaluation limit.
+This is offline engine evidence, not an implemented adaptive browser game or
+live cultural-discovery claim. No retained normalized live sample exists in the
+Prompt 2 artifacts; genuine pool acceptance remains blocked pending verified
+canonical order/score context. No new provider/model/cloud calls were made.
+
 **Prompt 6 actual delivery:** the server has a typed Qloo resolution/ranking port,
 official pinned local-stdio harness and bounded private runtime. All six result
 states and useful ambiguity choices are synthetic-tested. This does not connect
 the fixture UI or establish live ranking/coverage: compact affinity ordering
 remains explicitly unverified. No live Qloo calls, credential payload access or
 cloud changes occurred. Original-art fallback remains the supported baseline;
-unreviewed explanation text and unlicensed image use are withheld. Prompt 7 is
-the next implementation stage, with live pool acceptance still gated.
+unreviewed explanation text and unlicensed image use are withheld. Prompt 7 now
+adds the offline engine, with live pool acceptance still gated.
 
 **Choose one favourite, predict five Qloo comparisons, discover something surprising, then challenge a friend to the same five rounds.**
 

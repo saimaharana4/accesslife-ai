@@ -4,6 +4,11 @@ Prompt 5 adds a separate application under `src/tasteduel`. The old `accesslife`
 entry point, migration lineage, deployed database and containers are unchanged.
 The browser fixture game is not connected to this API yet.
 
+Prompt 7 adds the private [deterministic pool engine](DUEL_POOL.md), typed
+evidence bridge and safe aggregate curator feedback. Existing public routes and
+OpenAPI remain unchanged. No schema/DB changes, authoritative gameplay, model or
+cloud work occurred; live normalized-sample acceptance is explicitly blocked.
+
 Prompt 6 adds the typed private [Qloo runtime](../../runtime/qloo/README.md),
 bounded stdio lifecycle and shared key-wide SQL admission through `td0005`.
 The new isolated container is separate from legacy Compose/CI. Provider mode is

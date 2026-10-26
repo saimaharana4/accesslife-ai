@@ -2,6 +2,8 @@
 
 from dataclasses import dataclass
 from datetime import datetime
+import hashlib
+import json
 from typing import Literal, Protocol
 from uuid import UUID
 
@@ -21,6 +23,22 @@ class RankedCandidatesRequest:
     seed_domain: EntityDomain
     target_domain: EntityDomain
     limit: int = 20
+
+
+def ranked_context_hash(request: RankedCandidatesRequest) -> str:
+    """Bind a normalized snapshot to the exact pinned MCP recommendation inputs.
+
+    This is the existing Prompt 6 fingerprint, not a second provider schema.
+    A future transport/filter change must version/review this contract too.
+    """
+    arguments = {
+        "target_type": request.target_domain,
+        "signals": [str(request.seed_id)],
+        "limit": request.limit,
+        "explain": True,
+    }
+    value = {"operation": "recommend", "arguments": arguments, "harness": "0.1.26"}
+    return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
 @dataclass(frozen=True)
