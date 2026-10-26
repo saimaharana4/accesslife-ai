@@ -1,8 +1,19 @@
 # Taste Duel design specification
 
-Revision 7 - 26 October 2026 - Existing visual direction unchanged; bounded curator remains server-private
+Revision 8 - 26 October 2026 - Existing visual direction unchanged; authoritative API states available
 
 ## Status and visual goal
+
+**Prompt 9 changes no rendered UI.** Later frontend integration must consume the
+generated contracts: a pending response observes a request with a lease, and offers
+retry with the same input/key after expiry. Do not invent a worker/queue animation.
+Accepted reveal and explicit Next remain separate; restore saved revisions after
+uncertain responses and explain real 409/410 states. Private trace/receipt/pool
+diagnostics never become a preparation display. Withhold global curation summaries
+through unfinished games, including earlier reveals; only completed games may show
+the explicit aggregate allowlist. The existing Why-this-duel component still takes
+only authorized accepted-round evidence. Prompt 10 owns actual browser wiring,
+visual regression and screenshots against these APIs.
 
 **Prompt 8 makes no visual changes.** Its native model tools and private execution
 receipt do not authorize live badges, simulated progress, new curation dashboards

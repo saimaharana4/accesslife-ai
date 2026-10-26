@@ -1,10 +1,21 @@
 # Taste Duel product requirements
 
-Revision 7 - 26 October 2026 - Prompt 8 grounded pool passed; live corrective value still pending
+Revision 8 - 26 October 2026 - Prompt 9 authoritative local gameplay; live/frontend gates retained
 
 ## Delivery status and authority
 
-**Prompt 8:** a private typed RoundCuratorAgent now chooses verified target/limit
+**Prompt 9:** sessions, typed search persistence and authoritative creation,
+answer/Next/result APIs are implemented locally. Generation is awaited under a
+fenced expiring database claim; ready pool, first round and full private receipt
+commit together. Retry/restart preserves one game/evidence outcome. Clean PostgreSQL
+verification passed with synthetic data, including an actual API process restart.
+No new live provider call or cloud change occurred. [Gameplay details](../apps/api/GAMEPLAY.md)
+record current limits; the Prompt 8 live corrective-value gate remains open.
+The browser stays synthetic until Prompt 10. Discovery writes and friend challenge
+execution remain later work. Historical foundation statements below describe their
+delivery stage, not the now-implemented gameplay handlers.
+
+**Historical Prompt 8 delivery:** a private typed RoundCuratorAgent now chooses verified target/limit
 strategies using native Vertex tools and deterministic feedback. It can make one
 useful bounded correction, finish only a validated known pool or stop. One
 `gemini-3.1-flash-lite` native-tool smoke establishes model access. A second live

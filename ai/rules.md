@@ -1,8 +1,24 @@
 # Taste Duel engineering rules
 
-Revision 9 - 26 October 2026 - Prompt 8 bounded tools and explicit transport choice. **One grounded live pool passed; live corrective value remains unproven.**
+Revision 10 - 26 October 2026 - Prompt 9 transactional authority. **Live corrective value, browser integration and deployment remain unproven.**
 
 ## 1. Authority, scope and preservation
+
+Prompt 9 rules: use awaited generation, never post-response tasks or an in-memory
+promise registry. Lock session before reservation/game. Publish only a live matching
+fence and commit pool/receipt/first delivery atomically. Existing in-flight `202`
+responses are observations with an expiry/retry path. Three generation attempts are
+bounded separately; do not mislabel a six-request per-attempt cap as a lifetime quota.
+No provider/model calls are allowed on answer/Next. Canonical key signatures bind
+changed inputs; saved mutation references/revisions restore exact accepted outcomes.
+
+Keep full receipts private and immutable. Before all five answers, withhold global
+candidate/rejection/correction/strategy diagnostics even from an earlier accepted
+reveal. Only the completion allowlist may expose a summary. Generate web types from
+the actual FastAPI export; no private receipt schema. Synthetic injection exists only
+as a server test seam, never an HTTP flag or silent production fallback. Preserve
+the original local database during clean checks; never reset its data or use the
+deployed AccessLife database. See [gameplay rules](../apps/api/GAMEPLAY.md).
 
 Prompt 8's [curator evidence record](prompt8-curator.md) specifies actual native
 tools, model configuration and live boundaries. Default providers remain disabled;

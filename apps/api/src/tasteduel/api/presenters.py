@@ -33,14 +33,20 @@ def round_public(game: GameRead, round_: RoundRead | None = None):
             question=f"Which {round_.target_type} ranks higher for this seed in {'this synthetic fixture' if game.seed.source == 'fixture' else 'Qloo’s taste graph'}?",
         )
     accepted, receipt = round_.accepted, game.receipt
-    summary = s.CurationSummaryPublic(
-        curator_mode=receipt.curator_mode,
-        source=game.seed.source,
-        target_domains=receipt.target_domains_selected,
-        candidate_count_received=receipt.candidate_count_received,
-        rejection_counts=receipt.rejection_counts,
-        bounded_correction_count=receipt.bounded_correction_count,
-        five_round_path_verified=receipt.five_round_path_verified,
+    # Global pool diagnostics can reveal future answer-dependent information.
+    # Accepted earlier rounds do not authorize disclosure about unplayed pairs.
+    summary = (
+        s.CurationSummaryPublic(
+            curator_mode=receipt.curator_mode,
+            source=game.seed.source,
+            target_domains=receipt.target_domains_selected,
+            candidate_count_received=receipt.candidate_count_received,
+            rejection_counts=receipt.rejection_counts,
+            bounded_correction_count=receipt.bounded_correction_count,
+            five_round_path_verified=receipt.five_round_path_verified,
+        )
+        if game.phase == "completed" and game.answered_count == 5
+        else None
     )
     # Optional richer wording remains absent until returned semantics/rights are verified.
     evidence = s.RevealedEvidencePublic(

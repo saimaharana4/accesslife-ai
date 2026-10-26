@@ -2,13 +2,19 @@
 
 One favourite. Five duels. Predict Qloo's ranking, discover something surprising, then challenge a friend to the same five rounds.
 
-**Status - 26 October 2026: Prompt 8 implements a bounded private Vertex curator.** A genuine live tool run built a Qloo-grounded 15-pair pool with a complete five-round path in 5.36 seconds. It chose a 20-candidate movie strategy and finished after validator feedback; no correction was needed. Live adaptive correction remains unverified, so the stronger Prompt 8 gate is still open. The browser remains synthetic; durable gameplay and public release are later work. No cloud resources or deployed database were changed.
+**Status - 26 October 2026: Prompt 9 implements authoritative local gameplay APIs.** Awaited generation uses transactional reservations, expiring fenced claims, atomic private pool/receipt publication, idempotent answers and explicit Next. The clean-database gate passed with synthetic data, including a real API process restart midway through five rounds. The browser is still the separate development fixture; public sharing, frontend integration and deployment remain later work.
+
+Prompt 9 checks: **589 tests passed in the final backend suite** (587 also ran on an empty database migrated through `td0006`, followed by two additional curator/SQL bridge cases); TypeScript, generated contracts and Ruff passed. No new live Qloo/Vertex calls, provider credential reads or cloud changes. Original local data was retained and its database restored after the clean check. See [gameplay implementation, commands and limits](apps/api/GAMEPLAY.md); evidence is ignored `.data/tasteduel-prompt9/`.
+
+Full receipts remain server-private. Unfinished games withhold global curation summaries even after an earlier reveal, protecting future comparisons. Search and genuine generation require explicit provider configuration; defaults load no credentials. Discovery mutations, challenges and browser forwarding remain unconnected. Next: **Prompt 10**, carrying the unresolved live adaptive-value gate below into dependent integration.
+
+**Historical Prompt 8 evidence:** a genuine live tool run built a Qloo-grounded 15-pair pool with a complete five-round path in 5.36 seconds. Live adaptive correction remains unverified; Prompt 9's synthetic checks do not close that gate.
 
 Prompt 8 checks: **539 backend tests**, four Node compatibility contracts, Ruff and unchanged application OpenAPI passed. The isolated image builds with pinned Gen AI SDK `2.33.0`; see [curator implementation and evidence](ai/prompt8-curator.md) for limits, actual live calls and transport caveats. Independent agent roles covered orchestration, failure contracts and grounding review.
 
 Live budget used **7/8 Qloo HTTP requests and 3/5 Vertex requests** including failed probes/model smoke. The successful curator used two Vertex requests and one Qloo ranking request; typed seed search was separate. Secret Manager payloads stayed in server memory, and live artifacts remain ignored. Canonical MCP typed resolution is still blocked; the successful run explicitly selected tested HTTP search/ranking. This is not an automatic provider fallback.
 
-Next numbered step: **Prompt 9**, after resolving the remaining live adaptive-value gate before dependent live integration. Expanded private receipt persistence and authoritative HTTP mutations are not implemented here. No new frontend screenshots were needed because Prompt 8 changes no visual components.
+Prompt 9 now persists the expanded private receipt and implements authoritative game mutations. Neither prompt changes visual components, so no new screenshots were needed.
 
 ## What the new product will do
 
@@ -38,7 +44,7 @@ The target interface is a mobile-first cultural game: oversized artwork, distinc
 | Prompt 7 real-data gate at delivery | Was blocked; Prompt 8 now validates one real artist-to-movie snapshot through explicit HTTP. Canonical compact ordering and broader coverage remain unverified |
 | Prompt 7 actual checks | 159 targeted tests passed: 99 new engine/bridge/fairness checks plus 60 existing provider contracts; Ruff and application OpenAPI drift passed. No new visual/runtime/cloud acceptance claim |
 | Prompt 5 verification | Clean PostgreSQL 16 migration chain `td0001`–`td0004`; 157 checks passed, including real database constraints and HTTP secrecy/isolation; Ruff, TypeScript and OpenAPI drift passed. Final evidence is under `.data/tasteduel-prompt5/` |
-| Live search, generation, authoritative answer/Next/save mutations, public replay and RoundCuratorAgent | Contracts declared; unconnected operations return honest `501 FOUNDATION_NOT_IMPLEMENTED`. No full game engine, durable browser gameplay or live integration claim |
+| Prompt 9 APIs | Search/awaited generation when explicitly configured; authoritative answer/Next/result and private receipt storage verified locally. Browser integration, discovery writes and public replay remain later stages |
 | Qloo feasibility and rights | Pinned harness `0.1.26`; offline discovery and two raw cross-domain samples passed within **12/12** requests. Canonical MCP Insights, same-domain cells, nested explanation semantics and broad coverage remain unverified; [full matrix](ai/qloo-capability-matrix.md) |
 | Prompt 2 synthetic verification | 22 tests passed; Ruff passed. No production game, accessibility, restart or cloud readiness claim |
 | Prompt 3 local production-build verification | 12 Playwright tests passed across 1440×1000, 390×844 and 320×844; 27 full axe scans found zero violations; 30 screenshots captured, with core states and layout edge cases visually reviewed |
@@ -78,8 +84,8 @@ owns schema changes. See the [migration guide](apps/api/tasteduel_migrations/REA
 Actual private routes use `/v1`; the declared browser base `/api` gives
 `/api/v1`. The web forwarding boundary remains disabled until integration.
 Sessions, health and owned game/current-round/result/discovery reads are
-implemented. Tests seed synthetic private database graphs directly; this is
-not an implemented generation or answer service. Asking for an already answered
+implemented. Prompt 9 now adds awaited generation, answers and explicit Next.
+Tests use synthetic providers/private graphs; this is not live browser integration. Asking for an already answered
 playable round returns 409; an owned game read restores that accepted reveal.
 Other guests receive uniform 404s. Receipts, future pools, ranks, affinities and
 raw cache payloads never become public response models.

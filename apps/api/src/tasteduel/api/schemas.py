@@ -278,6 +278,16 @@ class GameGenerationPendingPublic(StrictRecord):
     lease_expires_at: UtcDatetime
 
 
+class GenerationStatusPublic(StrictRecord):
+    """Observation only. No pool diagnostics, execution history or answer clues."""
+
+    game_id: UUID
+    status: Literal["generation_in_progress", "retryable", "succeeded", "failed", "cancelled"]
+    lease_expires_at: UtcDatetime | None = None
+    retry_after_seconds: Annotated[StrictInt | None, Field(ge=1, le=30)] = None
+    recovery_action: Literal["wait_then_retry", "retry_same_request", "read_game", "start_new_game"]
+
+
 class DiscoveryPublic(StrictRecord):
     entity: EntityPublic
     saved_at: UtcDatetime

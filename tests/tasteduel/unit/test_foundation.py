@@ -22,6 +22,7 @@ def test_export_is_actual_application_paths_and_no_private_receipt_schema():
         "/v1/entities/search",
         "/v1/games",
         "/v1/games/{game_id}",
+        "/v1/games/{game_id}/generation",
         "/v1/games/{game_id}/round",
         "/v1/games/{game_id}/answer",
         "/v1/games/{game_id}/advance",
@@ -85,7 +86,7 @@ def test_no_config_does_not_import_legacy_or_contact_database():
     assert "accesslife.api.main" not in sys.modules
 
 
-def test_live_generation_contract_is_honestly_unimplemented_and_cookies_are_private(create_guest):
+def test_unknown_seed_cannot_create_a_game_and_cookies_are_private(create_guest):
     client, _ = create_guest()
     response = client.post("/v1/sessions", json={})
     assert response.status_code == 200
@@ -97,8 +98,8 @@ def test_live_generation_contract_is_honestly_unimplemented_and_cookies_are_priv
         json={"seed_entity_id": str(uuid4()), "seed_type": "artist", "mode": "solo"},
         headers={"Idempotency-Key": "synthetic-foundation-create"},
     )
-    assert response.status_code == 501
-    assert response.json()["error"]["code"] == "FOUNDATION_NOT_IMPLEMENTED"
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "NOT_FOUND"
     assert client.get("/v1/sessions/current").json()["resumable_game_ids"] == []
 
 

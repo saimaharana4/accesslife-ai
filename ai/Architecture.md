@@ -1,8 +1,29 @@
 # Taste Duel architecture
 
-Revision 9 - 26 October 2026 - Prompt 8 bounded curator and explicit HTTP transport. **One grounded live pool passed; corrective live strategy, browser gameplay and deployment remain unverified.**
+Revision 10 - 26 October 2026 - Prompt 9 durable authoritative local gameplay. **Browser integration, live corrective strategy and deployment remain unverified.**
 
-### Prompt 8 current boundary
+### Prompt 9 current boundary
+
+`GameplayService` owns transactional reservations, fenced claims, atomic
+publication, answers and advancement. The awaited request releases its authentication
+transaction before generation; it commits private snapshot/pairs/path, first delivery
+and validated full receipt before returning ready. Session-first locks serialize
+clear/publication and conflicting mutations. A 30-second lease fences a 20-second
+publication deadline; the same input/key may reclaim an expired claim at most three
+times. `202` observes an active request, not a queued job. Status GET returns only
+coarse state/lease/recovery fields. Cancellation cannot instantly kill SQL; bounded
+transactional commit and fencing determine the retryable authoritative outcome.
+
+Additive `td0006` retains prior migration bytes, stores the full private receipt,
+maps external provider IDs to guest-local entity IDs and preserves mutation outcome
+revisions across later progress. Answer and Next use stored evidence only. All
+unplayed pairs stay private; global curation summaries are withheld until five
+answers are complete. The initial selector follows the proven witness path;
+performance adaptation remains Prompt 11. [Gameplay contract and proof](../apps/api/GAMEPLAY.md)
+include empty-database migration and real API-process restart checks. New tests use
+synthetic contracts; no new Qloo/Vertex or cloud call closes the historical live gate.
+
+### Prompt 8 boundary at delivery
 
 The private `RoundCuratorAgent` now makes native Vertex function-call decisions
 through a typed model port. Actual application tools are `inspect_seed`,
@@ -34,8 +55,8 @@ but did not establish live canonical resolution. Unknown compact ordering remain
 rejected. Per-key shared controls protect only
 participating runtimes; an overlapping legacy reader is a rollout blocker until
 stopped or coordinated. New in-memory receipt trace/token/feedback fields are
-private; additive SQL persistence, fencing and atomic game/receipt publication
-remain Prompt 9. Never serialize the receipt as a public status response.
+private; Prompt 9 now adds SQL persistence, fencing and atomic game/receipt
+publication. Never serialize the receipt as a public status response.
 
 The web entry point is a fresh Taste Duel fixture frontend. `apps/api/src/tasteduel` now contains the independent local domain/API/read foundation; legacy backend entry points, containers and recorded deployment remain AccessLife. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate live Taste Duel gameplay, its agent, data rights or cloud migration. [prompts.md](prompts.md) controls later iterations.
 
@@ -80,7 +101,9 @@ The five-round matching is hard; sourced category then gap-band variation is a
 bounded journey objective. Unknown categories remain unknown. The 25,000-state
 limit distinguishes unproved evaluation from proven insufficient coverage;
 objective limits never revoke a valid witness or claim global optimality.
-Persist full policy/fingerprint/private server RNG seed in Prompt 9. Detailed
+Prompt 9 persists the full policy configuration/fingerprint and exact oriented
+private witness path. Replay reads frozen choices and winners; it never needs to
+regenerate them from the ephemeral server RNG seed. Detailed
 semantics, safe feedback and tests are in the [pool guide](../apps/api/DUEL_POOL.md).
 The real-sample gate remains blocked: Prompt 2 retained aggregates only, while
 MCP ordering/score precedence are still unverified. No additional calls occur.
@@ -262,7 +285,7 @@ Qloo is the sole ranking source. Original title-based SVG/CSS cards are an alway
 
 ## 5. Public API and disclosure contracts
 
-These are the declared application contracts, exported in Prompt 5. Private paths use `/v1`; the planned same-origin browser base `/api` gives `/api/v1`, while forwarding remains disabled. Sessions and owned reads are implemented; live search/generation/gameplay/discovery/challenge mutations and invitations currently return 501. The table describes intended successful behavior for those later handlers. `Idempotency-Key` is scoped to session/operation and a canonical typed-body signature; storage supports retries, but changed-body 409 execution remains Prompt 9 work.
+These are the declared application contracts, exported in Prompt 5. Private paths use `/v1`; the planned same-origin browser base `/api` gives `/api/v1`, while forwarding remains disabled. Sessions, owned reads, typed search, awaited generation and authoritative answer/Next handlers are implemented locally. Discovery writes, challenge execution and invitations remain 501. The table includes both implemented contracts and later share/discovery contracts. `Idempotency-Key` is scoped to session/operation and a canonical typed-body signature; Prompt 9 proves changed-body 409 and stable retry execution against PostgreSQL.
 
 | Method/path without prefix | Request | Successful behavior |
 |---|---|---|

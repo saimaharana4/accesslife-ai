@@ -19,6 +19,9 @@ from tasteduel.ports.qloo import EntityMetadata, QlooResult, RankedCandidatesReq
 class PreparedPool:
     feedback: CuratorPoolFeedback
     pool: PoolBuildResult | None = None
+    snapshot: RankingSnapshot | None = None
+    observed_at: datetime | None = None
+    evidence_expires_at: datetime | None = None
 
 
 def prepare_qloo_pool(
@@ -128,4 +131,4 @@ def prepare_qloo_pool(
         evidence.score_field,
     )
     pool = build_pool(snapshot, rng_seed=rng_seed, policy=policy)
-    return PreparedPool(feedback_from_pool(pool), pool)
+    return PreparedPool(feedback_from_pool(pool), pool, snapshot, evidence.observed_at, evidence_expires_at)

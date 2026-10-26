@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
 import json
 import math
@@ -471,6 +471,7 @@ class _Run:
                 for fact in self.trace
             ),
             policy_fingerprint=self.agent.policy.fingerprint,
+            policy_configuration=asdict(self.agent.policy),
             final_pool_status=prepared.feedback.status if prepared else None,
             final_feedback=prepared.feedback if prepared else None,
             evaluation_feedback=tuple(value.feedback for value in self.snapshots.values()),

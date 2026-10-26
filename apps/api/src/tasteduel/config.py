@@ -35,6 +35,8 @@ class Settings(BaseSettings):
     qloo_enabled: bool = False
     qloo_transport: Literal["mcp", "http_ranked"] = "mcp"
     qloo_http_typed_search: bool = False
+    generation_enabled: bool = False
+    vertex_project: str = "project-bb13ecd8-9d67-408d-9a7"
     qloo_secret_version: str = Field(
         default="projects/project-bb13ecd8-9d67-408d-9a7/secrets/accesslife-qloo-api-key/versions/latest",
         pattern=r"^projects/project-bb13ecd8-9d67-408d-9a7/secrets/accesslife-qloo-api-key/versions/(latest|[1-9][0-9]*)$",

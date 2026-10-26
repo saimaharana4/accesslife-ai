@@ -175,6 +175,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/v1/games/{game_id}/generation": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Generation Status */
+    get: operations["getGenerationStatus"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/v1/games/{game_id}/results": {
     parameters: {
       query?: never;
@@ -622,6 +639,40 @@ export interface components {
        * @constant
        */
       total: 5;
+    };
+    /**
+     * GenerationStatusPublic
+     * @description Observation only. No pool diagnostics, execution history or answer clues.
+     */
+    GenerationStatusPublic: {
+      /**
+       * Game Id
+       * Format: uuid
+       */
+      game_id: string;
+      /** Lease Expires At */
+      lease_expires_at?: string | null;
+      /**
+       * Recovery Action
+       * @enum {string}
+       */
+      recovery_action:
+        | "wait_then_retry"
+        | "retry_same_request"
+        | "read_game"
+        | "start_new_game";
+      /** Retry After Seconds */
+      retry_after_seconds?: number | null;
+      /**
+       * Status
+       * @enum {string}
+       */
+      status:
+        | "generation_in_progress"
+        | "retryable"
+        | "succeeded"
+        | "failed"
+        | "cancelled";
     };
     /** HealthPublic */
     HealthPublic: {
@@ -2021,6 +2072,118 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["RevealedRoundPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  getGenerationStatus: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        game_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GenerationStatusPublic"];
         };
       };
       /** @description Unauthorized */

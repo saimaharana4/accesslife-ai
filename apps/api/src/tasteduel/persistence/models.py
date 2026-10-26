@@ -147,6 +147,7 @@ class GenerationReservation(Owned, Created, Base):
     qloo_request_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     model_request_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     deadline_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    failure_code: Mapped[str | None] = mapped_column(String(64))
 
 
 class RankingSnapshot(Owned, Created, Base):
@@ -224,9 +225,6 @@ class CurationReceipt(Owned, Created, Base):
             name="fixture_requests",
         ),
         CheckConstraint(
-            "curator_mode <> 'deterministic_qloo' OR model_request_count = 0", name="deterministic_requests"
-        ),
-        CheckConstraint(
             "status <> 'succeeded' OR (five_round_path_verified AND valid_pair_count >= 5 AND candidate_count_received >= 10 AND cardinality(target_domains_selected) > 0)",
             name="success",
         ),
@@ -237,7 +235,12 @@ class CurationReceipt(Owned, Created, Base):
             "status <> 'succeeded' OR curator_mode <> 'genuine_agent' OR (model_request_count > 0 AND model_version IS NOT NULL)",
             name="success_agent",
         ),
+        CheckConstraint(
+            "full_receipt IS NULL OR (jsonb_typeof(full_receipt)='object' AND octet_length(full_receipt::text)<=65536)",
+            name="full_receipt_bound",
+        ),
     )
+    full_receipt: Mapped[dict | None] = mapped_column(JSONB)
     game_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     curator_mode: Mapped[str] = mapped_column(String(24), nullable=False)
     seed_entity_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
@@ -283,6 +286,12 @@ class PrivatePair(Owned, Created, Base):
             name="contestants",
         ),
         CheckConstraint("difficulty IN ('easy','medium','hard')", name="difficulty"),
+        UniqueConstraint("game_id", "planned_ordinal"),
+        CheckConstraint("planned_ordinal BETWEEN 1 AND 5", name="planned_ordinal"),
+        CheckConstraint(
+            "(planned_ordinal IS NULL AND left_choice_id IS NULL AND right_choice_id IS NULL) OR (planned_ordinal IS NOT NULL AND left_choice_id IS NOT NULL AND right_choice_id IS NOT NULL AND left_choice_id<>right_choice_id)",
+            name="plan",
+        ),
     )
     game_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     snapshot_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
@@ -290,6 +299,9 @@ class PrivatePair(Owned, Created, Base):
     right_entity_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     winner_entity_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     difficulty: Mapped[str] = mapped_column(String(16), nullable=False)
+    planned_ordinal: Mapped[int | None] = mapped_column(Integer)
+    left_choice_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
+    right_choice_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
 
 
 class DeliveredRound(Owned, Created, Base):

@@ -1,8 +1,15 @@
 # Taste Duel implementation phases
 
-Revision 7 - 26 October 2026 - Prompt 8 bounded curator; one live grounded pool, corrective live gate pending
+Revision 8 - 26 October 2026 - Prompt 9 local authoritative flow; next frontend integration
 
-**Progress:** Prompts 1, 3-6 local preservation/fixture/foundation/transport checks passed. Prompt 7's real-sample gate now passes for one artist-to-movie snapshot through Prompt 8's explicit HTTP adapter. The native Vertex curator selected a 20-candidate strategy, inspected validator feedback and finished a 15-pair/five-round pool in 5.36 seconds. Its bounded corrective branch passes synthetic tests; no natural live correction was observed, so the stronger live adaptive-value gate remains open. Canonical MCP typed resolution remains blocked; browser gameplay remains fixture-only. Next numbered step is Prompt 9, with unresolved live gates carried explicitly before dependent integration. No infrastructure changes occurred.
+**Prompt 9 completed locally:** fenced reservation/recovery, atomic full receipt
+and pool, authoritative idempotent answers/Next, safe generation observation and
+completion-only summary passed the clean-database/real-process-restart gate with
+synthetic data. All earlier references and migration bytes are preserved. Browser
+integration remains Prompt 10; no new live/provider/cloud claim follows. Historical
+Prompt 8 adaptive correction and broader coverage gates remain open.
+
+**Historical progress through Prompt 8:** Prompts 1, 3-6 local preservation/fixture/foundation/transport checks passed. Prompt 7's real-sample gate now passes for one artist-to-movie snapshot through Prompt 8's explicit HTTP adapter. The native Vertex curator selected a 20-candidate strategy, inspected validator feedback and finished a 15-pair/five-round pool in 5.36 seconds. Its bounded corrective branch passes synthetic tests; no natural live correction was observed, so the stronger live adaptive-value gate remains open. Canonical MCP typed resolution remains blocked; browser gameplay remains fixture-only. At that delivery Prompt 9 was next; its local implementation above now passes, while unresolved live gates still precede dependent integration. No infrastructure changes occurred.
 
 ## Status and execution rules
 

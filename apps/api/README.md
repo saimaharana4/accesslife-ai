@@ -4,11 +4,20 @@ Prompt 5 adds a separate application under `src/tasteduel`. The old `accesslife`
 entry point, migration lineage, deployed database and containers are unchanged.
 The browser fixture game is not connected to this API yet.
 
+**Prompt 9 current status:** authoritative session/game creation, safe generation
+status, answers, explicit advancement and results now operate locally; typed
+search stores minimal owned provider metadata when configured. Generation is
+awaited and fenced, with atomic full receipt/pool publication. See
+[the gameplay guide](GAMEPLAY.md). The older foundation descriptions below are
+historical. Discovery writes and challenge execution still return 501; browser
+forwarding remains disabled. The clean-database/process-restart proof uses
+synthetic data, with no new live provider calls or cloud changes.
+
 Prompt 8 adds a private bounded Vertex curator and explicit HTTP gap adapter;
 see [the curator record](../../ai/prompt8-curator.md). One live artist-to-movie
 pool passed with genuine native tool use; no live corrective case was observed.
 No handlers below were connected, no migration changed, and the expanded
-in-memory receipt still needs additive durable storage in Prompt 9. The Prompt 7
+receipt was then in memory; Prompt 9 now persists it atomically with the pool. The Prompt 7
 sample blocker described below is historical and closed only for this one sample.
 
 Prompt 7 adds the private [deterministic pool engine](DUEL_POOL.md), typed
@@ -116,7 +125,7 @@ Generation reservations store body hash/lease/fence. Mutation receipts uniquely
 bind owner/operation/key to a signature and checked typed outcome reference.
 Completed answer receipts require a genuine saved answer and authoritative
 revision. The database cannot compare an incoming HTTP body by itself: durable
-claiming, body-conflict responses and lost-response replay handlers are Prompt 9.
+claiming, body-conflict responses and lost-response replay handlers now operate in Prompt 9.
 
 ## Private/public boundary and storage
 

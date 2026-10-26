@@ -1,6 +1,7 @@
 """PostgreSQL read adapter. Builds bounded values, never generic ORM responses."""
 
 from datetime import UTC, datetime
+import json
 from uuid import UUID
 
 from sqlalchemy import select
@@ -39,6 +40,8 @@ class SqlReadRepository:
             raise AppError(
                 409, "GENERATION_IN_PROGRESS", "A validated game has not been published yet.", retryable=True
             )
+        if receipt.full_receipt is not None:
+            return ReceiptValue.model_validate_json(json.dumps(receipt.full_receipt))
         return ReceiptValue(
             game_id=receipt.game_id,
             curator_mode=receipt.curator_mode,

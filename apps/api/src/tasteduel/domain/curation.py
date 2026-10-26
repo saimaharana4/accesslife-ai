@@ -34,6 +34,16 @@ class CurationAction(StrictRecord):
     candidate_limit: Annotated[StrictInt | None, Field(ge=10, le=20)] = None
 
 
+class PairPolicyRecord(StrictRecord):
+    version: Literal["duel-pool-v1"]
+    rounds: Literal[5]
+    target_pairs: Annotated[StrictInt, Field(ge=10, le=15)]
+    min_categories: Annotated[StrictInt, Field(ge=0, le=10)]
+    min_bands: Annotated[StrictInt, Field(ge=1, le=3)]
+    near_tie_ratio: Literal[0.05]
+    max_candidates: Annotated[StrictInt, Field(ge=10, le=20)]
+
+
 class CurationReceipt(StrictRecord):
     game_id: UUID
     curator_mode: CuratorMode
@@ -61,6 +71,7 @@ class CurationReceipt(StrictRecord):
     model_usage_complete: StrictBool = True
     action_trace: Annotated[tuple[CurationAction, ...], Field(max_length=16)] = ()
     policy_fingerprint: Annotated[str | None, Field(pattern=r"^[a-f0-9]{64}$")] = None
+    policy_configuration: PairPolicyRecord | None = None
     final_pool_status: (
         Literal[
             "ready",

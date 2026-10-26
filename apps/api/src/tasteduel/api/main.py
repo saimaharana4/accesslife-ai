@@ -1,11 +1,13 @@
-"""Taste Duel contract/read foundation plus opt-in private provider lifecycle.
+"""Taste Duel authoritative local API with opt-in private provider lifecycle.
 
 Run separately from accesslife.api.main; no automatic migration or import I/O.
-Gameplay HTTP mutations/search remain unconnected; only explicit startup resolves credentials.
+Generation is awaited and fenced; no post-response background execution.
 """
 
 from contextlib import asynccontextmanager, contextmanager
 from datetime import UTC, datetime, timedelta
+from dataclasses import replace
+import asyncio
 import hashlib
 import hmac
 import re
@@ -26,12 +28,15 @@ from tasteduel.adapters.read_repository import SqlReadRepository
 from tasteduel.api import presenters, schemas as s
 from tasteduel.api.body_limit import BoundedBodyMiddleware
 from tasteduel.application.errors import AppError
+from tasteduel.application.entity_search import remember_search_entities
+from tasteduel.application.gameplay import GameplayService, GenerationObservation
 from tasteduel.application.reads import ReadService
 from tasteduel.api.provider_runtime import ProviderStartupFailure, build_qloo_runtime
 from tasteduel.config import Settings
 from tasteduel.domain.types import EntityType
 from tasteduel.persistence import models as m
 from tasteduel.persistence.db import local_engine, scoped_session
+from tasteduel.ports.qloo import ResolveSeedRequest
 
 Key = Annotated[
     str, Header(alias="Idempotency-Key", min_length=16, max_length=128, pattern=r"^[A-Za-z0-9_-]+$")
@@ -40,13 +45,15 @@ ERRORS = {code: {"model": s.ErrorEnvelope} for code in (401, 403, 404, 409, 410,
 
 
 def create_app(
-    settings: Settings | None = None, *, engine: Engine | None = None, qloo_factory=None
+    settings: Settings | None = None, *, engine: Engine | None = None, qloo_factory=None, generator=None
 ) -> FastAPI:
     settings = settings or Settings()
 
     @asynccontextmanager
     async def lifespan(app):
         runtime = None
+        model = None
+        app.state.generator = generator
         app.state.qloo = None
         app.state.qloo_status = "disabled"
         if settings.qloo_enabled:
@@ -58,17 +65,34 @@ def create_app(
                 app.state.qloo_status = failure.code
             except (AppError, SQLAlchemyError):
                 app.state.qloo_status = "QLOO_DATABASE_UNAVAILABLE"
+        if generator is None and settings.generation_enabled and app.state.qloo is not None:
+            from tasteduel.adapters.vertex_curator import VertexCuratorModel
+            from tasteduel.agents.round_curator import RoundCuratorAgent
+
+            try:
+                async with asyncio.timeout(5):
+                    model = await asyncio.to_thread(VertexCuratorModel, project=settings.vertex_project)
+            except Exception:
+                # Explicitly labelled deterministic-Qloo resilience; never fixtures.
+                model = None
+            app.state.generator = RoundCuratorAgent(
+                provider=app.state.qloo,
+                model=model,
+                capabilities={"artist": ("movie",), "movie": ("artist",)},
+            )
         try:
             yield
         finally:
+            if model:
+                await model.aclose()
             if runtime:
                 await runtime.close()
             app.state.qloo = None
 
     app = FastAPI(
         title="Taste Duel API",
-        version="0.1.0-foundation",
-        description="Prompt 5 contract and owned-read foundation. Live search, generation and mutations are not connected.",
+        version="0.2.0-gameplay",
+        description="Authoritative sessions/gameplay with awaited fenced generation. Provider use is explicitly configured; browser integration is later work.",
         servers=[
             {"url": "/", "description": "Private API, including the local documentation server"},
             {"url": "/api", "description": "Planned same-origin browser prefix; route paths are /v1"},
@@ -78,6 +102,7 @@ def create_app(
     )
     app.state.engine = engine
     app.state.settings = settings
+    app.state.generator = generator
     app.add_middleware(BoundedBodyMiddleware)
 
     def database() -> Engine:
@@ -288,7 +313,11 @@ def create_app(
     def clear_session(request: Request):
         try:
             with owned_db(request) as (db, row):
+                # Match mutation/publication lock order: session first.
+                db.refresh(row, with_for_update=True)
                 now = datetime.now(UTC)
+                if row.revoked_at is not None or row.expires_at <= now:
+                    raise AppError(401, "SESSION_REQUIRED", "Start a guest session to continue.")
                 db.execute(
                     update(m.Challenge)
                     .where(m.Challenge.session_id == row.id, m.Challenge.revoked_at.is_(None))
@@ -320,14 +349,40 @@ def create_app(
         )
 
     @app.get("/v1/entities/search", response_model=s.EntitySearchPublic, operation_id="searchEntities")
-    def search_entities(
+    async def search_entities(
         request: Request,
         q: Annotated[str, Query(min_length=1, max_length=100)],
         type: EntityType,
         limit: Annotated[int, Query(ge=1, le=20)] = 10,
     ):
-        with owned_db(request):
-            not_implemented()
+        with owned_db(request) as (_, row):
+            owner = row.id
+        port = getattr(app.state, "qloo", None)
+        if port is None:
+            raise AppError(503, "QLOO_UNAVAILABLE", "Entity search is not configured.", retryable=True)
+        async with port.request_budget(max_requests=2, deadline_seconds=8):
+            result = await port.resolve_seed(ResolveSeedRequest(q, type))
+        if result.error:
+            raise AppError(
+                503, "QLOO_UNAVAILABLE", "Entity search is temporarily unavailable.", retryable=True
+            )
+        items = result.entities or tuple(choice for issue in result.issues for choice in issue.choices)
+        unique = {item.id: item for item in items}
+        stored, expired = await asyncio.to_thread(
+            remember_search_entities, database(), owner, tuple(unique.values())[:limit]
+        )
+        status = (
+            result.status if result.status in ("ok", "empty", "needs_input", "partial") else "unavailable"
+        )
+        return s.EntitySearchPublic(
+            status="unavailable" if expired and not stored else status,
+            results=tuple(presenters.entity(item) for item in stored),
+            message="This session's saved seed has expired. Start a new guest session."
+            if expired
+            else "Choose the intended entity."
+            if status == "needs_input"
+            else None,
+        )
 
     @app.post(
         "/v1/games",
@@ -336,14 +391,128 @@ def create_app(
         responses={200: {"model": s.GamePublic}, 202: {"model": s.GameGenerationPendingPublic}},
         operation_id="createGame",
     )
-    def create_game(body: s.CreateGameRequest, request: Request, idempotency_key: Key):
-        with owned_db(request):
-            not_implemented()
+    async def create_game(
+        body: s.CreateGameRequest, request: Request, response: Response, idempotency_key: Key
+    ):
+        # Authenticate in a short transaction; hold no database lock across I/O.
+        with owned_db(request) as (_, row):
+            owner = row.id
+        service = GameplayService(database())
+        claim = await asyncio.to_thread(
+            service.reserve, owner, **body.model_dump(), idempotency_key=idempotency_key
+        )
+        if isinstance(claim, GenerationObservation):
+            if claim.status == "succeeded":
+                response.status_code = 200
+                return read_game(request, claim.game_id)
+            response.status_code = 202
+            seconds = max(1, min(30, int((claim.lease_expires_at - datetime.now(UTC)).total_seconds()) + 1))
+            response.headers["Retry-After"] = str(seconds)
+            return JSONResponse(
+                s.GameGenerationPendingPublic(
+                    game_id=claim.game_id,
+                    retry_after_seconds=seconds,
+                    lease_expires_at=claim.lease_expires_at,
+                ).model_dump(mode="json"),
+                status_code=202,
+                headers={"Retry-After": str(seconds), "Cache-Control": "no-store"},
+            )
+        try:
+            curator = app.state.generator
+            if curator is None:
+                raise AppError(
+                    503,
+                    "GENERATION_UNAVAILABLE",
+                    "Generation is not configured. Retry this request when available.",
+                    retryable=True,
+                )
+            async with asyncio.timeout(20):
+                outcome = await curator.curate(
+                    claim.seed, game_id=claim.game_id, rng_seed=secrets.token_hex(32), allow_fallback=True
+                )
+            if outcome.pool is None:
+                raise AppError(
+                    503,
+                    "GENERATION_UNAVAILABLE",
+                    "A verified five-round game could not be prepared. Retry or choose another seed.",
+                    retryable=True,
+                )
+            if generator is None and outcome.receipt.curator_mode == "fixture":
+                raise AppError(
+                    503, "GENERATION_UNAVAILABLE", "Synthetic evidence is not enabled in this runtime."
+                )
+            await asyncio.to_thread(service.publish, claim, outcome)
+        except asyncio.CancelledError:
+            # An interrupted request leaves an expiring claim; no detached work.
+            raise
+        except Exception as failure:
+            try:
+                await asyncio.to_thread(service.fail, claim)
+            except (AppError, SQLAlchemyError):
+                pass  # Expired/reclaimed/revoked claims must never overwrite a winner.
+            if isinstance(failure, (AppError, SQLAlchemyError, ValidationError)):
+                raise
+            raise AppError(
+                503,
+                "GENERATION_UNAVAILABLE",
+                "Generation was interrupted. Retry the same request.",
+                retryable=True,
+            ) from None
+        return read_game(request, claim.game_id)
+
+    def read_game(request, game_id):
+        with owned_db(request) as (db, row):
+            return presenters.game_public(ReadService(SqlReadRepository(db, row.id), row.id).game(game_id))
+
+    @app.get(
+        "/v1/games/{game_id}/generation",
+        response_model=s.GenerationStatusPublic,
+        operation_id="getGenerationStatus",
+    )
+    def generation_status(game_id: UUID, request: Request):
+        with owned_db(request) as (_, row):
+            owner = row.id
+        observation = GameplayService(database()).status(owner, game_id)
+        if observation is None:
+            raise AppError(404, "NOT_FOUND", "The requested resource is unavailable.")
+        now = datetime.now(UTC)
+        running = (
+            observation.status == "running"
+            and observation.lease_expires_at
+            and observation.lease_expires_at > now
+        )
+        state = (
+            "generation_in_progress"
+            if running
+            else (
+                "retryable"
+                if observation.status in ("running", "reserved", "failed")
+                else "failed"
+                if observation.status == "exhausted"
+                else observation.status
+            )
+        )
+        return s.GenerationStatusPublic(
+            game_id=game_id,
+            status=state,
+            lease_expires_at=observation.lease_expires_at,
+            retry_after_seconds=max(1, min(30, int((observation.lease_expires_at - now).total_seconds()) + 1))
+            if running
+            else None,
+            recovery_action="wait_then_retry"
+            if running
+            else (
+                "read_game"
+                if state == "succeeded"
+                else "retry_same_request"
+                if state == "retryable"
+                else "start_new_game"
+            ),
+        )
 
     @app.get("/v1/games/{game_id}", response_model=s.GamePublic, operation_id="getGame")
     def get_game(game_id: UUID, request: Request):
-        with owned_db(request) as (db, row):
-            return presenters.game_public(ReadService(SqlReadRepository(db, row.id), row.id).game(game_id))
+        return read_game(request, game_id)
 
     @app.get(
         "/v1/games/{game_id}/round", response_model=s.PlayableRoundPublic, operation_id="getCurrentRound"
@@ -356,13 +525,66 @@ def create_app(
 
     @app.post("/v1/games/{game_id}/answer", response_model=s.RevealedRoundPublic, operation_id="answerRound")
     def answer(game_id: UUID, body: s.AnswerRequest, request: Request, idempotency_key: Key):
-        with owned_db(request):
-            not_implemented()
+        with owned_db(request) as (_, row):
+            owner = row.id
+        result = GameplayService(database()).answer(
+            owner, game_id, **body.model_dump(), idempotency_key=idempotency_key
+        )
+        return mutation_public(request, result, answer=True)
 
     @app.post("/v1/games/{game_id}/advance", response_model=s.GamePublic, operation_id="advanceRound")
     def advance(game_id: UUID, body: s.AdvanceRequest, request: Request, idempotency_key: Key):
-        with owned_db(request):
-            not_implemented()
+        with owned_db(request) as (_, row):
+            owner = row.id
+        result = GameplayService(database()).advance(
+            owner, game_id, **body.model_dump(), idempotency_key=idempotency_key
+        )
+        return mutation_public(request, result, answer=False, final=body.answered_round_id == result.round_id)
+
+    def mutation_public(request, result, *, answer, final=False):
+        """Rebuild the saved mutation revision, never today's later navigation state."""
+        with owned_db(request) as (db, row):
+            repo = SqlReadRepository(db, row.id)
+            game = ReadService(repo, row.id).game(result.game_id)
+            delivered = db.scalar(
+                select(m.DeliveredRound).where(
+                    m.DeliveredRound.id == result.round_id,
+                    m.DeliveredRound.session_id == row.id,
+                    m.DeliveredRound.game_id == result.game_id,
+                )
+            )
+            if delivered is None:
+                raise AppError(404, "NOT_FOUND", "The requested resource is unavailable.")
+            saved_round = repo.round(result.game_id, delivered, game.seed.source)
+            if answer or final:
+                if saved_round.accepted is None:
+                    raise AppError(503, "STORED_STATE_UNAVAILABLE", "The saved answer is unavailable.")
+                count = saved_round.ordinal
+                score = saved_round.accepted.cumulative_score
+            else:
+                count = saved_round.ordinal - 1
+                score = sum(
+                    db.scalars(
+                        select(m.Answer.correct)
+                        .join(m.DeliveredRound, m.DeliveredRound.id == m.Answer.round_id)
+                        .where(
+                            m.Answer.session_id == row.id,
+                            m.Answer.game_id == game.id,
+                            m.DeliveredRound.ordinal < saved_round.ordinal,
+                        )
+                    )
+                )
+                saved_round = replace(saved_round, accepted=None)
+            snapshot = replace(
+                game,
+                revision=result.revision,
+                current=saved_round,
+                current_ordinal=saved_round.ordinal,
+                answered_count=count,
+                score=score,
+                phase="completed" if count == 5 else "playing",
+            )
+            return presenters.round_public(snapshot) if answer else presenters.game_public(snapshot)
 
     @app.get("/v1/games/{game_id}/results", response_model=s.GameResultPublic, operation_id="getResults")
     def results(game_id: UUID, request: Request):
@@ -448,9 +670,9 @@ def create_app(
             revision = connection.execute(
                 text("SELECT version_num FROM tasteduel.tasteduel_alembic_version LIMIT 1")
             ).scalar_one()
-            if revision != "td0005":
+            if revision != "td0006":
                 raise AppError(503, "SCHEMA_NOT_READY", "The local schema is not ready.", retryable=True)
-        return s.HealthPublic(status="ok", generation_available=False)
+        return s.HealthPublic(status="ok", generation_available=app.state.generator is not None)
 
     return app
 

@@ -449,8 +449,8 @@ def test_mutation_receipt_cannot_reference_another_owners_subject_or_outcome(db_
     "answered,revision,message",
     [
         (False, 1, "requires an accepted answer"),
-        (True, 999, "authoritative game revision"),
-        (True, 1, "authoritative game revision"),
+        (True, 999, "authoritative revision"),
+        (True, 1, "authoritative revision"),
     ],
 )
 def test_completed_answer_receipt_requires_accepted_answer_and_exact_revision(
