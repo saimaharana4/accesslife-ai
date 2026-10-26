@@ -25,12 +25,22 @@ class RankedCandidatesRequest:
     limit: int = 20
 
 
-def ranked_context_hash(request: RankedCandidatesRequest) -> str:
+def ranked_context_hash(request: RankedCandidatesRequest, *, transport: str = "mcp") -> str:
     """Bind a normalized snapshot to the exact pinned MCP recommendation inputs.
 
     This is the existing Prompt 6 fingerprint, not a second provider schema.
     A future transport/filter change must version/review this contract too.
     """
+    if transport == "http_ranked":
+        value = {
+            "transport": "qloo-http-affinity-v1",
+            "host": "https://hackathon.api.qloo.com",
+            "path": "/v2/insights",
+            "parameters": ranked_http_parameters(request),
+        }
+        return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
+    if transport != "mcp":
+        raise ValueError("Unsupported ranking transport")
     arguments = {
         "target_type": request.target_domain,
         "signals": [str(request.seed_id)],
@@ -39,6 +49,16 @@ def ranked_context_hash(request: RankedCandidatesRequest) -> str:
     }
     value = {"operation": "recommend", "arguments": arguments, "harness": "0.1.26"}
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
+
+
+def ranked_http_parameters(request: RankedCandidatesRequest) -> dict[str, str]:
+    return {
+        "filter.type": "urn:entity:" + request.target_domain,
+        "signal.interests.entities": str(request.seed_id),
+        "take": str(request.limit),
+        "feature.explainability": "true",
+        "sort_by": "affinity",
+    }
 
 
 @dataclass(frozen=True)
@@ -74,12 +94,14 @@ class RankingEvidence:
     score_field: str = "harness.compact.affinity"
     ordering_verified: bool = False
     source_label: str = "Qloo API via official harness"
+    transport: Literal["mcp", "http_ranked"] = "mcp"
 
 
 @dataclass(frozen=True)
 class ProviderFailure:
     code: str
     retryable: bool = False
+    retry_after_seconds: float | None = None
 
 
 @dataclass(frozen=True)

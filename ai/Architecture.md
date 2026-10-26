@@ -1,6 +1,41 @@
 # Taste Duel architecture
 
-Revision 8 - 26 October 2026 - Prompt 7 private deterministic engine. **Fixture UI remains disconnected; live sample, agent, gameplay and deployment gates remain open.**
+Revision 9 - 26 October 2026 - Prompt 8 bounded curator and explicit HTTP transport. **One grounded live pool passed; corrective live strategy, browser gameplay and deployment remain unverified.**
+
+### Prompt 8 current boundary
+
+The private `RoundCuratorAgent` now makes native Vertex function-call decisions
+through a typed model port. Actual application tools are `inspect_seed`,
+`fetch_ranked`, `evaluate_pool`, `finish_pool` and `stop`. A fetch returns bounded
+deterministic feedback; the model may select a known validated pool, make one
+reason-supported strategy correction or stop. It receives no candidate titles,
+scores, winners or private pairs. The full objective, limits, current live ledger
+and source links are in [Prompt 8 curator evidence](prompt8-curator.md).
+
+Pin `gemini-3.1-flash-lite`/`global`, Google Gen AI `2.33.0`, explicit IAM/ADC,
+minimal thinking, 512 output tokens and one SDK attempt. The generation boundary
+is 20 seconds, six actual Qloo HTTP dispatches, normally two/hard four Vertex
+attempts, eight tool steps, one correction and a 24,000-token admission envelope.
+One native-tool model smoke and one genuine grounded curator run passed. The
+curator chose 20 movie candidates, inspected deterministic feedback and selected
+a ready 15-pair pool with a five-round path in 5,359 ms (two model requests, one
+Qloo ranking request). This resolves Prompt 7's real-sample gate for this sample.
+No natural correction occurred; live adaptive correction remains unverified.
+No cloud changes or browser integration occurred.
+
+The pinned MCP process remains the default/preferred transport, but its live typed
+resolution still failed closed. An explicitly configured
+`http_ranked` adapter closes the documented compact-score/type/sort gap behind
+the same typed port/admission guard; it is not a silent transport fallback.
+An additional `qloo_http_typed_search=true` opt-in preserves actual returned
+types and ambiguity through independently tested GET `/search`; the successful
+live run used this path. A pre-harness type-preservation shim is synthetic-tested,
+but did not establish live canonical resolution. Unknown compact ordering remains
+rejected. Per-key shared controls protect only
+participating runtimes; an overlapping legacy reader is a rollout blocker until
+stopped or coordinated. New in-memory receipt trace/token/feedback fields are
+private; additive SQL persistence, fencing and atomic game/receipt publication
+remain Prompt 9. Never serialize the receipt as a public status response.
 
 The web entry point is a fresh Taste Duel fixture frontend. `apps/api/src/tasteduel` now contains the independent local domain/API/read foundation; legacy backend entry points, containers and recorded deployment remain AccessLife. Historical verification remains in [memory.md](memory.md) and Git history; it does not validate live Taste Duel gameplay, its agent, data rights or cloud migration. [prompts.md](prompts.md) controls later iterations.
 
@@ -292,9 +327,9 @@ flowchart TD
     Commit --> Public[Return first unanswered round only]
 ```
 
-Application tools include inspect_seed, fetch_ranked_candidates, validate_candidates, propose_pairs, evaluate_pool and finish_pool. Actual Qloo names/arguments come from pinned discovered schemas; these application functions are not Qloo-owned agents. The model chooses allowed domains/a useful correction; validators veto invalid selections. Generate reveal copy before play from returned evidence or use a factual template. Aggregate correlations do not support psychological/causal stories.
+Implemented application tools are inspect_seed, fetch_ranked, evaluate_pool, finish_pool and stop. Actual Qloo names/arguments come from pinned discovered schemas; the explicitly selected ranked HTTP adapter has a separate reviewed GET contract. These application functions are not Qloo-owned agents. The model chooses verified domains/limits and may make one reason-supported correction; it never proposes answer pairs or changes scores. Validators own eligibility, no-repeat feasibility and winners. Reveal copy is not model-generated here; use supported accepted evidence or a factual higher-ranked template. Aggregate correlations do not support psychological/causal stories.
 
-Initial budgets to validate: about 20 seconds total generation, six upstream Qloo calls including retries/internal lookups, normally two and at most four Vertex requests, finite tokens/tool steps and repetition limits. Coordinate per-key usage across scale-out and overlapping old readers. Read quota metadata; simulate 429/timeouts instead of exhausting access. Exhaustion yields retry/coverage failure, never an unbounded loop. Label deterministic Qloo curation when Vertex fails; it is resilience, not proof of live agent tool use.
+Implemented hard limits are a 20-second acceptance/cancellation deadline, six upstream Qloo requests including retries/internal lookups, normally two and at most four Vertex attempts, eight tool steps, one useful correction, 512 model-output tokens per request and 24,000 total-token admission. Count observed HTTP dispatches separately from reservations, including denied/failed reservations where relevant. Coordinate per-key usage across scale-out and overlapping old readers; legacy bypass remains a rollout blocker. Read quota metadata; simulate 429/timeouts instead of exhausting access. Exhaustion yields retry/coverage failure, never an unbounded loop. Label deterministic Qloo curation when Vertex fails and retain actual attempted model counts; it is resilience, not proof of live agent tool use. Finite synchronous validation has late-publication vetoes, not instant CPU preemption.
 
 Reject ambiguous identity, self/duplicate/wrong-domain contestants, unverifiable ordering, contradictory metadata, ties/near-ties and missing/nonfinite required scores. Artwork failure selects an approved fallback. Build roughly 10–15 potential pairs where feasible and prove a five-round no-repeat continuation. Difficulty bands are versioned within-context heuristics, not calibrated confidence/cross-query quantities. Adaptive choice must preserve a remaining path; scarce-band fallback is explicit. Balance sides without leaking winners.
 

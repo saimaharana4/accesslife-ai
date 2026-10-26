@@ -34,6 +34,7 @@ class ManagedMcpProcess:
         runner: Path,
         api_key: str | None = None,
         reserve_upstream: ReserveUpstream | None = None,
+        note_dispatch: Callable[[str], None] | None = None,
         startup_timeout: float = 5,
         call_timeout: float = 12,
         max_restarts: int = 2,
@@ -53,6 +54,7 @@ class ManagedMcpProcess:
         self._snapshot = (contract_snapshot or runner.resolve().parent / "discovered-contract.json").resolve()
         self._api_key = api_key
         self._reserve_default = reserve_upstream
+        self._note_dispatch = note_dispatch
         self.startup_timeout, self.call_timeout, self.max_restarts = (
             startup_timeout,
             call_timeout,
@@ -227,6 +229,10 @@ class ManagedMcpProcess:
                     await self._write(
                         {"jsonrpc": "2.0", "id": message.get("id"), "result": {"allowed": allowed}}
                     )
+                elif message.get("method") == "tasteduel/dispatch":
+                    path = message.get("params", {}).get("path")
+                    if self._context and self._note_dispatch:
+                        self._context.copy().run(self._note_dispatch, path)
                 elif message.get("method") == "tasteduel/http":
                     status = message.get("params", {}).get("status")
                     if type(status) is int and 100 <= status <= 599 and len(self.http_statuses) < 6:

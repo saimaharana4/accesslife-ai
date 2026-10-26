@@ -1,8 +1,19 @@
 # Taste Duel product requirements
 
-Revision 6 - 26 October 2026 - Prompt 7 offline deterministic pool; real-sample gate pending
+Revision 7 - 26 October 2026 - Prompt 8 grounded pool passed; live corrective value still pending
 
 ## Delivery status and authority
+
+**Prompt 8:** a private typed RoundCuratorAgent now chooses verified target/limit
+strategies using native Vertex tools and deterministic feedback. It can make one
+useful bounded correction, finish only a validated known pool or stop. One
+`gemini-3.1-flash-lite` native-tool smoke establishes model access. A second live
+test chose a 20-candidate movie strategy, consumed genuine Qloo feedback and
+finished a validated five-round path in 5.36 seconds. No natural corrective case
+was obtained; adaptive correction remains synthetic-tested rather than live-proven.
+The [dated curator record](prompt8-curator.md) states live
+results and limits. Browser gameplay remains synthetic; SQL receipt extension,
+atomic authoritative generation/answers, sharing and GCP rollout remain later work.
 
 Taste Duel is the selected new product. Prompt 4 implements the five-round development fixture frontend; Prompt 5 adds a separate local Python API/database foundation and generated contracts. The browser remains a fixture adapter, while deployed services and cloud automation remain AccessLife. Old venue checks and the old live URL do not validate this game. Only isolated local Taste Duel migrations run; no deployed database, repository identity or cloud resource changes.
 
@@ -127,7 +138,7 @@ An image field is not permission to mirror, transform or publish that artwork in
 
 Use private bounded caches. The dated [Qloo/source capability matrix](qloo-capability-matrix.md) records inspected terms, bounded operational defaults and any unresolved event restrictions for raw responses, minimal entities, immutable snapshots, challenges, logs and backups. No universal contractual numerical TTL is established by the inspected guidance; product defaults are not licence grants. Challenge lifetime cannot exceed its evidence permissions.
 
-The agent can choose supported targets, request bounded data and propose valid pairs. It cannot create affinities, winners, candidates or causal explanations, or override validator rejection. Vertex failure may use a transparently labelled deterministic curator with genuine Qloo data; this is not a passed live-agent execution. A fixed pipeline narrated by an LLM is not automatically autonomous reasoning.
+The implemented agent chooses verified targets/candidate limits, requests bounded data, inspects aggregate feedback and selects a known validated pool. It does not propose or invent pairs, affinities, winners, candidates or causal explanations, or override validator rejection. Vertex unavailability may use a transparently labelled deterministic curator with genuine Qloo data, retaining failed model attempts in the receipt; this is not a passed live-agent execution. Malformed model calls and Qloo authentication failures fail closed. A fixed pipeline narrated by an LLM is not automatically autonomous reasoning.
 
 ## 7. Quality targets and verification
 
@@ -136,7 +147,7 @@ The agent can choose supported targets, request bounded data and propose valid p
 | Visual | Inspected 390×844, 1440×1000 and 320px screenshots, long titles and failed images; build success alone is insufficient. |
 | Accessibility | Full axe/keyboard/reduced-motion/reflow/contrast checks; no unresolved serious/critical defects. Report actual manual screen-reader checks separately. |
 | Performance | Lab LCP ≤2.5s/CLS ≤0.1; initial route JS about ≤180KB gzip/gameplay addition ≤100KB targets; pressed feedback <100ms; warm answer-handler p95 ≤500ms target. |
-| Generation | Target about 20s; ≤6 upstream Qloo requests including retries/harness lookups; normal 2 Vertex requests, hard max 4, with measured step/token/cost limits. |
+| Generation | 20s acceptance/cancellation deadline; ≤6 actual Qloo HTTP requests including retries/harness lookups; normal 2 Vertex attempts, hard max 4; ≤8 tool steps/1 correction, ≤512 output tokens per request and 24,000 total-token admission. Actual latency/usage and limitations are recorded per execution. |
 | Security | Session/mutation-origin isolation, secure cookies, private API IAM, safe bounded image fetching, prompt-injection resistance and no secret/pre-answer leakage. |
 | Reproducibility | Node 24/Python 3.12 compatible pins/locks, clean migrations/container restart and actual remote CI for the application SHA. |
 | Recovery | Actual local persistence and priced disposable restore checks; logical and managed Cloud SQL restore are distinct claims. |

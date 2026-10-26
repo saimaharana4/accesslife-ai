@@ -1,9 +1,9 @@
 """Private execution facts. Never use this model as a public response schema."""
 
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import Field, StrictBool, model_validator
+from pydantic import Field, StrictBool, StrictInt, model_validator
 
 from .types import (
     Count,
@@ -15,6 +15,23 @@ from .types import (
     UtcDatetime,
     VersionToken,
 )
+from .pool_feedback import CuratorPoolFeedback
+
+
+class CurationAction(StrictRecord):
+    tool: Literal[
+        "inspect_seed",
+        "fetch_ranked",
+        "evaluate_pool",
+        "finish_pool",
+        "stop",
+        "model_request",
+        "deterministic_fallback",
+    ]
+    status: Literal["ok", "rejected", "error", "timeout"]
+    elapsed_ms: Annotated[StrictInt, Field(ge=0, le=120_000)]
+    target_domain: EntityType | None = None
+    candidate_limit: Annotated[StrictInt | None, Field(ge=10, le=20)] = None
 
 
 class CurationReceipt(StrictRecord):
@@ -25,6 +42,7 @@ class CurationReceipt(StrictRecord):
     target_domains_considered: Annotated[tuple[EntityType, ...], Field(min_length=1, max_length=2)]
     target_domains_selected: Annotated[tuple[EntityType, ...], Field(max_length=2)]
     qloo_request_count: Annotated[Count, Field(le=6)]
+    qloo_reserved_count: Annotated[Count, Field(le=6)] = 0
     tool_request_count: Annotated[Count, Field(le=24)]
     model_request_count: Annotated[Count, Field(le=4)]
     candidate_count_received: Count
@@ -37,7 +55,27 @@ class CurationReceipt(StrictRecord):
     harness_version: VersionToken | None = None
     model_version: VersionToken | None = None
     validator_version: VersionToken
-    elapsed_ms: Annotated[Count, Field(le=120_000)]
+    elapsed_ms: Annotated[StrictInt, Field(ge=0, le=120_000)]
+    model_input_tokens: Annotated[StrictInt, Field(ge=0, le=32_000)] = 0
+    model_output_tokens: Annotated[StrictInt, Field(ge=0, le=2048)] = 0
+    model_usage_complete: StrictBool = True
+    action_trace: Annotated[tuple[CurationAction, ...], Field(max_length=16)] = ()
+    policy_fingerprint: Annotated[str | None, Field(pattern=r"^[a-f0-9]{64}$")] = None
+    final_pool_status: (
+        Literal[
+            "ready",
+            "insufficient_coverage",
+            "invalid_snapshot",
+            "evaluation_limited",
+            "provider_unavailable",
+            "needs_input",
+        ]
+        | None
+    ) = None
+    candidate_count_rejected: Count = 0
+    final_feedback: CuratorPoolFeedback | None = None
+    evaluation_feedback: Annotated[tuple[CuratorPoolFeedback, ...], Field(max_length=2)] = ()
+    final_target_domain: EntityType | None = None
     status: GenerationStatus
     created_at: UtcDatetime
 
@@ -55,8 +93,8 @@ class CurationReceipt(StrictRecord):
             raise ValueError("Primary rejection counts exceed candidates received")
         if self.curator_mode == CuratorMode.FIXTURE and (self.qloo_request_count or self.model_request_count):
             raise ValueError("Fixture curation cannot claim Qloo/model calls")
-        if self.curator_mode == CuratorMode.DETERMINISTIC_QLOO and self.model_request_count:
-            raise ValueError("Deterministic curation cannot claim model execution")
+        # Mode records the strategy that selected the pool. Failed Vertex attempts
+        # still count when a deterministic fallback does the actual curation.
         if self.status == GenerationStatus.SUCCEEDED:
             if not selected or not self.five_round_path_verified or self.valid_pair_count < 5:
                 raise ValueError("Successful generation requires a validated five-round path")

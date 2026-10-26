@@ -1,8 +1,8 @@
 # Taste Duel implementation phases
 
-Revision 6 - 26 October 2026 - Prompt 7 offline engine; real-sample gate blocked
+Revision 7 - 26 October 2026 - Prompt 8 bounded curator; one live grounded pool, corrective live gate pending
 
-**Progress:** Prompts 1, 3-6 local preservation/fixture/foundation/transport checks passed. Prompt 7 adds the synthetic-tested deterministic pool and private feedback, without connecting browser gameplay. Its real-normalized-sample gate remains blocked: Prompt 2 retained aggregates only and canonical MCP ordering remains unverified. Next numbered step is Prompt 8; resolve the capability/sample gate before dependent live agent integration. No model/cloud changes occurred.
+**Progress:** Prompts 1, 3-6 local preservation/fixture/foundation/transport checks passed. Prompt 7's real-sample gate now passes for one artist-to-movie snapshot through Prompt 8's explicit HTTP adapter. The native Vertex curator selected a 20-candidate strategy, inspected validator feedback and finished a 15-pair/five-round pool in 5.36 seconds. Its bounded corrective branch passes synthetic tests; no natural live correction was observed, so the stronger live adaptive-value gate remains open. Canonical MCP typed resolution remains blocked; browser gameplay remains fixture-only. Next numbered step is Prompt 9, with unresolved live gates carried explicitly before dependent integration. No infrastructure changes occurred.
 
 ## Status and execution rules
 
@@ -119,11 +119,10 @@ v1 quality policy, exact matching/continuation and bounded category-first
 journey optimization, with independent opaque IDs/balanced sides. Added strict
 typed provider bridge, safe private curator feedback and choice-only owned-art
 projection; no gameplay handler, agent or browser connection. Synthetic scenario
-and independent fairness checks pass. **Full gate remains partial:** only
-aggregate evidence was retained in Prompt 2, and canonical live ordering stays
-unverified; no live normalized sample can honestly be replayed here. Resolve
-that capability/sample gate under a new finite budget before dependent live
-Prompt 8 integration; do not relabel fixtures as a pass.
+and independent fairness checks pass. At Prompt 7 delivery only aggregate
+evidence had been retained. Prompt 8 subsequently validated one real normalized
+artist-to-movie snapshot through explicit HTTP; this closes that sample gate.
+Canonical MCP ordering and broad named-seed coverage stay unverified.
 
 **Prompt 8 owners:** Vertex/tool loop, failure contracts, grounding reviewer. One bounded `RoundCuratorAgent` chooses verified targets, fetches/evaluates data and optionally makes a useful correction. Verified model/IAM access, actual tool decisions and deterministic veto authority.
 

@@ -48,6 +48,48 @@ def test_compact_description_can_use_matching_resolved_identity_not_guess_domain
     assert normalize(value, operation="describe").entities == ()
 
 
+def test_generic_compact_type_cannot_infer_domain_from_typed_search_context():
+    # Mirrors pinned harness source, not a captured response: compactEntity drops
+    # `types`; entityType returns direct generic `type` before inspecting `types`.
+    value = envelope(
+        operation="describe",
+        results=[{"entity_id": FIRST_ID, "name": "Synthetic typed movie", "type": "urn:entity"}],
+    )
+    value["interpretation"] = {
+        "entity": {
+            "input": "Synthetic typed movie",
+            "entityId": FIRST_ID,
+            "name": "Synthetic typed movie",
+            "type": "urn:entity",
+            "match": "exact",
+        }
+    }
+    value["resolution"] = {
+        "outcomes": [
+            {
+                "input": "Synthetic typed movie",
+                "status": "resolved",
+                "match": "exact",
+                "selected": {"id": FIRST_ID, "name": "Synthetic typed movie", "type": "urn:entity"},
+                "provenance": {
+                    "provider_id": "qloo_api",
+                    "endpoint": "/search",
+                    "strategy": "exact_name_context_or_choice",
+                },
+            }
+        ]
+    }
+    result = normalize(value, operation="describe")
+    assert result.status == "degraded"
+    assert result.entities == ()
+    # Only actual returned type evidence, preserved before compaction, can fix this.
+    value["results"][0]["subtype"] = "urn:entity:movie"
+    result = normalize(value, operation="describe")
+    assert result.status == "ok"
+    assert result.entities[0].id == UUID(FIRST_ID)
+    assert result.entities[0].domain == "movie"
+
+
 def test_order_ties_and_raw_units_survive_without_artificial_tiebreaking_or_scale_conversion():
     value = envelope(results=[entity(score=81), entity(SECOND_ID, score=81)])
     result = normalize(value)

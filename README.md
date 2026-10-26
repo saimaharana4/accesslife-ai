@@ -2,7 +2,13 @@
 
 One favourite. Five duels. Predict Qloo's ranking, discover something surprising, then challenge a friend to the same five rounds.
 
-**Status - 26 October 2026: Prompt 7 implements the private deterministic duel-pool engine offline.** It proves complete five-round no-repeat paths, enforces versioned quality/diversity and returns bounded curator feedback. The real-normalized-sample gate is blocked: Prompt 2 retained aggregates only and canonical MCP ordering remains unverified. The browser still uses synthetic fixtures; live gameplay, agent and public release are pending. No provider/model/credential/cloud calls or database changes occurred in Prompt 7.
+**Status - 26 October 2026: Prompt 8 implements a bounded private Vertex curator.** A genuine live tool run built a Qloo-grounded 15-pair pool with a complete five-round path in 5.36 seconds. It chose a 20-candidate movie strategy and finished after validator feedback; no correction was needed. Live adaptive correction remains unverified, so the stronger Prompt 8 gate is still open. The browser remains synthetic; durable gameplay and public release are later work. No cloud resources or deployed database were changed.
+
+Prompt 8 checks: **539 backend tests**, four Node compatibility contracts, Ruff and unchanged application OpenAPI passed. The isolated image builds with pinned Gen AI SDK `2.33.0`; see [curator implementation and evidence](ai/prompt8-curator.md) for limits, actual live calls and transport caveats. Independent agent roles covered orchestration, failure contracts and grounding review.
+
+Live budget used **7/8 Qloo HTTP requests and 3/5 Vertex requests** including failed probes/model smoke. The successful curator used two Vertex requests and one Qloo ranking request; typed seed search was separate. Secret Manager payloads stayed in server memory, and live artifacts remain ignored. Canonical MCP typed resolution is still blocked; the successful run explicitly selected tested HTTP search/ranking. This is not an automatic provider fallback.
+
+Next numbered step: **Prompt 9**, after resolving the remaining live adaptive-value gate before dependent live integration. Expanded private receipt persistence and authoritative HTTP mutations are not implemented here. No new frontend screenshots were needed because Prompt 8 changes no visual components.
 
 ## What the new product will do
 
@@ -29,7 +35,7 @@ The target interface is a mobile-first cultural game: oversized artwork, distinc
 | Prompt 6 verification boundary | Synthetic contracts, real local SQL controls and packaged offline checks; **zero live Qloo calls**, no Secret Manager payload access. Compact score precedence/default ordering remain unverified and `ordering_verified=false` |
 | Prompt 6 actual checks | 283 isolated backend tests passed, including 126 new provider/lifecycle/policy/security checks; Ruff/OpenAPI drift passed. New image built; network-none/read-only UID10001 harness discovery, API liveness/OpenAPI/unconfigured readiness and bounded SIGTERM smoke passed |
 | Prompt 7 offline pool | Validated frozen-context candidates, exact five-round/continuation feasibility, bounded category/band objective, stable sides/IDs and private feedback; no new endpoint or game mutation |
-| Prompt 7 real-data gate | Blocked: no retained normalized candidate samples and no verified canonical MCP ordering. No new provider/model/Secret Manager calls or cloud/DB changes |
+| Prompt 7 real-data gate at delivery | Was blocked; Prompt 8 now validates one real artist-to-movie snapshot through explicit HTTP. Canonical compact ordering and broader coverage remain unverified |
 | Prompt 7 actual checks | 159 targeted tests passed: 99 new engine/bridge/fairness checks plus 60 existing provider contracts; Ruff and application OpenAPI drift passed. No new visual/runtime/cloud acceptance claim |
 | Prompt 5 verification | Clean PostgreSQL 16 migration chain `td0001`–`td0004`; 157 checks passed, including real database constraints and HTTP secrecy/isolation; Ruff, TypeScript and OpenAPI drift passed. Final evidence is under `.data/tasteduel-prompt5/` |
 | Live search, generation, authoritative answer/Next/save mutations, public replay and RoundCuratorAgent | Contracts declared; unconnected operations return honest `501 FOUNDATION_NOT_IMPLEMENTED`. No full game engine, durable browser gameplay or live integration claim |

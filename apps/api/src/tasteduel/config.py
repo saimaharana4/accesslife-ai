@@ -1,4 +1,6 @@
-"""Explicit local foundation configuration. No legacy .env or cloud lookup."""
+"""Explicit local configuration. No legacy .env or import-time cloud lookup."""
+
+from typing import Literal
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -31,6 +33,8 @@ class Settings(BaseSettings):
     allowed_origins: tuple[str, ...] = ("http://127.0.0.1:3001", "http://localhost:3001")
     # Reference only. Payload is fetched through server ADC when explicitly enabled.
     qloo_enabled: bool = False
+    qloo_transport: Literal["mcp", "http_ranked"] = "mcp"
+    qloo_http_typed_search: bool = False
     qloo_secret_version: str = Field(
         default="projects/project-bb13ecd8-9d67-408d-9a7/secrets/accesslife-qloo-api-key/versions/latest",
         pattern=r"^projects/project-bb13ecd8-9d67-408d-9a7/secrets/accesslife-qloo-api-key/versions/(latest|[1-9][0-9]*)$",

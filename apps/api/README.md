@@ -4,6 +4,13 @@ Prompt 5 adds a separate application under `src/tasteduel`. The old `accesslife`
 entry point, migration lineage, deployed database and containers are unchanged.
 The browser fixture game is not connected to this API yet.
 
+Prompt 8 adds a private bounded Vertex curator and explicit HTTP gap adapter;
+see [the curator record](../../ai/prompt8-curator.md). One live artist-to-movie
+pool passed with genuine native tool use; no live corrective case was observed.
+No handlers below were connected, no migration changed, and the expanded
+in-memory receipt still needs additive durable storage in Prompt 9. The Prompt 7
+sample blocker described below is historical and closed only for this one sample.
+
 Prompt 7 adds the private [deterministic pool engine](DUEL_POOL.md), typed
 evidence bridge and safe aggregate curator feedback. Existing public routes and
 OpenAPI remain unchanged. No schema/DB changes, authoritative gameplay, model or

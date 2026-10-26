@@ -3,7 +3,7 @@ FROM node:24.18.1-bookworm-slim@sha256:235600a8101ab264e117b1768e925532262668dc9
 WORKDIR /runtime/qloo
 COPY runtime/qloo/package.json runtime/qloo/package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
-COPY runtime/qloo/runner.mjs runtime/qloo/discovered-contract.json ./
+COPY runtime/qloo/runner.mjs runtime/qloo/typed-response.mjs runtime/qloo/discovered-contract.json ./
 
 FROM ghcr.io/astral-sh/uv:0.9.5@sha256:f459f6f73a8c4ef5d69f4e6fbbdb8af751d6fa40ec34b39a1ab469acd6e289b7 AS uv
 FROM python:3.12.13-slim-bookworm@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2

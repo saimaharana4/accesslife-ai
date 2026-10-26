@@ -4,6 +4,22 @@ This runtime invokes the official canonical local-stdio MCP implementation in
 `@qloo/qloo-harness@0.1.26`, with **Node 24.18.1**. `package-lock.json` pins the
 complete package graph. It does not download packages during application startup.
 
+**Prompt 8 update:** this file's Prompt 6 zero-call/no-HTTP statements below are
+historical. An explicit `TASTEDUEL_QLOO_TRANSPORT=http_ranked` option now uses
+reviewed GET Insights with explicit affinity ordering behind the same guard.
+Separately opt into `TASTEDUEL_QLOO_HTTP_TYPED_SEARCH=true` to preserve raw
+returned type evidence in GET search; it never silently replaces a failed MCP
+workflow. Default MCP remains conservative and disabled unless configured.
+The owned `typed-response.mjs` pre-harness shim preserves one unambiguous
+artist/movie type from actual `types[]`, never the request scope; four offline
+contracts pass, but two live canonical describe attempts still failed closed.
+The successful grounded curator test used explicit HTTP search/ranking.
+See [actual Prompt 8 evidence and limits](../../ai/prompt8-curator.md).
+
+The parent now distinguishes persisted reservations from observed HTTP dispatch
+notifications. Both paths share the same request budget and SQL key admission;
+conservative reservations can exceed dispatches after a failed/cancelled send.
+
 ```powershell
 npm.cmd ci --prefix runtime/qloo --ignore-scripts --no-audit --no-fund
 ```

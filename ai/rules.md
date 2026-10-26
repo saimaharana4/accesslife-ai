@@ -1,8 +1,22 @@
 # Taste Duel engineering rules
 
-Revision 8 - 26 October 2026 - Prompt 7 deterministic policy and private feedback. **Synthetic engine checks do not pass the live-data gate.**
+Revision 9 - 26 October 2026 - Prompt 8 bounded tools and explicit transport choice. **One grounded live pool passed; live corrective value remains unproven.**
 
 ## 1. Authority, scope and preservation
+
+Prompt 8's [curator evidence record](prompt8-curator.md) specifies actual native
+tools, model configuration and live boundaries. Default providers remain disabled;
+model/transport configuration is explicit. An `http_ranked` choice may close the
+documented harness compact-score/type/sort gap behind the same guard, never switch
+silently after authentication, malformed data or runtime failure. The docs MCP
+server is reference-only. Existing legacy readers bypassing shared key admission
+must be stopped or coordinated before rollout; no cloud change is implied here.
+
+The separate `qloo_http_typed_search` opt-in permits reviewed GET search/type
+normalization without guessing the type lost by canonical resolution. It is not
+an automatic MCP retry. Search does not require Insights' `success` member;
+validate each endpoint's actual envelope independently. Keep unknown/ambiguous
+entities ineligible. Source-only compatibility shims do not establish live success.
 
 Follow the user's explicit Taste Duel pivot, [prompts.md](prompts.md) and the maintained [PRD](prd.md), [Architecture](Architecture.md), [phases](phases.md) and [design](design.md). Execute only the selected numbered prompt. Complete its checks or report the specific blocker; do not skip into later implementation/deployment. Routine reversible decisions do not require repeated approval. Prompt 1 authorizes documentation/preservation, not cloud mutations or application replacement.
 
@@ -18,7 +32,7 @@ Require actual received body limits and safe validation envelopes: no submitted 
 
 Use available Codex agents with explicit independent file ownership, coordinated contracts and an independent reviewer. Those build roles are not deployed agents. The application starts with one bounded RoundCuratorAgent; extra frameworks/agents/services are not evidence of quality.
 
-Preserve original `/ai` reference bytes and a recoverable AccessLife source checkpoint/history. Publish only specifically allowlisted AI documents: the six maintained specs, ai/prompts.md and the dated [Qloo capability matrix](qloo-capability-matrix.md); originals remain local/ignored. Never broad-stage credential history, private captures, state or original references. Keep dated short factual [memory.md](memory.md) entries and mark historical AccessLife evidence clearly. Do not edit external user memory without a direct request.
+Preserve original `/ai` reference bytes and a recoverable AccessLife source checkpoint/history. Publish only specifically allowlisted AI documents: the six maintained specs, ai/prompts.md, the dated [Qloo capability matrix](qloo-capability-matrix.md) and [Prompt 8 curator record](prompt8-curator.md); originals remain local/ignored. Never broad-stage credential history, private captures, state or original references. Keep dated short factual [memory.md](memory.md) entries and mark historical AccessLife evidence clearly. Do not edit external user memory without a direct request.
 
 ## 2. Approved stack and dependencies
 
@@ -106,7 +120,7 @@ An image URL is not permission to mirror/transform/use artwork in social cards. 
 
 RoundCurator chooses verified domains, calls allowlisted tools, inspects validation and makes a bounded correction. CandidateValidator owns eligibility, frozen Qloo order supplies winners, GameEngine owns delivery/scoring/adaptation, ChallengeService owns replay. The model cannot create entities/scores or override a veto. Precompute supported reveal text or use a factual template; correlation does not support invented personal/causal stories.
 
-Validate initial limits: around 20 seconds total, at most six upstream Qloo calls including retries/internal harness lookups, normally two and at most four Vertex requests, finite tokens/tool steps and repetition/cancellation checks. Coordinate per-key budgets across instances and overlapping legacy readers. Count actual upstream calls or conservative verified workflow maxima; one MCP invocation is not necessarily one HTTP call. Exhaustion is a useful failure state, not permission for an extended loop.
+Enforce Prompt 8 limits before live use: 20-second acceptance/cancellation deadline, six actual upstream Qloo requests including retries/internal harness lookups, normally two/hard four Vertex attempts, eight tools, one correction, 512 output tokens per model call and 24,000 total-token admission. Pin gemini-3.1-flash-lite/global with SDK2.33.0, IAM/ADC, minimal thinking and SDK retries disabled beyond the first attempt. Preflight complete tool batches before any external side effect. Reject repetitions and unsupported targets; corrections must match reason-coded feedback. Coordinate per-key budgets across instances and overlapping legacy readers. Count observed dispatches separately from reservations; one MCP invocation is not necessarily one HTTP call. Exhaustion is a useful failure state, not permission for an extended loop. Record incomplete model usage honestly and never persist opaque thought signatures or hidden text. Late synchronous validation must not publish after the deadline.
 
 Before acceptance, winners/ranks/affinities/revealing copy/remaining pools/answer-dependent URLs must stay out of JSON, HTML, RSC/preload/prefetch, bundles, accessible labels, public logs, analytics and OG images. Choice order cannot simply preserve upstream ranking. Persist independently assigned sides and opaque IDs.
 
@@ -133,7 +147,8 @@ Answer/advance use transactions, unique acceptance and expected revisions. Ident
 | Timeout/eligible 429/temporary 5xx | Bounded idempotent retry within deadline/quota; Retry-After where feasible |
 | Partial/degraded harness result | Explicit normalized status; normal deterministic quality gates still apply |
 | Malformed order or weak pool | Reject unsupported pairs and offer another seed |
-| Vertex unavailable/refusal/malformed output | Label deterministic curation/template fallback only where real Qloo permits |
+| Vertex unavailable | Label deterministic Qloo curation only where verified evidence permits; retain failed model attempts and incomplete usage |
+| Malformed model/tool output or unsupported override | Fail closed; no fixture success or silently narrated fallback |
 | Artwork failure | Preserve title and deliberate owned fallback |
 | Internal/database error | Stable safe envelope/correlation ID; no traceback/query/payload |
 | Lost answer/advance response | Saved outcome/round; no duplicate score or reshuffle |

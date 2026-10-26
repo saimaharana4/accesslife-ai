@@ -9,6 +9,7 @@ from sqlalchemy.engine import Engine
 
 from tasteduel.adapters.qloo.adapter import QlooMcpAdapter
 from tasteduel.adapters.qloo.process import ManagedMcpProcess, McpFailure
+from tasteduel.adapters.qloo.ranked_http import QlooRankedHttpAdapter
 from tasteduel.adapters.qloo_policy import GuardedQlooPort, PostgresAdmissionStore
 from tasteduel.config import Settings
 
@@ -35,13 +36,17 @@ def _secret_payload(reference: str) -> str:
 class QlooRuntime:
     port: GuardedQlooPort
     process: ManagedMcpProcess
+    ranked_http: QlooRankedHttpAdapter | None = None
 
     async def close(self):
         await self.process.close()
+        if self.ranked_http:
+            await self.ranked_http.close()
 
 
 async def build_qloo_runtime(settings: Settings, engine: Engine) -> QlooRuntime:
     process = None
+    ranked_http = None
     try:
         async with asyncio.timeout(settings.qloo_startup_timeout):
             key = await asyncio.to_thread(_secret_payload, settings.qloo_secret_version)
@@ -51,25 +56,43 @@ async def build_qloo_runtime(settings: Settings, engine: Engine) -> QlooRuntime:
         async def reserve(path):
             await guarded.reserve_upstream(path)
 
+        def note_dispatch(path):
+            guarded.note_dispatch(path)
+
         process = ManagedMcpProcess(
             node=settings.qloo_node_path,
             runner=Path(settings.qloo_runner_path),
             api_key=key,
             reserve_upstream=reserve,
+            note_dispatch=note_dispatch,
             startup_timeout=settings.qloo_startup_timeout,
             call_timeout=settings.qloo_call_timeout,
             max_restarts=settings.qloo_max_restarts,
         )
-        guarded = GuardedQlooPort(QlooMcpAdapter(process), store, scope)
+        inner = QlooMcpAdapter(process)
+        if settings.qloo_transport == "http_ranked":
+            ranked_http = QlooRankedHttpAdapter(
+                inner,
+                api_key=key,
+                reserve_upstream=reserve,
+                note_dispatch=note_dispatch,
+                typed_search=settings.qloo_http_typed_search,
+            )
+            inner = ranked_http
+        guarded = GuardedQlooPort(inner, store, scope)
         await process.start()  # initialize/listTools/capabilities are offline; no upstream fetch.
-        return QlooRuntime(guarded, process)
+        return QlooRuntime(guarded, process, ranked_http)
     except asyncio.CancelledError:
         if process:
             await process.close()
+        if ranked_http:
+            await ranked_http.close()
         raise
     except Exception as failure:
         if process:
             await process.close()
+        if ranked_http:
+            await ranked_http.close()
         code = (
             failure.code
             if isinstance(failure, (McpFailure, ProviderStartupFailure))

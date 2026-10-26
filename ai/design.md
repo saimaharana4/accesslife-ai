@@ -1,8 +1,18 @@
 # Taste Duel design specification
 
-Revision 6 - 26 October 2026 - Existing visual direction unchanged; private pool projection boundary documented
+Revision 7 - 26 October 2026 - Existing visual direction unchanged; bounded curator remains server-private
 
 ## Status and visual goal
+
+**Prompt 8 makes no visual changes.** Its native model tools and private execution
+receipt do not authorize live badges, simulated progress, new curation dashboards
+or pre-answer disclosures. The browser keeps its unmistakable fixture label.
+Later integration may show an allowlisted accepted-round summary of actual mode,
+target domain, aggregate counts/corrections and path verification; never raw trace,
+private feedback, future contestants, gaps, scores, winner direction or opaque
+model continuation signatures. A model smoke is not a genuine-agent game badge.
+See [actual curator boundaries](prompt8-curator.md); no new screenshots or visual
+acceptance claim arises from this backend prompt.
 
 The fresh Taste Duel shell implements this direction as a five-round local development fixture. Prompt 5 adds a separate local API/schema foundation without changing that composition or connecting it to live data. Deployed services/cloud remain AccessLife. Planner screenshots and historical accessibility results cannot satisfy this game's gates. Preserve original reference files unchanged.
 

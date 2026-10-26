@@ -43,7 +43,10 @@ def prepare_qloo_pool(
         and type(request.limit) is int
         and 1 <= request.limit <= 20
     )
-    context = ranked_context_hash(request) if request_valid else None
+    transport = result.evidence.transport if result.evidence else "mcp"
+    if transport not in ("mcp", "http_ranked"):
+        request_valid = False
+    context = ranked_context_hash(request, transport=transport) if request_valid else None
 
     def stop(reason, status="invalid_snapshot", corrections=("provider_capability_gate_required",)):
         return PreparedPool(

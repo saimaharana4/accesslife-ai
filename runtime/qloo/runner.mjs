@@ -4,6 +4,7 @@ import { pathToFileURL, fileURLToPath } from "node:url";
 import { createInterface } from "node:readline";
 import { PassThrough } from "node:stream";
 import { readFileSync } from "node:fs";
+import { preserveTypedEntityEvidence } from "./typed-response.mjs";
 
 const packageRoot = dirname(
   fileURLToPath(import.meta.resolve("@qloo/qloo-harness")),
@@ -65,6 +66,11 @@ async function guardedFetch(input, init = {}) {
       throw new Error("ENDPOINT_BLOCKED");
     if (!process.env.QLOO_API_KEY) throw new Error("CREDENTIAL_UNAVAILABLE");
     await reserve(url.pathname); // Includes hydration, retries and failures; parent persists before dispatch.
+    write({
+      jsonrpc: "2.0",
+      method: "tasteduel/dispatch",
+      params: { path: url.pathname },
+    });
     const response = await realFetch(input, {
       ...init,
       redirect: "manual",
@@ -88,7 +94,12 @@ async function guardedFetch(input, init = {}) {
       method: "tasteduel/http",
       params: { status: response.status },
     });
-    return new Response(Buffer.concat(chunks), {
+    const body = preserveTypedEntityEvidence(
+      Buffer.concat(chunks),
+      url.pathname,
+      response.status,
+    );
+    return new Response(body, {
       status: response.status,
       headers: response.headers,
     });

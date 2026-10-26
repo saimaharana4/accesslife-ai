@@ -2,6 +2,11 @@
 
 Research date: **24 October 2026 (IST)**. Scope: **Prompt 2 only**. This is a feasibility record, not a game implementation, packaged production adapter, deployed agent or infrastructure change.
 
+**26 October follow-up:** [Prompt 8's separate evidence record](prompt8-curator.md)
+adds one validated real artist-to-movie pool and genuine Vertex tool use within
+a separate 7/8 Qloo, 3/5 Vertex ledger. This historical Prompt 2 budget remains
+12/12. Canonical resolution and live corrective strategy remain unverified.
+
 **Result: partial capability gate.** Official-source research, offline MCP discovery and two live cross-domain raw-HTTP samples passed. The 12-request ceiling is exhausted. Both artist and movie seeds have a demonstrated five-round numeric pool path, but the canonical MCP Insights path and same-domain cells remain unverified. Only independent synthetic visual work in Prompts 3–4 may proceed before those dependent integration gaps are resolved. No Taste Duel application or GCP migration is complete.
 
 ## 1. Reproducible official-source pins

@@ -4,6 +4,13 @@ Implemented locally on 26 October 2026. This is a private pure Python engine,
 not a game endpoint, agent, live integration or deployment. Current browser
 behavior remains the explicitly synthetic Prompt 4 fixture.
 
+Prompt 8 subsequently passed this engine's real-sample gate for one genuine
+artist-to-movie snapshot using the explicit HTTP adapter: 20 accepted candidates,
+21 near-tie pair exclusions, 15 pool pairs and a complete five-round path.
+No raw response or normalized contestant fixture was committed. See the
+[curator evidence](../../ai/prompt8-curator.md); broader coverage, sourced category
+diversity and live corrective strategy are not established by this sample.
+
 ## Run without credentials, database, model or network
 
 ```powershell

@@ -33,6 +33,7 @@ class RequestBudget:
     max_requests: int = 6
     deadline_seconds: float = 20
     used: int = 0
+    dispatched: int = 0
     started_at: float = field(default_factory=time.monotonic)
     denied: str | None = None
 
@@ -169,6 +170,7 @@ class GuardedQlooPort:
             "MCP_PROCESS_EXIT",
             "MCP_STARTUP_TIMEOUT",
             "QLOO_UPSTREAM_UNAVAILABLE",
+            "QLOO_HTTP_DEADLINE",
         }
     )
 
@@ -206,6 +208,17 @@ class GuardedQlooPort:
             budget.denied = failure.code
             raise
 
+    def note_dispatch(self, operation: str):
+        """Observed transport dispatch, separately from conservative reservations."""
+        budget = _budget.get()
+        if (
+            budget is None
+            or operation not in {"/search", "/entities", "/v2/insights"}
+            or budget.dispatched >= budget.used
+        ):
+            raise AdmissionDenied("QLOO_UNRESERVED_DISPATCH")
+        budget.dispatched += 1
+
     async def resolve_seed(self, request):
         return await self._run(self.inner.resolve_seed, request)
 
@@ -226,7 +239,11 @@ class GuardedQlooPort:
         for attempt in range(2):
             if budget.remaining_seconds <= 0:
                 return QlooResult("error", error=ProviderFailure("QLOO_REQUEST_DEADLINE"))
-            result = await function(request)
+            try:
+                result = await function(request)
+            except AdmissionDenied as denied:
+                budget.denied = denied.code
+                return QlooResult("error", error=ProviderFailure(denied.code))
             if budget.denied:
                 return QlooResult("error", error=ProviderFailure(budget.denied))
             failure = result.error
@@ -239,12 +256,14 @@ class GuardedQlooPort:
                 )
             except AdmissionDenied as denied:
                 return QlooResult("error", error=ProviderFailure(denied.code))
+            delay = max(0.25, failure.retry_after_seconds or 0) if failure else 0.25
             if (
                 not eligible
                 or attempt
                 or budget.used >= budget.max_requests
-                or budget.remaining_seconds < 0.3
+                or delay > 2
+                or budget.remaining_seconds < delay + 0.05
             ):
                 return result
-            await asyncio.sleep(0.25)  # One bounded retry; never after auth or contract failure.
+            await asyncio.sleep(delay)  # Never outrun Retry-After or retry after auth/contract failure.
         raise AssertionError("unreachable")
