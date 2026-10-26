@@ -8,12 +8,20 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from hashlib import sha256
 import json
+import secrets
 from uuid import UUID, uuid4
 
 from sqlalchemy import select, text
 
 from tasteduel.application.errors import AppError, not_found
 from tasteduel.domain.curation import CurationReceipt as ReceiptValue
+from tasteduel.domain.adaptive import (
+    SELECTION_VERSION,
+    InsufficientContinuation,
+    PerformanceRound,
+    SelectionPair,
+    choose_next,
+)
 from tasteduel.persistence import models as m
 from tasteduel.persistence.db import scoped_session
 from tasteduel.ports.qloo import EntityMetadata
@@ -131,6 +139,8 @@ class GameplayService:
                     revision=0,
                     scoring_version="duel-score-v1",
                     validator_version="duel-pool-v1",
+                    selection_version=SELECTION_VERSION,
+                    selection_seed=secrets.token_hex(32),
                     expires_at=min(session.expires_at, entity.expires_at, now + timedelta(hours=24)),
                 )
                 db.add(game)
@@ -405,6 +415,7 @@ class GameplayService:
                         right_entity_id=entity_ids[oriented.right.entity.id if oriented else pair.second.id],
                         winner_entity_id=entity_ids[pair.winner_id],
                         difficulty=pair.band,
+                        category_labels=sorted(pair.categories),
                         planned_ordinal=planned[0] if planned else None,
                         left_choice_id=oriented.left.id if oriented else None,
                         right_choice_id=oriented.right.id if oriented else None,
@@ -456,6 +467,9 @@ class GameplayService:
             return game.id
 
     def _deliver(self, db, session_id, game_id, ordinal):
+        game = db.scalar(select(m.Game).where(m.Game.id == game_id, m.Game.session_id == session_id))
+        if game.selection_version == SELECTION_VERSION:
+            return self._deliver_adaptive(db, game, ordinal)
         pair = db.scalar(
             select(m.PrivatePair).where(
                 m.PrivatePair.session_id == session_id,
@@ -488,6 +502,97 @@ class GameplayService:
                     entity_id=pair.right_entity_id,
                     side="right",
                 ),
+            ]
+        )
+        db.flush()
+        return delivered
+
+    def _deliver_adaptive(self, db, game, ordinal):
+        pairs = list(
+            db.scalars(
+                select(m.PrivatePair).where(
+                    m.PrivatePair.session_id == game.session_id, m.PrivatePair.game_id == game.id
+                )
+            )
+        )
+        values = {
+            pair.id: SelectionPair(
+                pair.id,
+                frozenset((pair.left_entity_id, pair.right_entity_id)),
+                pair.difficulty,
+                frozenset(pair.category_labels),
+            )
+            for pair in pairs
+        }
+        rows = list(
+            db.execute(
+                select(m.DeliveredRound, m.Answer, m.PrivatePair)
+                .join(m.Answer, m.Answer.round_id == m.DeliveredRound.id)
+                .join(m.PrivatePair, m.PrivatePair.id == m.DeliveredRound.pair_id)
+                .where(m.DeliveredRound.game_id == game.id, m.DeliveredRound.session_id == game.session_id)
+                .order_by(m.DeliveredRound.ordinal)
+            )
+        )
+        if len(rows) != ordinal - 1:
+            raise conflict("ANSWER_REQUIRED")
+        history = tuple(
+            PerformanceRound(
+                values[pair.id],
+                answer.correct,
+                "left"
+                if (delivered.left_entity_id or pair.left_entity_id) == pair.winner_entity_id
+                else "right",
+            )
+            for delivered, answer, pair in rows
+        )
+        receipt = db.scalar(
+            select(m.CurationReceipt).where(
+                m.CurationReceipt.game_id == game.id, m.CurationReceipt.session_id == game.session_id
+            )
+        )
+        policy = (receipt.full_receipt or {}).get("policy_configuration") or {}
+        try:
+            selection = choose_next(
+                tuple(values.values()),
+                history,
+                selection_seed=bytes.fromhex(game.selection_seed),
+                min_categories=policy.get("min_categories", 0),
+                min_bands=policy.get("min_bands", 1),
+            )
+        except (ValueError, InsufficientContinuation) as exc:
+            raise AppError(
+                503, "STORED_STATE_UNAVAILABLE", "The saved valid continuation is unavailable."
+            ) from exc
+        pair = next(pair for pair in pairs if pair.id == selection.pair_id)
+        loser = pair.right_entity_id if pair.left_entity_id == pair.winner_entity_id else pair.left_entity_id
+        left, right = (
+            (pair.winner_entity_id, loser)
+            if selection.winner_side == "left"
+            else (loser, pair.winner_entity_id)
+        )
+        delivered = m.DeliveredRound(
+            id=uuid4(),
+            session_id=game.session_id,
+            game_id=game.id,
+            pair_id=pair.id,
+            ordinal=ordinal,
+            left_entity_id=left,
+            right_entity_id=right,
+            selection_context={key: value for key, value in asdict(selection).items() if key != "pair_id"},
+        )
+        db.add(delivered)
+        db.flush()
+        db.add_all(
+            [
+                m.RoundContestant(
+                    id=uuid4(),
+                    session_id=game.session_id,
+                    game_id=game.id,
+                    round_id=delivered.id,
+                    entity_id=entity_id,
+                    side=side,
+                )
+                for side, entity_id in (("left", left), ("right", right))
             ]
         )
         db.flush()

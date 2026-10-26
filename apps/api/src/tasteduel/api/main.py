@@ -28,6 +28,7 @@ from tasteduel.adapters.read_repository import SqlReadRepository
 from tasteduel.api import presenters, schemas as s
 from tasteduel.api.body_limit import BoundedBodyMiddleware
 from tasteduel.application.errors import AppError
+from tasteduel.application.discoveries import DiscoveryService
 from tasteduel.application.entity_search import remember_search_entities
 from tasteduel.application.gameplay import GameplayService, GenerationObservation
 from tasteduel.application.reads import ReadService
@@ -604,10 +605,11 @@ def create_app(
     @app.get("/v1/discoveries", response_model=s.DiscoveriesPublic, operation_id="getDiscoveries")
     def discoveries(request: Request):
         with owned_db(request) as (db, row):
+            items, expired = SqlReadRepository(db, row.id).discovery_collection()
             return s.DiscoveriesPublic(
-                discoveries=tuple(
-                    presenters.discovery_public(d) for d in SqlReadRepository(db, row.id).discoveries()
-                )
+                discoveries=tuple(presenters.discovery_public(d) for d in items),
+                expired_count=expired,
+                session_expires_at=row.expires_at,
             )
 
     @app.post(
@@ -617,14 +619,32 @@ def create_app(
         responses={200: {"model": s.DiscoveryPublic}},
         operation_id="saveDiscovery",
     )
-    def save_discovery(body: s.DiscoveryCreateRequest, request: Request, idempotency_key: Key):
-        with owned_db(request):
-            not_implemented()
+    def save_discovery(
+        body: s.DiscoveryCreateRequest, request: Request, response: Response, idempotency_key: Key
+    ):
+        with owned_db(request) as (_, row):
+            owner = row.id
+        result = DiscoveryService(database()).save(owner, body.entity_id, idempotency_key)
+        response.status_code = 201 if result.created else 200
+        with owned_db(request) as (db, row):
+            saved = next(
+                (
+                    item
+                    for item in SqlReadRepository(db, row.id).discoveries()
+                    if item.entity.id == result.entity_id
+                ),
+                None,
+            )
+            if saved is None:
+                raise AppError(410, "DISCOVERY_EXPIRED", "This discovery is no longer available.")
+            return presenters.discovery_public(saved)
 
     @app.delete("/v1/discoveries/{entity_id}", status_code=204, operation_id="removeDiscovery")
     def remove_discovery(entity_id: UUID, request: Request):
-        with owned_db(request):
-            not_implemented()
+        with owned_db(request) as (_, row):
+            owner = row.id
+        DiscoveryService(database()).remove(owner, entity_id)
+        return Response(status_code=204)
 
     @app.post(
         "/v1/challenges",
@@ -670,7 +690,7 @@ def create_app(
             revision = connection.execute(
                 text("SELECT version_num FROM tasteduel.tasteduel_alembic_version LIMIT 1")
             ).scalar_one()
-            if revision != "td0006":
+            if revision != "td0007":
                 raise AppError(503, "SCHEMA_NOT_READY", "The local schema is not ready.", retryable=True)
         return s.HealthPublic(status="ok", generation_available=app.state.generator is not None)
 

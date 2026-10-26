@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button as ActionButton } from "@/components/ui/button";
 import { LiveEntityCombobox } from "./live-entity-combobox";
 import { api, ApiError, ensureSession } from "@/lib/api/client";
+import { subscribeSessionChanges } from "@/lib/api/session-events";
 import type {
   ApiSchemas,
   EntityPublic,
@@ -50,7 +51,25 @@ export function LiveSeedLauncher() {
       lock.current = false;
       setPending(false);
     }
+    const unsubscribe = subscribeSessionChanges((kind) => {
+      if (kind === "session-cleared") {
+        submitAbort.current?.abort();
+        searchAbort.current?.abort();
+        revision.current += 1;
+        lock.current = false;
+        activeIntent.current = undefined;
+        setSelected(null);
+        setQuery("");
+        setRecovery(undefined);
+        setSearch({ kind: "idle" });
+        setPending(false);
+        setError(
+          "Your guest session has been cleared. Choose a favourite to start fresh.",
+        );
+      }
+    });
     return () => {
+      unsubscribe();
       submitAbort.current?.abort();
     };
   }, []);

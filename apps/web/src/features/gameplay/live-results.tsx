@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActionLink, Button } from "@/components/ui/button";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { api, ApiError } from "@/lib/api/client";
 import type { ApiSchemas } from "@/lib/api/contracts";
 import { CurationDisclosure } from "./curation-disclosure";
 import { sourceLabel } from "./presentation";
+import { LiveDiscoveries } from "@/features/discoveries/live-discoveries";
+import { subscribeSessionChanges } from "@/lib/api/session-events";
 
 export function LiveResults({ gameId }: { gameId: string }) {
   const [result, setResult] = useState<ApiSchemas["GameResultPublic"] | null>(
@@ -14,8 +16,34 @@ export function LiveResults({ gameId }: { gameId: string }) {
   );
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const epoch = useRef(0);
+  useEffect(() => {
+    const refresh = () => {
+      if (!document.hidden) setAttempt((value) => value + 1);
+    };
+    const unsubscribe = subscribeSessionChanges((kind) => {
+      if (kind === "session-cleared") {
+        epoch.current += 1;
+        setResult(null);
+        setError("Your guest session has been cleared. Start a fresh duel.");
+      } else if (kind === "game-changed" || kind === "discoveries-changed")
+        refresh();
+    });
+    window.addEventListener("online", refresh);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("pageshow", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      unsubscribe();
+      window.removeEventListener("online", refresh);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("pageshow", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, []);
   useEffect(() => {
     const controller = new AbortController();
+    const version = epoch.current;
     setError(null);
     setResult(null);
     void api
@@ -24,7 +52,8 @@ export function LiveResults({ gameId }: { gameId: string }) {
         controller.signal,
       )
       .then((saved) => {
-        if (!controller.signal.aborted) setResult(saved);
+        if (!controller.signal.aborted && version === epoch.current)
+          setResult(saved);
       })
       .catch((failure) => {
         if (!controller.signal.aborted)
@@ -124,6 +153,11 @@ export function LiveResults({ gameId }: { gameId: string }) {
           ))}
         </ol>
         {summary && <CurationDisclosure summary={summary} />}
+        <LiveDiscoveries
+          choices={result.answered_rounds.flatMap((round) => [
+            ...round.choices,
+          ])}
+        />
         <div className="ticket-actions">
           <ActionLink href="/">
             Play another duel <span aria-hidden="true">↗</span>
@@ -133,8 +167,8 @@ export function LiveResults({ gameId }: { gameId: string }) {
           </ActionLink>
         </div>
         <p className="ticket-fine-print">
-          Saved within this guest session until its evidence expires. Discovery
-          saves and friend challenges are coming in later iterations.
+          Saved within this guest session until its evidence expires. Friend
+          challenges are coming later.
         </p>
       </div>
     </section>

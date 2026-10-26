@@ -21,6 +21,11 @@ import {
   type PendingMutation,
 } from "./mutation";
 import { revealEvidence, sourceLabel } from "./presentation";
+import { LiveDiscoveries } from "@/features/discoveries/live-discoveries";
+import {
+  publishSessionChange,
+  subscribeSessionChanges,
+} from "@/lib/api/session-events";
 
 function problem(error: unknown) {
   if (error instanceof ApiError) {
@@ -55,6 +60,8 @@ export function LiveGame({ gameId }: { gameId: string }) {
   const question = useRef<HTMLHeadingElement>(null);
   const outcome = useRef<HTMLHeadingElement>(null);
   const focused = useRef("");
+  const queuedRefresh = useRef(false);
+  const reload = useRef<() => void>(() => {});
 
   const storePending = useCallback(
     (value: PendingMutation | null) => {
@@ -151,9 +158,14 @@ export function LiveGame({ gameId }: { gameId: string }) {
       if (request.current === controller) {
         if (!controller.signal.aborted && mounted.current) setBusy(null);
         locked.current = false;
+        if (queuedRefresh.current && mounted.current) {
+          queuedRefresh.current = false;
+          setTimeout(() => reload.current(), 0);
+        }
       }
     }
   }, [acceptGame, gameId]);
+  reload.current = () => void load();
 
   useEffect(() => {
     mounted.current = true;
@@ -169,6 +181,24 @@ export function LiveGame({ gameId }: { gameId: string }) {
     window.addEventListener("online", resume);
     window.addEventListener("pageshow", resume);
     document.addEventListener("visibilitychange", resume);
+    window.addEventListener("focus", resume);
+    const unsubscribe = subscribeSessionChanges((kind) => {
+      if (kind === "session-cleared") {
+        request.current?.abort();
+        locked.current = false;
+        queuedRefresh.current = false;
+        storePending(null);
+        setGame(null);
+        setGeneration(null);
+        setBusy(null);
+        setError(
+          "Your guest session has been cleared. Start a fresh duel to continue.",
+        );
+      } else if (kind === "game-changed") {
+        if (locked.current) queuedRefresh.current = true;
+        else void load();
+      }
+    });
     return () => {
       mounted.current = false;
       request.current?.abort();
@@ -176,6 +206,8 @@ export function LiveGame({ gameId }: { gameId: string }) {
       window.removeEventListener("online", resume);
       window.removeEventListener("pageshow", resume);
       document.removeEventListener("visibilitychange", resume);
+      window.removeEventListener("focus", resume);
+      unsubscribe();
     };
   }, [load]);
 
@@ -235,6 +267,7 @@ export function LiveGame({ gameId }: { gameId: string }) {
         if (saved.phase === "completed") router.push(`/results/${gameId}`);
       }
       storePending(null);
+      publishSessionChange("game-changed", false);
     } catch (failure) {
       if (!controller.signal.aborted && mounted.current) {
         setError(problem(failure));
@@ -248,6 +281,10 @@ export function LiveGame({ gameId }: { gameId: string }) {
       if (request.current === controller) {
         if (!controller.signal.aborted && mounted.current) setBusy(null);
         locked.current = false;
+        if (queuedRefresh.current && mounted.current) {
+          queuedRefresh.current = false;
+          setTimeout(() => reload.current(), 0);
+        }
       }
     }
   }
@@ -444,6 +481,7 @@ export function LiveGame({ gameId }: { gameId: string }) {
       {(error || (!busy && pending)) && (
         <StatusPanel
           title="Check before continuing."
+          live="polite"
           tone="warning"
           actions={
             <>
@@ -492,6 +530,14 @@ export function LiveGame({ gameId }: { gameId: string }) {
                 : "Synthetic fixture result. No genuine Qloo ranking is claimed."}
             </p>
             {evidence && <WhyThisDuel evidence={evidence} />}
+            <details
+              className="discovery-reveal"
+              data-testid="discovery-reveal"
+              key={revealed.round_id}
+            >
+              <summary>Save a discovery</summary>
+              <LiveDiscoveries choices={[...revealed.choices]} />
+            </details>
             {revealed.curation_summary && (
               <CurationDisclosure summary={revealed.curation_summary} />
             )}

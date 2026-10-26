@@ -296,6 +296,8 @@ class DiscoveryPublic(StrictRecord):
 
 class DiscoveriesPublic(StrictRecord):
     discoveries: Annotated[tuple[DiscoveryPublic, ...], Field(max_length=100)] = ()
+    expired_count: Annotated[StrictInt, Field(ge=0, le=100)] = 0
+    session_expires_at: UtcDatetime | None = None
 
 
 class GameResultPublic(StrictRecord):

@@ -2229,6 +2229,123 @@ h1.arena-heading {
 .live-recovery {
   margin-top: 20px;
 }
+.guest-session-controls {
+  position: relative;
+  font-size: 0.875rem;
+}
+.guest-session-controls > span {
+  display: block;
+  max-width: 300px;
+}
+.guest-session-controls summary,
+.discovery-explore > summary {
+  cursor: pointer;
+  min-height: 48px;
+  align-content: center;
+}
+.guest-session-panel {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  width: min(340px, calc(100vw - 40px));
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--control-border);
+  border-radius: 16px;
+  z-index: 30;
+  box-shadow: 0 12px 24px #0006;
+}
+.guest-session-panel p {
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+.guest-session-panel .button {
+  width: 100%;
+  margin-top: 8px;
+}
+.live-discoveries {
+  min-width: 0;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--control-border);
+}
+.discovery-reveal {
+  margin-top: 12px;
+  border-top: 1px solid var(--control-border);
+}
+.discovery-reveal > summary {
+  min-height: 48px;
+  align-content: center;
+  cursor: pointer;
+  color: var(--lavender);
+  font-weight: 600;
+}
+.discovery-reveal > summary:focus-visible,
+.guest-session-controls summary:focus-visible,
+.discovery-explore > summary:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.live-discoveries h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  margin: 0 0 12px;
+}
+.live-discoveries p {
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+.discovery-list {
+  padding: 0;
+  margin: 16px 0;
+  list-style: none;
+}
+.discovery-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.discovery-list li > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.discovery-list .button {
+  flex-shrink: 0;
+  font-size: 0.875rem;
+}
+.discovery-kind {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.discovery-expiry {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.result-ticket .live-discoveries {
+  margin: 20px 28px 28px;
+}
+.header-nav {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+@media (max-width: 600px) {
+  .discovery-list li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .guest-session-panel {
+    right: 0;
+  }
+  .guest-session-controls {
+    text-align: left;
+  }
+}
 .live-seed-combobox {
   position: relative;
 }

@@ -118,6 +118,10 @@ class Game(Owned, Created, Base):
     revision: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     scoring_version: Mapped[str] = mapped_column(String(80), nullable=False)
     validator_version: Mapped[str] = mapped_column(String(80), nullable=False)
+    selection_version: Mapped[str] = mapped_column(
+        String(80), nullable=False, server_default=text("'fixed-path-v1'")
+    )
+    selection_seed: Mapped[str | None] = mapped_column(String(64))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
@@ -299,6 +303,9 @@ class PrivatePair(Owned, Created, Base):
     right_entity_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     winner_entity_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     difficulty: Mapped[str] = mapped_column(String(16), nullable=False)
+    category_labels: Mapped[list[str]] = mapped_column(
+        ARRAY(String(300)), nullable=False, server_default=text("'{}'::text[]")
+    )
     planned_ordinal: Mapped[int | None] = mapped_column(Integer)
     left_choice_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
     right_choice_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
@@ -317,6 +324,9 @@ class DeliveredRound(Owned, Created, Base):
     game_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     pair_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     ordinal: Mapped[int] = mapped_column(Integer, nullable=False)
+    left_entity_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
+    right_entity_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
+    selection_context: Mapped[dict | None] = mapped_column(JSONB)
 
 
 class RoundContestant(Owned, Base):

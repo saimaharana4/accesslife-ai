@@ -1,4 +1,5 @@
 import type { ApiSchemas } from "./contracts";
+import { publishSessionChange } from "./session-events.ts";
 
 export class ApiError extends Error {
   readonly code: string;
@@ -100,13 +101,36 @@ export const api = {
 };
 
 let sessionRequest: Promise<ApiSchemas["SessionPublic"]> | undefined;
+let sessionController: AbortController | undefined;
+export function cancelSessionHandshake() {
+  sessionController?.abort();
+  sessionController = undefined;
+  sessionRequest = undefined;
+}
 export function ensureSession(signal?: AbortSignal) {
   // A caller's cancellation must not cancel a shared session handshake.
-  sessionRequest ??= api
-    .post<ApiSchemas["SessionPublic"]>("/sessions", {})
-    .finally(() => {
-      sessionRequest = undefined;
-    });
+  if (!sessionRequest) {
+    const controller = new AbortController();
+    sessionController = controller;
+    const pending = api
+      .post<ApiSchemas["SessionPublic"]>(
+        "/sessions",
+        {},
+        undefined,
+        controller.signal,
+      )
+      .then((session) => {
+        publishSessionChange("session-updated");
+        return session;
+      })
+      .finally(() => {
+        if (sessionController === controller) {
+          sessionRequest = undefined;
+          sessionController = undefined;
+        }
+      });
+    sessionRequest = pending;
+  }
   if (!signal) return sessionRequest;
   return Promise.race([
     sessionRequest,

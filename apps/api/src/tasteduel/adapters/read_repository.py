@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from tasteduel.application.errors import AppError
+from tasteduel.application.discoveries import discovery_expiry
 from tasteduel.domain.curation import CurationReceipt as ReceiptValue
 from tasteduel.persistence import models as m
 from tasteduel.ports.reads import AcceptedRead, ChoiceRead, DiscoveryRead, EntityRead, GameRead, RoundRead
@@ -160,15 +161,24 @@ class SqlReadRepository:
         return tuple(self.round(game_id, round_, source) for round_ in rounds)
 
     def discoveries(self) -> tuple[DiscoveryRead, ...]:
+        return self.discovery_collection()[0]
+
+    def discovery_collection(self) -> tuple[tuple[DiscoveryRead, ...], int]:
         rows = list(
             self.db.scalars(self.owned(m.Discovery).order_by(m.Discovery.created_at.desc()).limit(100))
         )
+        session = self.db.get(m.Session, self.session_id)
+        if session is None:
+            return (), 0
         result = []
+        expired = 0
+        now = datetime.now(UTC)
         for row in rows:
             entity = self.db.scalar(self.owned(m.Entity, m.Entity.id == row.entity_id))
-            if entity is not None and entity.expires_at > datetime.now(UTC):
+            expiry = discovery_expiry(self.db, self.session_id, entity, session) if entity else None
+            if expiry is not None and expiry > now:
                 source = "fixture" if entity.provider == "fixture" else "qloo"
-                result.append(
-                    DiscoveryRead(self.entity(entity.id, source), row.created_at, entity.expires_at)
-                )
-        return tuple(result)
+                result.append(DiscoveryRead(self.entity(entity.id, source), row.created_at, expiry))
+            else:
+                expired += 1
+        return tuple(result), expired

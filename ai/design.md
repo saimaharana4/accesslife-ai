@@ -1,5 +1,15 @@
 # Taste Duel design specification
 
+**Prompt 11 — 26 October 2026:** keep Next primary. A closed native “Save a
+discovery” disclosure after accepted reveal provides optional Save/Remove for
+either contestant. The result shows explicit saves compactly and hides other
+answered choices under “Explore answered choices.” Show empty/expired states and
+session/evidence expiry. Correctness measures performance, not personal preference.
+Guest clearing uses explicit confirmation and an announced result. Cross-tab,
+offline/reconnect and uncertain responses restore server state without duplicate
+points. Reviewed desktop/390/320 captures include a second compact-reveal pass;
+reduced motion/keyboard/full axe passed. [Evidence](../apps/api/SOLO.md).
+
 Revision 9 - 26 October 2026 - Prompt 10 connected fight-night arena
 
 **Current Prompt 10 composition:** preserve the oversized title, owned artwork-led

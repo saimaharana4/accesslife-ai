@@ -1,8 +1,23 @@
 # Taste Duel architecture
 
-Revision 11 - 26 October 2026 - Prompt 10 browser integration; cloud remains unchanged.
+### Prompt 11 current boundary — 26 October 2026
 
-### Prompt 10 current boundary
+`domain/adaptive.py` selects from frozen pairs while retaining a complete no-repeat
+continuation and original diversity requirements. `GameplayService` freezes
+private policy/seed and delivered orientation under the existing transaction.
+Additive `td0007` preserves legacy fixed-path games. Scarce-band fallback is
+reason-coded privately; snapshots/winners remain immutable. Weighted private side
+patterns avoid a forced final answer. Selection data never enters public DTOs.
+
+`DiscoveryService` records only explicit accepted-contestant saves and serializes
+save/unsave/clear by session. Collection contracts add expired count/session expiry.
+Cross-tab hints carry no entity/answer data; views refetch and ignore revoked late
+responses. [Implementation/restart proof](../apps/api/SOLO.md). Prompt 12 must
+migrate challenge-side freezing before enabling replay. No cloud resource changed.
+
+Revision 12 - 26 October 2026 - Prompt 11 adaptive solo/discoveries; cloud remains unchanged.
+
+### Prompt 10 browser integration boundary
 
 The default shell uses generated application contracts through a strict same-origin
 Next route. Fixed method/path/query/header allowlists, streamed byte bounds,
@@ -308,7 +323,7 @@ Qloo is the sole ranking source. Original title-based SVG/CSS cards are an alway
 
 ## 5. Public API and disclosure contracts
 
-These are the declared application contracts, exported in Prompt 5. Private paths use `/v1`; the implemented same-origin browser base `/api` gives `/api/v1`. Prompt 10 forwards the session/search/game/health allowlist only. Sessions, owned reads, typed search, awaited generation and authoritative answer/Next handlers are implemented locally. Discovery writes, challenge execution and invitations remain 501. The table includes both implemented contracts and later share/discovery contracts. `Idempotency-Key` is scoped to session/operation and a canonical typed-body signature; Prompt 9 proves changed-body 409 and stable retry execution against PostgreSQL.
+These are the application contracts exported from Python. Private paths use `/v1`; the same-origin browser base `/api` gives `/api/v1`. The forwarding allowlist now includes discovery read/save/remove alongside session/search/game/health. Sessions, typed search, awaited generation, authoritative answer/Next and owned discoveries are implemented locally. Challenge execution and invitations remain 501 until Prompt 12. `Idempotency-Key` binds session/operation and canonical input; conflicting reuse returns 409. Public summaries remain completion-only.
 
 | Method/path without prefix         | Request                                                        | Successful behavior                                                                          |
 | ---------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |

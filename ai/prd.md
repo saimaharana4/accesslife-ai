@@ -1,5 +1,12 @@
 # Taste Duel product requirements
 
+**Prompt 11 current outcome — 26 October 2026:** new solo games adapt challenge
+from accepted prediction performance within the stored pool. Only the chosen
+favourite and explicit discovery saves are preference signals; correctness is
+never a like/dislike. Saves/unsaves have ownership, evidence/session expiry and
+clear/recovery behavior. [Verified policy and limits](../apps/api/SOLO.md).
+Friend replay is Prompt 12; historical milestones below retain their named scope.
+
 Revision 9 - 26 October 2026 - Prompt 10 connected browser journey; no deployment
 
 **Current Prompt 10 implementation:** typed real seed selection, awaited preparation,

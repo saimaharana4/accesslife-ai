@@ -566,3 +566,63 @@ test("metadata IAM only fixed host, fixed audience, bounded response and matchin
     ),
   );
 });
+
+test("discoveries require an explicit keyed save and permit only the safe collection and idempotent removal", async () => {
+  const entity = {
+    id: ID,
+    name: "Synthetic explicit discovery",
+    type: "movie",
+    source: "fixture",
+  };
+  const discovery = {
+    entity,
+    saved_at: "2026-10-26T10:00:00Z",
+    expires_at: "2026-10-27T10:00:00Z",
+  };
+  assert.equal(
+    (
+      await forwardApi(
+        request("/discoveries", "POST", { entity_id: ID }),
+        settings(),
+      )
+    ).status,
+    422,
+  );
+  const response = await forwardApi(
+    request(
+      "/discoveries",
+      "POST",
+      { entity_id: ID },
+      { "Idempotency-Key": KEY },
+    ),
+    settings(async (_url, init) => {
+      assert.equal(new Headers(init?.headers).get("idempotency-key"), KEY);
+      return Response.json(discovery, { status: 201 });
+    }),
+  );
+  assert.equal(response.status, 201);
+  const collection = await forwardApi(
+    request("/discoveries"),
+    settings(async () =>
+      Response.json({
+        discoveries: [discovery],
+        expired_count: 1,
+        session_expires_at: "2026-10-27T10:00:00Z",
+      }),
+    ),
+  );
+  assert.equal(collection.status, 200);
+  const removed = await forwardApi(
+    request(`/discoveries/${ID}`, "DELETE"),
+    settings(async () => new Response(null, { status: 204 })),
+  );
+  assert.equal(removed.status, 204);
+  assert.equal(await removed.text(), "");
+  const unsafe = await forwardApi(
+    request("/discoveries"),
+    settings(async () =>
+      Response.json({ discoveries: [], personal_likes: [ID] }),
+    ),
+  );
+  assert.equal(unsafe.status, 502);
+});

@@ -1,5 +1,15 @@
 # Taste Duel engineering rules
 
+Prompt 11: correctness changes game performance only; never auto-save or infer
+likes/dislikes. Require explicit saves of accepted contestants and earliest
+supporting/session expiry. Keep selection policy/private seed immutable, preserve
+legacy versions, verify the full remaining no-repeat path and record fallback
+reasons. Bands are engineering heuristics, not human-calibrated difficulty.
+Favor side balance without a hard quota revealing future answers. Clear must
+abort/ignore late responses and revoke access while preserving historic answers
+and backup retention. Challenge freezing must use delivered orientation before
+Prompt 12 endpoints are enabled. [Checks/runbook](../apps/api/SOLO.md).
+
 Revision 11 - 26 October 2026 - Prompt 10 browser/private API boundary; deployment remains unproven.
 
 Current browser rules: forward only explicitly supported methods/paths/query keys,

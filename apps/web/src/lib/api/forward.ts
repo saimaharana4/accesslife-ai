@@ -28,6 +28,9 @@ const allowed = [
   ["GET", /^\/v1\/games\/[0-9a-f-]{36}(?:\/(?:round|generation|results))?$/i],
   ["POST", /^\/v1\/games\/[0-9a-f-]{36}\/(?:answer|advance)$/i],
   ["GET", /^\/v1\/health\/(?:live|ready)$/],
+  ["GET", /^\/v1\/discoveries$/],
+  ["POST", /^\/v1\/discoveries$/],
+  ["DELETE", /^\/v1\/discoveries\/[0-9a-f-]{36}$/i],
 ] as const;
 
 export function publicFailure(
@@ -155,6 +158,12 @@ function safeSetCookie(
   return `${COOKIE}=${token}; Path=/; Max-Age=${age}; HttpOnly; SameSite=Lax${local ? "" : "; Secure"}`;
 }
 const messages: Record<string, string> = {
+  DISCOVERY_EXPIRED:
+    "This discovery's supporting evidence has expired. Play a fresh duel to explore it again.",
+  DISCOVERY_REMOVED:
+    "This save was removed. Check your discoveries before making a new explicit save.",
+  DISCOVERY_LIMIT:
+    "This guest session has reached its discovery limit. Remove an item before saving another.",
   SESSION_REQUIRED: "Start a guest session to continue.",
   NOT_FOUND: "This game or round is unavailable in your guest session.",
   EXPIRED: "This game has expired. Start a new duel.",
@@ -278,7 +287,9 @@ export async function forwardApi(
   const cookie = cookieForUpstream(request);
   if (cookie) headers.set("Cookie", cookie);
   const key = request.headers.get("idempotency-key");
-  const keyRequired = method === "POST" && /^\/v1\/games(?:\/|$)/.test(path);
+  const keyRequired =
+    method === "POST" &&
+    (/^\/v1\/games(?:\/|$)/.test(path) || path === "/v1/discoveries");
   if ((keyRequired && !key) || (key && !keyPattern.test(key)))
     return publicFailure(
       422,
@@ -357,7 +368,8 @@ export async function forwardApi(
     if (
       upstream.status === 204 &&
       method === "DELETE" &&
-      path === "/v1/sessions/current"
+      (path === "/v1/sessions/current" ||
+        /^\/v1\/discoveries\/[0-9a-f-]{36}$/i.test(path))
     )
       return new Response(null, { status: 204, headers: responseHeaders });
     if (

@@ -35,7 +35,29 @@ export default function HowItWorksPage() {
         <p>
           {fixturesEnabled
             ? "This development-only fixture game uses invented entities and rankings, original artwork and five local rounds. Your score counts accepted sample answers out of five. It makes no Qloo calls and creates no real share link. Progress lasts only in this tab's current app session; reloading resets it."
-            : "When the private game service is configured, search resolves real Qloo entities and a bounded curator prepares five evidence-backed rounds. Each game identifies whether its curator used a genuine agent or deterministic Qloo mode. The server stores accepted answers and your score. Friend challenges and discovery saves are later work. The synthetic fixture game is excluded from production builds."}
+            : "When the private game service is configured, search resolves real Qloo entities and a bounded curator prepares five evidence-backed rounds. Each game identifies its actual curator mode. The server stores accepted answers, your score and only the discoveries you explicitly save. Friend challenges are later work. The synthetic fixture game is excluded from production builds."}
+        </p>
+        <h2>A challenge that follows your game.</h2>
+        <p>
+          New solo games begin at a medium band. Two matching predictions can
+          raise the requested challenge; a miss can ease it. Only unused valid
+          pairs from the saved pool are eligible, and a nearby band may be used
+          to preserve five rounds without repeated contestants. Bands are
+          engineering heuristics, not human-calibrated difficulty or a
+          probability of enjoyment.
+        </p>
+        <p>
+          Correct and incorrect predictions measure game performance. They are
+          never stored as personal likes or dislikes. Your chosen favourite
+          starts the journey; Save Discovery is your separate, explicit choice
+          to explore either answered contestant. Remove a save whenever you
+          wish.
+        </p>
+        <p>
+          Saves expire with their supporting evidence or guest session. Clearing
+          the guest session revokes private access and dependent share links;
+          backups follow their retention policy. Previous game answers and
+          frozen rankings do not change when difficulty adapts.
         </p>
         <h2>Built to be played your way.</h2>
         <p>

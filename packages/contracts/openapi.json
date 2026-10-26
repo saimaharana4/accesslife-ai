@@ -294,6 +294,25 @@
             "maxItems": 100,
             "title": "Discoveries",
             "type": "array"
+          },
+          "expired_count": {
+            "default": 0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Expired Count",
+            "type": "integer"
+          },
+          "session_expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Expires At"
           }
         },
         "title": "DiscoveriesPublic",

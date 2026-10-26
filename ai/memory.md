@@ -1,5 +1,6 @@
 # Project memory
 
+
 Keep each dated entry to one or two lines. Record completed work and verified outcomes; distinguish requirements, measurements and blockers. Never include secrets, personal profiles or unverified success claims.
 
 **Current direction - 25 October 2026:** Taste Duel. Prompt 5 adds the local API/database foundation and generated contracts; the browser remains Prompt 4 fixtures and deployed services/cloud remain AccessLife. Prompt 2's MCP/same-domain live gate remains partial at 12/12 requests. Historical AccessLife results below are not Taste Duel verification.
@@ -76,3 +77,7 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 
 - **2026-10-26 - Prompt 10:** Connected strict same-origin forwarding, typed seed selection and server-owned five-round/reveal/result recovery; added completion-only curation facts and owned title-card fallback. Fixed production Host normalization and replaced inaccessible live search overlay; original references/migrations and user prompts remain unchanged, with no cloud deployment/push.
 - **2026-10-26 - Prompt 10 verification:** 52 Node checks, 23 distinct browser cases (28 passing invocations), 38 full axe scans and production/type/OpenAPI/Ruff/fixture-exclusion checks passed. One genuine Radiohead-to-movie browser game used 2 Qloo/2 Vertex calls with zero on answer/Next; 12 live captures and audits in `.data/tasteduel-prompt10/`. Next Prompt 11; broader coverage, live corrective value, human AT/playtesting and cloud release remain open.
+
+- **2026-10-26 — Prompt 11:** Added private versioned adaptive solo selection/td0007, explicit owned discovery save/unsave with expiry, and session/cross-tab recovery. Preserved original winners, prior migrations and user prompts; no prediction becomes a preference and no cloud deployment occurred.
+- **2026-10-26 — Prompt 11 verification:** 638 backend/53 Node checks, 18 distinct browser cases plus six affected reruns and 21 full axe captures passed; five API restarts and three Chromium launches preserved score/progress/saves without provider test calls. Artifacts `.data/tasteduel-prompt11/`; next Prompt 12 requires delivered-orientation challenge freezing. Human calibration/AT, live corrective value and cloud release remain open.
+- **2026-10-26 — Preview budget audit:** Existing live-preview ledger reached 8/8 Qloo and 2/6 Vertex dispatches, including six additional searches of unestablished origin; the ceiling remains intact. Fresh uncached search/generation is blocked; stored gameplay is provider-free, and Prompt 11 tests made no external provider calls.

@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import Link from "next/link";
 import { FixtureProvider } from "tasteduel-fixture-entry";
 import { fixturesEnabled } from "@/features/mode/config";
+import { GuestSessionControls } from "@/features/seed/guest-session-controls";
 import "./globals.css";
 
 const displayFont = localFont({
@@ -73,6 +74,7 @@ export default function RootLayout({
                 </span>
               </Link>
               <nav className="header-nav" aria-label="Main navigation">
+                {!fixturesEnabled && <GuestSessionControls />}
                 <Link href="/how-it-works">
                   How it works <span aria-hidden="true">↗</span>
                 </Link>

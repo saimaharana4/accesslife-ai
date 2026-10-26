@@ -1,5 +1,20 @@
 # Taste Duel
 
+**Current status — Prompt 11, 26 October 2026:** new solo games adapt from the frozen
+pool using game performance; explicit guest-owned Save/Remove actions remain
+separate from predictions. Five-round feasibility, original winners, retries,
+expiry, session revocation and cross-tab recovery are preserved. See the
+[solo policy, commands and evidence](apps/api/SOLO.md).
+
+Verified: **638 backend tests, 53 Node checks, 18 distinct browser cases**, six
+affected reruns and 21 full axe executions. Five API restarts and three Chromium
+process launches preserved accepted progress, score and saves. No new Qloo/Vertex
+test calls or cloud changes. Artifacts: `.data/tasteduel-prompt11/` and
+`test-results/tasteduel-prompt11/`. Next: **Prompt 12**, including a mandatory
+challenge-freezing update for delivered orientations before sharing is enabled.
+Bands remain engineering heuristics; side balance is weighted, not a hard quota.
+The named outcomes below describe their historical deliveries.
+
 One favourite. Five duels. Predict Qloo's ranking, discover something surprising, then challenge a friend to the same five rounds.
 
 **Status - 26 October 2026: Prompt 10 connects the Taste Duel browser to authoritative gameplay.** Typed seed search, explicit identity selection, awaited preparation, accepted-only Qloo reveal, manual Next and the server-scored result ticket use the generated contracts through a strict same-origin boundary. Reload and uncertain-response recovery retain request identity and restore saved state. Local verification is described below; there is no Taste Duel cloud deployment.
@@ -19,8 +34,13 @@ the **8 / 6** iteration ceiling. Answer/Next made none. Twelve live captures cov
 private ignored `.data/tasteduel-prompt10/`; synthetic reports are in
 `test-results/tasteduel-integration{,-artwork,-search,-generation,-navigation}/`.
 
-The running local preview retains the remaining metered allowance; it is not an
-unlimited demo. No cloud provisioning, deployment, remote CI or push occurred.
+The local preview's existing Qloo allowance is now exhausted: **8/8 Qloo and 2/6
+Vertex dispatches**. After the original two/two journey, six further preview
+searches were recorded; redacted logs cannot establish their origin. The ceiling
+was not increased. Fresh uncached search/generation is unavailable; existing
+stored games support answer/Next/recovery and explicit saves without provider IO.
+Prompt 11's synthetic checks made zero provider calls. No cloud provisioning,
+deployment, remote CI or push occurred.
 Local source remains separate from the legacy deployment workflow.
 
 ### Historical Prompt 9 outcome
@@ -29,7 +49,7 @@ Prompt 9 implemented transactional reservations, expiring fenced claims, atomic 
 
 Prompt 9 checks: **589 tests passed in the final backend suite** (587 also ran on an empty database migrated through `td0006`, followed by two additional curator/SQL bridge cases); TypeScript, generated contracts and Ruff passed. No new live Qloo/Vertex calls, provider credential reads or cloud changes. Original local data was retained and its database restored after the clean check. See [gameplay implementation, commands and limits](apps/api/GAMEPLAY.md); evidence is ignored `.data/tasteduel-prompt9/`.
 
-Full receipts remain server-private. Unfinished games withhold global curation summaries even after an earlier reveal, protecting future comparisons. Search and genuine generation require explicit provider configuration; defaults load no credentials. Discovery mutations and challenges remain unconnected. Next: **Prompt 11**, carrying the unresolved live adaptive-value gate below into later work.
+Full receipts remain server-private. Unfinished games withhold global curation summaries even after an earlier reveal, protecting future comparisons. Search and genuine generation require explicit provider configuration; defaults load no credentials. Prompt 11 now connects owned discoveries; challenges remain Prompt 12, alongside the unresolved live adaptive-value gate.
 
 **Historical Prompt 8 evidence:** a genuine live tool run built a Qloo-grounded 15-pair pool with a complete five-round path in 5.36 seconds. Live adaptive correction remains unverified; Prompt 9's synthetic checks do not close that gate.
 
@@ -181,8 +201,8 @@ labels invented data and prints aggregate validation facts. Local artifacts are
 `.data/tasteduel-prompt7/{synthetic-report.json,tests.xml,verification.json}`.
 The [engine guide](apps/api/DUEL_POOL.md) specifies policy, rejection accounting,
 safe feedback and the blocked real-sample gate. No frontend/screenshots changed.
-Next numbered step is Prompt 8; live capability/sample proof is still required
-before dependent genuine-agent integration.
+At Prompt 7 delivery, Prompt 8 and genuine sample proof were still required;
+later outcomes above distinguish what was subsequently verified.
 
 ## Run the development fixture game
 
@@ -268,7 +288,7 @@ Duel delivery infrastructure.
 
 ## Execute one iteration at a time
 
-The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next numbered step: Prompt 11 — adaptive solo selection and discoveries.** Prompt 8's stronger live corrective-value gate and broader coverage remain open. Historical Prompt 2 used exactly twelve Qloo requests; Prompts 3–7 added zero live calls or Secret Manager payload access. Prompt 8 and Prompt 10 have separately recorded non-renewing budgets. Do not reset an exhausted or closed ledger on resume or in a clean clone.
+The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next numbered step: Prompt 12 — exact friend challenges.** Prompt 8's stronger live corrective-value gate and broader coverage remain open. Historical Prompt 2 used exactly twelve Qloo requests; Prompts 3–7 added zero live calls or Secret Manager payload access. Prompt 8 and Prompt 10 have separately recorded non-renewing budgets. Do not reset an exhausted or closed ledger on resume or in a clean clone.
 
 Read its shared requirements, then paste the complete numbered prompt. Do not run all prompts as a single implementation request. Independent synthetic visual work can proceed during a provider outage, but it cannot pass the genuine integration gate.
 

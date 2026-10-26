@@ -432,6 +432,13 @@ export interface components {
        * @default []
        */
       discoveries: components["schemas"]["DiscoveryPublic"][];
+      /**
+       * Expired Count
+       * @default 0
+       */
+      expired_count: number;
+      /** Session Expires At */
+      session_expires_at?: string | null;
     };
     /** DiscoveryCreateRequest */
     DiscoveryCreateRequest: {

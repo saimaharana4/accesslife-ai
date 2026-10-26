@@ -1,5 +1,13 @@
 # Taste Duel implementation phases
 
+**Prompt 11 locally verified — 26 October 2026:** versioned adaptive solo selection,
+explicit saves/unsaves and session/cross-tab recovery. Passed 638 backend/53 Node
+checks, 18 distinct browser cases plus six affected reruns, 21 full axe captures
+and real API/browser process recovery, with zero provider test calls/cloud changes.
+[Actual policy/limits](../apps/api/SOLO.md). Next: **Prompt 12**; first update
+challenge-freezing SQL for immutable delivered orientation via an additive
+migration. Human calibration, live corrective value and cloud release remain open.
+
 Revision 9 - 26 October 2026 - Prompt 10 browser integration; next Prompt 11
 
 **Current Prompt 10 delivery:** generated-contract search/session forwarding and
