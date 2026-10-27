@@ -8,6 +8,7 @@ const ID = "12345678-1234-4234-8234-123456789012";
 const KEY = "12345678-1234-4234-8234-123456789013";
 const token = `${ID}.${"a".repeat(43)}`;
 const origin = "https://taste.example";
+const SLUG = "synthetic_capability_1234567890";
 const session = {
   active: true,
   expires_at: "2026-10-27T00:00:00Z",
@@ -22,6 +23,117 @@ const error = (code = "QLOO_UNAVAILABLE") => ({
     field_errors: [],
     retry_after_seconds: 4,
   },
+});
+
+test("challenge forwarding requires keyed strict mutations and never exposes invitation answer fields", async () => {
+  const invitation = {
+    slug: SLUG,
+    seed: {
+      id: ID,
+      name: "Synthetic favourite",
+      type: "artist",
+      source: "fixture",
+    },
+    creator_score: 3,
+    total: 5,
+    source: "fixture",
+    expires_at: "2099-10-26T12:00:00Z",
+  };
+  const result = { invitation, share_path: `/c/${SLUG}` };
+  let calls = 0;
+  const transport: typeof fetch = async (input, init) => {
+    calls++;
+    assert.equal(new Headers(init?.headers).get("idempotency-key"), KEY);
+    assert.equal(String(input), "https://private-api.example/v1/challenges");
+    return Response.json(result, { status: 201 });
+  };
+  assert.equal(
+    (
+      await forwardApi(
+        request("/challenges", "POST", { game_id: ID }),
+        settings(transport),
+      )
+    ).status,
+    422,
+  );
+  assert.equal(
+    (
+      await forwardApi(
+        request(
+          "/challenges",
+          "POST",
+          { game_id: ID, private_key: "PRIVATE" },
+          { "Idempotency-Key": KEY },
+        ),
+        settings(transport),
+      )
+    ).status,
+    422,
+  );
+  const created = await forwardApi(
+    request("/challenges", "POST", { game_id: ID }, { "Idempotency-Key": KEY }),
+    settings(transport),
+  );
+  assert.equal(created.status, 201);
+  assert.deepEqual(await created.json(), result);
+  assert.equal(calls, 1);
+  for (const payload of [
+    { ...invitation, private_pool: ["PRIVATE"] },
+    { ...invitation, seed: { ...invitation.seed, affinity: 0.99 } },
+  ]) {
+    const invalid = await forwardApi(
+      request(`/challenges/${SLUG}`),
+      settings(async () => Response.json(payload)),
+    );
+    assert.equal(invalid.status, 502);
+    assert.ok(!(await invalid.text()).includes("PRIVATE"));
+  }
+  const revoked = await forwardApi(
+    request(`/challenges/${SLUG}`, "DELETE"),
+    settings(async (_, init) => {
+      assert.equal(init?.method, "DELETE");
+      return new Response(null, { status: 204 });
+    }),
+  );
+  assert.equal(revoked.status, 204);
+  assert.equal(revoked.headers.get("cache-control"), "no-store");
+  let playCalls = 0;
+  for (const [body, key] of [
+    [{}, undefined],
+    [{ winner: ID }, KEY],
+    [undefined, KEY],
+  ] as const) {
+    const response = await forwardApi(
+      request(
+        `/challenges/${SLUG}/plays`,
+        "POST",
+        body,
+        key ? { "Idempotency-Key": key } : undefined,
+      ),
+      settings(async () => {
+        playCalls++;
+        return Response.json({});
+      }),
+    );
+    assert.equal(response.status, 422);
+  }
+  const play = await forwardApi(
+    request(
+      `/challenges/${SLUG}/plays`,
+      "POST",
+      {},
+      { "Idempotency-Key": KEY },
+    ),
+    settings(async (_, init) => {
+      playCalls++;
+      assert.equal(new Headers(init?.headers).get("idempotency-key"), KEY);
+      assert.equal(init?.body, "{}");
+      return Response.json(error("CHALLENGE_EXPIRED"), { status: 410 });
+    }),
+  );
+  assert.equal(playCalls, 1);
+  assert.equal(play.status, 410);
+  assert.equal((await play.json()).error.code, "CHALLENGE_EXPIRED");
 });
 
 test("generated curation rejection keys reject unknown diagnostic fields", () => {
@@ -225,26 +337,26 @@ test("secure host-only cookie is rewritten, never copying upstream Domain or oth
   assert.equal(response.headers.get("x-provider"), null);
 });
 
-test("clear emits host-only tombstone", async () => {
-  const response = await forwardApi(
-    request("/sessions/current", "DELETE"),
-    settings(
-      async () =>
-        new Response(null, {
-          status: 204,
-          headers: {
-            "Set-Cookie":
-              "tasteduel_session=; Max-Age=0; Domain=.example; Path=/",
-          },
-        }),
-    ),
-  );
-  assert.equal(response.status, 204);
-  assert.match(
-    response.headers.get("set-cookie")!,
-    /Max-Age=0; HttpOnly; SameSite=Lax; Secure$/,
-  );
-});
+for (const emptyValue of ["", '\"\"'])
+  test(`clear emits host-only tombstone for ${JSON.stringify(emptyValue)}`, async () => {
+    const response = await forwardApi(
+      request("/sessions/current", "DELETE"),
+      settings(
+        async () =>
+          new Response(null, {
+            status: 204,
+            headers: {
+              "Set-Cookie": `tasteduel_session=${emptyValue}; Max-Age=0; Domain=.example; Path=/`,
+            },
+          }),
+      ),
+    );
+    assert.equal(response.status, 204);
+    assert.match(
+      response.headers.get("set-cookie")!,
+      /Max-Age=0; HttpOnly; SameSite=Lax; Secure$/,
+    );
+  });
 
 test("internal standalone HTTP URL selects only the exact configured public Host", async () => {
   let calls = 0;

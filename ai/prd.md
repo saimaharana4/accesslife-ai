@@ -1,5 +1,16 @@
 # Taste Duel product requirements
 
+### Prompt 12 implemented locally - 27 October 2026
+
+Completed solo games now create an expiring friend invitation with the creator's
+actual score. Friends play exactly the five delivered comparisons, sides and order;
+each gets an independent score. No adaptive selection or new provider calls occur
+on replay. Prediction accuracy remains game performance, not personal preference.
+Revoked/expired links offer fresh solo play without replacing their answers. Fixed
+replays cannot fork around original revocation. Sharing is casual, not cheat-proof;
+no leaderboard or percentile exists. [Verification/limits](../apps/api/CHALLENGES.md).
+Next Prompt 13; no production deployment is claimed.
+
 **Prompt 11 current outcome — 26 October 2026:** new solo games adapt challenge
 from accepted prediction performance within the stored pool. Only the chosen
 favourite and explicit discovery saves are preference signals; correctness is

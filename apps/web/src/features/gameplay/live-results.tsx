@@ -9,8 +9,15 @@ import { CurationDisclosure } from "./curation-disclosure";
 import { sourceLabel } from "./presentation";
 import { LiveDiscoveries } from "@/features/discoveries/live-discoveries";
 import { subscribeSessionChanges } from "@/lib/api/session-events";
+import { ChallengeShare } from "@/features/challenges/challenge-share";
 
-export function LiveResults({ gameId }: { gameId: string }) {
+export function LiveResults({
+  gameId,
+  canonicalOrigin = null,
+}: {
+  gameId: string;
+  canonicalOrigin?: string | null;
+}) {
   const [result, setResult] = useState<ApiSchemas["GameResultPublic"] | null>(
     null,
   );
@@ -166,9 +173,23 @@ export function LiveResults({ gameId }: { gameId: string }) {
             Revisit the final reveal
           </ActionLink>
         </div>
+        {result.mode === "fixed" ? (
+          <p className="ticket-fine-print" data-testid="fixed-replay-result">
+            Fixed replay complete. Your score uses the creator's frozen
+            comparisons. Start a new solo duel to create your own friend
+            challenge; a replay cannot detach from its original link's
+            revocation.
+          </p>
+        ) : (
+          <ChallengeShare
+            gameId={gameId}
+            canonicalOrigin={canonicalOrigin}
+            source={result.source}
+          />
+        )}
         <p className="ticket-fine-print">
-          Saved within this guest session until its evidence expires. Friend
-          challenges are coming later.
+          Saved within this guest session until its evidence expires. Share
+          links expire with their supporting evidence and can be revoked.
         </p>
       </div>
     </section>

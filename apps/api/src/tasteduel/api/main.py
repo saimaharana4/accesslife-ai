@@ -29,6 +29,7 @@ from tasteduel.api import presenters, schemas as s
 from tasteduel.api.body_limit import BoundedBodyMiddleware
 from tasteduel.application.errors import AppError
 from tasteduel.application.discoveries import DiscoveryService
+from tasteduel.application.challenges import ChallengeService
 from tasteduel.application.entity_search import remember_search_entities
 from tasteduel.application.gameplay import GameplayService, GenerationObservation
 from tasteduel.application.reads import ReadService
@@ -594,6 +595,7 @@ def create_app(
             game, rounds = ReadService(repo, row.id).results(game_id)
             return s.GameResultPublic(
                 game_id=game.id,
+                mode=game.mode,
                 score=game.score,
                 source=game.seed.source,
                 curator_mode=game.receipt.curator_mode,
@@ -646,6 +648,17 @@ def create_app(
         DiscoveryService(database()).remove(owner, entity_id)
         return Response(status_code=204)
 
+    def challenge_invitation(slug):
+        challenge, seed = ChallengeService(database()).invitation(slug)
+        source = "fixture" if seed.provider == "fixture" else "qloo"
+        return s.ChallengeInvitationPublic(
+            slug=slug,
+            seed=s.EntityPublic(id=seed.id, name=seed.name, type=seed.entity_type, source=source),
+            creator_score=challenge.creator_score,
+            source=source,
+            expires_at=challenge.expires_at,
+        )
+
     @app.post(
         "/v1/challenges",
         response_model=s.ChallengeCreatedPublic,
@@ -653,9 +666,14 @@ def create_app(
         responses={200: {"model": s.ChallengeCreatedPublic}},
         operation_id="createChallenge",
     )
-    def create_challenge(body: s.ChallengeCreateRequest, request: Request, idempotency_key: Key):
-        with owned_db(request):
-            not_implemented()
+    def create_challenge(
+        body: s.ChallengeCreateRequest, request: Request, response: Response, idempotency_key: Key
+    ):
+        with owned_db(request) as (_, row):
+            owner = row.id
+        slug, created = ChallengeService(database()).create(owner, body.game_id, idempotency_key)
+        response.status_code = 201 if created else 200
+        return s.ChallengeCreatedPublic(invitation=challenge_invitation(slug), share_path=f"/c/{slug}")
 
     @app.get(
         "/v1/challenges/{slug}",
@@ -663,7 +681,17 @@ def create_app(
         operation_id="getChallengeInvitation",
     )
     def invitation(slug: Annotated[str, Path(min_length=22, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")]):
-        not_implemented()
+        return challenge_invitation(slug)
+
+    @app.delete("/v1/challenges/{slug}", status_code=204, operation_id="revokeChallenge")
+    def revoke_challenge(
+        slug: Annotated[str, Path(min_length=22, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")],
+        request: Request,
+    ):
+        with owned_db(request) as (_, row):
+            owner = row.id
+        ChallengeService(database()).revoke(owner, slug)
+        return Response(status_code=204)
 
     @app.post(
         "/v1/challenges/{slug}/plays",
@@ -674,11 +702,16 @@ def create_app(
     )
     def play_challenge(
         slug: Annotated[str, Path(min_length=22, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")],
+        body: s.ChallengePlayRequest,
         request: Request,
+        response: Response,
         idempotency_key: Key,
     ):
-        with owned_db(request):
-            not_implemented()
+        with owned_db(request) as (_, row):
+            owner = row.id
+        game_id, created = ChallengeService(database()).play(owner, slug, idempotency_key)
+        response.status_code = 201 if created else 200
+        return read_game(request, game_id)
 
     @app.get("/v1/health/live", response_model=s.HealthPublic, operation_id="liveness")
     def live():
@@ -690,7 +723,7 @@ def create_app(
             revision = connection.execute(
                 text("SELECT version_num FROM tasteduel.tasteduel_alembic_version LIMIT 1")
             ).scalar_one()
-            if revision != "td0007":
+            if revision != "td0008":
                 raise AppError(503, "SCHEMA_NOT_READY", "The local schema is not ready.", retryable=True)
         return s.HealthPublic(status="ok", generation_available=app.state.generator is not None)
 

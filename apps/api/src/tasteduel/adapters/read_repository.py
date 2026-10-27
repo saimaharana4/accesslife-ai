@@ -121,9 +121,12 @@ class SqlReadRepository:
         )
 
     def game(self, game_id: UUID) -> GameRead | None:
+        from tasteduel.application.challenges import require_replay_active
+
         game = self.db.scalar(self.owned(m.Game, m.Game.id == game_id))
         if game is None:
             return None
+        require_replay_active(self.db, game_id)
         receipt = self.receipt(game_id)
         source = "fixture" if receipt.curator_mode == "fixture" else "qloo"
         answers = list(self.db.scalars(self.owned(m.Answer, m.Answer.game_id == game_id)))

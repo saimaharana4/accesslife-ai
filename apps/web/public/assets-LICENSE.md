@@ -16,3 +16,13 @@ Qloo image reuse permission. No external API is required to display them.
 
 Locally hosted typefaces have their own OFL notices in `public/fonts/`; those
 notices govern the font files. The root project licence does not replace them.
+
+## Challenge social cards (26 October 2026)
+
+The dynamically rendered challenge card uses original typography, a dashed ticket
+seam and project-created SVG asterisk geometry. Only an authorized invitation's
+seed title and actual creator score are displayed; no external artwork is fetched.
+Barlow Condensed uses its existing local OFL font. The raster card transliterates
+Latin accents and replaces unsupported glyphs with `?` to prevent next/og from
+downloading fallback fonts or emoji; the invitation and metadata preserve the full
+original title. Long raster titles are bounded to 140 characters.

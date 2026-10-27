@@ -1,6 +1,20 @@
 # Taste Duel
 
-**Current status — Prompt 11, 26 October 2026:** new solo games adapt from the frozen
+**Current status — Prompt 12, 27 October 2026:** completed solo games can create
+an idempotent, expiring friend challenge. Isolated guests replay exactly the five
+delivered comparisons, order and sides with independent scores and no new provider
+calls. Invitations, copy/share fallback, owner revocation and original social
+cards are implemented locally. [Contracts, policy, commands and proof](apps/api/CHALLENGES.md).
+The provider-free preview is **http://127.0.0.1:3003**; fresh solo generation is
+unavailable there. No Taste Duel production origin has been assumed or deployed.
+
+Verified: **648 backend tests, 58 Node checks, 15 browser scenarios**, plus a real
+two-replay API/database/browser journey and 23 successful full axe captures.
+Original rounds stayed fixed; scores were 3/5 and 2/5, and creator clearing
+revoked dependent access. Screenshots/OG are ignored `.data/tasteduel-prompt12/`.
+Next: **Prompt 13**. Earlier milestone descriptions below are historical.
+
+**Historical Prompt 11 status, 26 October 2026:** new solo games adapt from the frozen
 pool using game performance; explicit guest-owned Save/Remove actions remain
 separate from predictions. Five-round feasibility, original winners, retries,
 expiry, session revocation and cross-tab recovery are preserved. See the
@@ -49,7 +63,7 @@ Prompt 9 implemented transactional reservations, expiring fenced claims, atomic 
 
 Prompt 9 checks: **589 tests passed in the final backend suite** (587 also ran on an empty database migrated through `td0006`, followed by two additional curator/SQL bridge cases); TypeScript, generated contracts and Ruff passed. No new live Qloo/Vertex calls, provider credential reads or cloud changes. Original local data was retained and its database restored after the clean check. See [gameplay implementation, commands and limits](apps/api/GAMEPLAY.md); evidence is ignored `.data/tasteduel-prompt9/`.
 
-Full receipts remain server-private. Unfinished games withhold global curation summaries even after an earlier reveal, protecting future comparisons. Search and genuine generation require explicit provider configuration; defaults load no credentials. Prompt 11 now connects owned discoveries; challenges remain Prompt 12, alongside the unresolved live adaptive-value gate.
+Full receipts remain server-private. Unfinished games withhold global curation summaries even after an earlier reveal, protecting future comparisons. Search and genuine generation require explicit provider configuration; defaults load no credentials. Prompt 11 now connects owned discoveries; Prompt 12 now implements exact challenges; the stronger live corrective-value gate remains unresolved.
 
 **Historical Prompt 8 evidence:** a genuine live tool run built a Qloo-grounded 15-pair pool with a complete five-round path in 5.36 seconds. Live adaptive correction remains unverified; Prompt 9's synthetic checks do not close that gate.
 
@@ -288,7 +302,7 @@ Duel delivery infrastructure.
 
 ## Execute one iteration at a time
 
-The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next numbered step: Prompt 12 — exact friend challenges.** Prompt 8's stronger live corrective-value gate and broader coverage remain open. Historical Prompt 2 used exactly twelve Qloo requests; Prompts 3–7 added zero live calls or Secret Manager payload access. Prompt 8 and Prompt 10 have separately recorded non-renewing budgets. Do not reset an exhausted or closed ledger on resume or in a clean clone.
+The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next numbered step: Prompt 13 - accessibility, performance and security.** Prompt 8's stronger live corrective-value gate and broader coverage remain open. Historical Prompt 2 used exactly twelve Qloo requests; Prompts 3–7 added zero live calls or Secret Manager payload access. Prompt 8 and Prompt 10 have separately recorded non-renewing budgets. Do not reset an exhausted or closed ledger on resume or in a clean clone.
 
 Read its shared requirements, then paste the complete numbered prompt. Do not run all prompts as a single implementation request. Independent synthetic visual work can proceed during a provider outage, but it cannot pass the genuine integration gate.
 

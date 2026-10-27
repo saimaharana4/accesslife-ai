@@ -126,7 +126,9 @@ export function matchesSchema(
 
 export function getOperation(path: string, method: string) {
   for (const [template, methods] of Object.entries(document.paths)) {
-    const pattern = template.replace(/\{[^}]+\}/g, "([0-9a-fA-F-]{36})");
+    const pattern = template.replace(/\{([^}]+)\}/g, (_, name: string) =>
+      name === "slug" ? "([A-Za-z0-9_-]{22,80})" : "([0-9a-fA-F-]{36})",
+    );
     if (!new RegExp(`^${pattern}$`).test(path)) continue;
     return methods[method.toLowerCase()];
   }

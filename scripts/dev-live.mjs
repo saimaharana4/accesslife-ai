@@ -3,8 +3,11 @@ import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 const cwd = fileURLToPath(new URL("../apps/web/", import.meta.url));
 const port = process.env.TASTEDUEL_PREVIEW_PORT ?? "3001";
+const apiPort = process.env.TASTEDUEL_PREVIEW_API_PORT ?? "8004";
 if (!["3001", "3003"].includes(port))
   throw new Error("Use reviewed loopback preview port");
+if (!["8004", "8005"].includes(apiPort))
+  throw new Error("Use reviewed loopback API preview port");
 const child = spawn(
   process.execPath,
   [
@@ -22,8 +25,9 @@ const child = spawn(
       ...process.env,
       NEXT_TELEMETRY_DISABLED: "1",
       TASTEDUEL_FIXTURES: "0",
-      TASTEDUEL_API_URL: "http://127.0.0.1:8004",
+      TASTEDUEL_API_URL: `http://127.0.0.1:${apiPort}`,
       TASTEDUEL_WEB_ORIGINS: `http://127.0.0.1:${port}`,
+      TASTEDUEL_CANONICAL_ORIGIN: `http://127.0.0.1:${port}`,
       TASTEDUEL_ALLOW_LOCAL_HTTP: "true",
     },
   },

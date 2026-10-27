@@ -74,11 +74,14 @@ class GameplayService:
         return row, now
 
     def _game(self, db, session_id, game_id, now):
+        from tasteduel.application.challenges import require_replay_active
+
         game = db.scalar(
             select(m.Game).where(m.Game.id == game_id, m.Game.session_id == session_id).with_for_update()
         )
         if game is None:
             raise not_found()
+        require_replay_active(db, game_id)
         if game.expires_at <= now or game.status == "expired":
             raise AppError(410, "GAME_EXPIRED", "This game and its supporting evidence have expired.")
         if game.status == "cancelled":

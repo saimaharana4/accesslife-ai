@@ -1,5 +1,16 @@
 # Taste Duel implementation phases
 
+### Prompt 12 gate - 27 October 2026
+
+Implemented exact fixed challenges, capability lookup, idempotent replay, bounded
+expiry/revocation, invitation/result sharing and original OG cards. Real local
+BFF/API/database tests completed two isolated five-round replays with the same
+sides/order/winners and independent scores; provider calls were zero. Fifteen
+intercepted browser scenarios covered expiry, lost responses and accessible copy
+fallback. The prerequisite delivered-orientation migration is additive td0008.
+Next Prompt 13. Cloud, external crawler verification, manual AT/zoom and physical
+cleanup remain later gates. [Commands and evidence](../apps/api/CHALLENGES.md).
+
 **Prompt 11 locally verified — 26 October 2026:** versioned adaptive solo selection,
 explicit saves/unsaves and session/cross-tab recovery. Passed 638 backend/53 Node
 checks, 18 distinct browser cases plus six affected reruns, 21 full axe captures

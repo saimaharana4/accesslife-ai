@@ -2198,6 +2198,91 @@ h1.arena-heading {
   }
 }
 
+.challenge-share {
+  margin-top: 28px;
+  border-top: 1px dashed #8a8299;
+  padding-top: 24px;
+  text-align: left;
+}
+.challenge-share h2 {
+  font-family: var(--font-display), Impact, sans-serif;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  line-height: 1.05;
+  margin: 12px 0;
+}
+.challenge-share > p:not(.eyebrow) {
+  color: var(--muted);
+  margin: 12px 0;
+}
+.challenge-share .state-actions {
+  margin: 18px 0;
+  flex-wrap: wrap;
+}
+.challenge-share .button {
+  max-width: 100%;
+}
+.share-notice {
+  min-height: 1.5em;
+  overflow-wrap: anywhere;
+}
+.retire-challenge {
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.retire-challenge summary {
+  min-height: 48px;
+  display: list-item;
+  align-content: center;
+  cursor: pointer;
+}
+.retire-challenge p {
+  margin: 12px 0;
+}
+.share-link-field {
+  display: block;
+  color: var(--text);
+  font-size: 0.875rem;
+  margin: 16px 0;
+}
+.share-link-field[hidden] {
+  display: none;
+}
+.share-link-field input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px;
+  margin-top: 8px;
+  border: 1px solid #8a8299;
+  border-radius: 8px;
+  background: var(--canvas);
+  color: var(--text);
+  font: inherit;
+}
+.challenge-title,
+.challenge-summary,
+.invitation-source {
+  overflow-wrap: anywhere;
+}
+.invitation-source {
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+@media (max-width: 480px) {
+  .challenge-share .state-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .challenge-share .state-actions .button {
+    width: 100%;
+  }
+  .challenge-title {
+    font-size: clamp(2.5rem, 11vw, 3.75rem);
+  }
+}
+
 /* Live transport shares the arena's editorial composition, not its fixtures. */
 .live-seed-types {
   border: 0;

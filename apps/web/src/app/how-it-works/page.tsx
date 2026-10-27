@@ -35,7 +35,7 @@ export default function HowItWorksPage() {
         <p>
           {fixturesEnabled
             ? "This development-only fixture game uses invented entities and rankings, original artwork and five local rounds. Your score counts accepted sample answers out of five. It makes no Qloo calls and creates no real share link. Progress lasts only in this tab's current app session; reloading resets it."
-            : "When the private game service is configured, search resolves real Qloo entities and a bounded curator prepares five evidence-backed rounds. Each game identifies its actual curator mode. The server stores accepted answers, your score and only the discoveries you explicitly save. Friend challenges are later work. The synthetic fixture game is excluded from production builds."}
+            : "When the private game service is configured, search resolves real Qloo entities and a bounded curator prepares five evidence-backed rounds. Each game identifies its actual curator mode. The server stores accepted answers, your score and only the discoveries you explicitly save. A completed game can become a fixed friend challenge. The synthetic fixture game is excluded from production builds."}
         </p>
         <h2>A challenge that follows your game.</h2>
         <p>
@@ -64,7 +64,27 @@ export default function HowItWorksPage() {
           No time pressure, sound or animation is required. Use the keyboard to
           search and choose. Reduced-motion preferences are respected. Real
           games restore accepted progress when you reload in the same guest
-          session. Friend replay will be built in a later iteration.
+          session. A friend replay preserves the creator's exact played
+          comparisons, order, sides and scoring rules, without another Qloo
+          query.
+        </p>
+        <h2>Same five. Your predictions.</h2>
+        <p>
+          A public invitation shows the chosen favourite and creator's actual
+          score out of five, never the answer key or remaining choices. Friends
+          play their own fixed replay with independent scores. A share link
+          expires with its supporting evidence and is revoked when the creator
+          clears their session. It never silently refreshes into a different
+          game.
+        </p>
+        <p>
+          Sharing is casual play, not a cheat-proof competition: prior
+          knowledge, external research and repeated attempts exist. There is no
+          global leaderboard or claimed percentile. Copying a link or opening a
+          share sheet does not send it until you choose to do so. External
+          services may retain previously fetched social previews after a link is
+          revoked; this application cannot recall those copies or rewrite old
+          backups.
         </p>
         <h2>Artwork and type</h2>
         <p>

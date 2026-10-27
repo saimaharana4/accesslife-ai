@@ -1,5 +1,18 @@
 # Taste Duel design specification
 
+### Prompt 12 sharing design - 27 October 2026
+
+The result ticket leads into a secondary friend challenge section with real-score
+copy, keyboard-accessible copy/share and a selectable-link fallback. The invitation
+keeps the editorial fight-night title, large action and seed/actual creator score;
+no future contestant appears. Expired/revoked states deliberately offer fresh solo
+play. Fixed replay is labelled separately from solo adaptation and historical
+curation. Original 1200x630 social artwork uses local licensed Barlow, a dashed seam,
+seed title and actual score; bounded glyph fallback prevents external font fetches.
+No purchased domain or third-party imagery is assumed. Desktop/390/320 and actual
+OG renders were inspected. [Manifest](../apps/web/public/assets-LICENSE.md),
+[proof and limitations](../apps/api/CHALLENGES.md).
+
 **Prompt 11 — 26 October 2026:** keep Next primary. A closed native “Save a
 discovery” disclosure after accepted reveal provides optional Save/Remove for
 either contestant. The result shows explicit saves compactly and hides other

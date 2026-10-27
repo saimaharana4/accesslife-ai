@@ -22,6 +22,7 @@
     "start:live": "node scripts/start-live.mjs",
     "test:web-integration": "playwright test --config playwright.live.config.ts",
     "test:solo": "playwright test --config playwright.prompt11.config.ts",
+    "test:challenges": "playwright test --config playwright.prompt12.config.ts",
     "test:web-contracts": "node --experimental-strip-types --test apps/web/src/lib/api/*.test.ts apps/web/src/features/gameplay/*.test.ts",
     "check:fixture-production": "node scripts/check-fixture-production.mjs"
   },

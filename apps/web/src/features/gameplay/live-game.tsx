@@ -415,6 +415,12 @@ export function LiveGame({ gameId }: { gameId: string }) {
           {sourceLabel(game.source, game.curator_mode)}
         </span>
       </div>
+      {game.mode === "fixed" && (
+        <p className="ticket-fine-print" data-testid="fixed-replay-label">
+          Fixed friend replay — same five, order and sides. Original curation
+          evidence; no new ranking or agent calls.
+        </p>
+      )}
       <div className="arena-context">
         <span className="seed-pill" id="live-seed-context">
           <span aria-hidden="true">✳</span>

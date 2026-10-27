@@ -387,6 +387,7 @@ class Challenge(Owned, Created, Base):
     )
     source_game_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     slug_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    share_slug: Mapped[str | None] = mapped_column(String(80))
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     creator_score: Mapped[int] = mapped_column(Integer, nullable=False)
     scoring_version: Mapped[str] = mapped_column(String(80), nullable=False)
@@ -421,6 +422,7 @@ class ChallengePlay(Owned, Created, Base):
         UniqueConstraint("game_id"),
     )
     challenge_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
+    slug_hash: Mapped[str | None] = mapped_column(String(64))
     game_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
 
 

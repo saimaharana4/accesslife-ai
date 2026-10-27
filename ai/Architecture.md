@@ -1,6 +1,20 @@
 # Taste Duel architecture
 
-### Prompt 11 current boundary — 26 October 2026
+### Prompt 12 current boundary - 27 October 2026
+
+`ChallengeService` creates one high-entropy capability per completed owned solo
+game, with idempotency receipts. `td0008` freezes delivered orientations, order,
+context and versions. Guest copies contain only those five pairs and use fixed
+selection, preserving independent scores without provider IO. Hash-scoped RLS
+lookup is server-only; public invitation DTOs contain no answer/pool/creator data.
+Owner revocation/clearing also blocks started replays and replay-only discovery
+support. Fixed replay resharing is prohibited to preserve the parent's revocation.
+Canonical-origin configuration, anonymous bounded server metadata reads, no-store
+routes and original local-font social cards implement sharing. No cloud changed.
+[Contracts, retention and verified local boundary](../apps/api/CHALLENGES.md).
+The earlier boundaries below describe their historical deliveries.
+
+### Historical Prompt 11 boundary — 26 October 2026
 
 `domain/adaptive.py` selects from frozen pairs while retaining a complete no-repeat
 continuation and original diversity requirements. `GameplayService` freezes
@@ -323,7 +337,7 @@ Qloo is the sole ranking source. Original title-based SVG/CSS cards are an alway
 
 ## 5. Public API and disclosure contracts
 
-These are the application contracts exported from Python. Private paths use `/v1`; the same-origin browser base `/api` gives `/api/v1`. The forwarding allowlist now includes discovery read/save/remove alongside session/search/game/health. Sessions, typed search, awaited generation, authoritative answer/Next and owned discoveries are implemented locally. Challenge execution and invitations remain 501 until Prompt 12. `Idempotency-Key` binds session/operation and canonical input; conflicting reuse returns 409. Public summaries remain completion-only.
+These are the application contracts exported from Python. Private paths use `/v1`; the same-origin browser base `/api` gives `/api/v1`. The forwarding allowlist now includes discovery read/save/remove alongside session/search/game/health. Sessions, typed search, awaited generation, authoritative answer/Next and owned discoveries are implemented locally. Challenge creation, invitation, revocation and fixed replay are now implemented locally in Prompt 12. The strict forwarding allowlist includes these operations. `Idempotency-Key` binds session/operation and canonical input; conflicting reuse returns 409. Public summaries remain completion-only.
 
 | Method/path without prefix         | Request                                                        | Successful behavior                                                                          |
 | ---------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |

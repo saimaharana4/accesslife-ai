@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { LiveGame } from "@/features/gameplay/live-game";
 
+export const dynamic = "force-dynamic";
+
 export default async function GamePage({
   params,
 }: {

@@ -25,7 +25,9 @@ export function clearGuestIntents() {
     const keys = Object.keys(sessionStorage).filter(
       (key) =>
         key === "tasteduel.generation-intent.v1" ||
-        key.startsWith("tasteduel:mutation:v1:"),
+        key.startsWith("tasteduel:mutation:v1:") ||
+        key.startsWith("tasteduel:challenge-create:v1:") ||
+        key.startsWith("tasteduel:challenge-play:v1:"),
     );
     for (const key of keys) sessionStorage.removeItem(key);
   } catch {

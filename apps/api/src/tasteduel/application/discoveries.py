@@ -25,7 +25,7 @@ def discovery_expiry(db, owner, entity, session):
     """
     contexts = list(
         db.execute(
-            select(m.Game.expires_at, m.RankingSnapshot.expires_at)
+            select(m.Game.id, m.Game.expires_at, m.RankingSnapshot.expires_at)
             .select_from(m.RoundContestant)
             .join(m.Answer, m.Answer.round_id == m.RoundContestant.round_id)
             .join(m.DeliveredRound, m.DeliveredRound.id == m.RoundContestant.round_id)
@@ -41,9 +41,20 @@ def discovery_expiry(db, owner, entity, session):
             )
         )
     )
-    if not contexts:
+    # A replay loses its evidence capability when its creator revokes sharing.
+    # An independent accepted solo context can still support the explicit save.
+    from tasteduel.application.challenges import require_replay_active
+
+    retained = []
+    for game_id, game_expiry, snapshot_expiry in contexts:
+        try:
+            require_replay_active(db, game_id)
+        except AppError:
+            continue
+        retained.extend((game_expiry, snapshot_expiry))
+    if not retained:
         return None
-    return min(session.expires_at, entity.expires_at, *(value for row in contexts for value in row))
+    return min(session.expires_at, entity.expires_at, *retained)
 
 
 @dataclass(frozen=True)

@@ -31,6 +31,10 @@ const allowed = [
   ["GET", /^\/v1\/discoveries$/],
   ["POST", /^\/v1\/discoveries$/],
   ["DELETE", /^\/v1\/discoveries\/[0-9a-f-]{36}$/i],
+  ["POST", /^\/v1\/challenges$/],
+  ["GET", /^\/v1\/challenges\/[A-Za-z0-9_-]{22,80}$/],
+  ["DELETE", /^\/v1\/challenges\/[A-Za-z0-9_-]{22,80}$/],
+  ["POST", /^\/v1\/challenges\/[A-Za-z0-9_-]{22,80}\/plays$/],
 ] as const;
 
 export function publicFailure(
@@ -150,7 +154,10 @@ function safeSetCookie(
   const values = upstream.headers.getSetCookie();
   const cookie = values.find((value) => value.startsWith(`${COOKIE}=`));
   if (!cookie) return undefined;
-  const token = cookie.split(";", 1)[0].slice(COOKIE.length + 1);
+  const rawToken = cookie.split(";", 1)[0].slice(COOKIE.length + 1);
+  // Starlette's delete_cookie emits a quoted empty value. Normalize only this
+  // tombstone; quoted authentication tokens remain invalid.
+  const token = method === "DELETE" && rawToken === '""' ? "" : rawToken;
   const deleting = method === "DELETE" && token === "";
   if (!deleting && !tokenPattern.test(token)) throw new Error("INVALID_COOKIE");
   const rawAge = /(?:^|;)\s*max-age=(\d+)/i.exec(cookie)?.[1];
@@ -158,6 +165,18 @@ function safeSetCookie(
   return `${COOKIE}=${token}; Path=/; Max-Age=${age}; HttpOnly; SameSite=Lax${local ? "" : "; Secure"}`;
 }
 const messages: Record<string, string> = {
+  CHALLENGE_EXPIRED: "This challenge has expired. Start a new solo game.",
+  CHALLENGE_REVOKED:
+    "This challenge is no longer available. Start a new solo game.",
+  CHALLENGE_UNAVAILABLE:
+    "This challenge is unavailable. Start a new solo game.",
+  CHALLENGE_NOT_FOUND:
+    "This challenge could not be found. Check the link or start a new solo game.",
+  CHALLENGE_INCOMPLETE: "Finish all five rounds before creating a challenge.",
+  CHALLENGE_RESHARE_UNAVAILABLE:
+    "A friend replay cannot create a detached challenge. Start a new solo game to share.",
+  CHALLENGE_METADATA_CONFLICT:
+    "This session retains different metadata. Open the fixed challenge in a fresh guest session.",
   DISCOVERY_EXPIRED:
     "This discovery's supporting evidence has expired. Play a fresh duel to explore it again.",
   DISCOVERY_REMOVED:
@@ -289,7 +308,9 @@ export async function forwardApi(
   const key = request.headers.get("idempotency-key");
   const keyRequired =
     method === "POST" &&
-    (/^\/v1\/games(?:\/|$)/.test(path) || path === "/v1/discoveries");
+    (/^\/v1\/games(?:\/|$)/.test(path) ||
+      path === "/v1/discoveries" ||
+      /^\/v1\/challenges(?:\/|$)/.test(path));
   if ((keyRequired && !key) || (key && !keyPattern.test(key)))
     return publicFailure(
       422,
@@ -369,7 +390,8 @@ export async function forwardApi(
       upstream.status === 204 &&
       method === "DELETE" &&
       (path === "/v1/sessions/current" ||
-        /^\/v1\/discoveries\/[0-9a-f-]{36}$/i.test(path))
+        /^\/v1\/discoveries\/[0-9a-f-]{36}$/i.test(path) ||
+        /^\/v1\/challenges\/[A-Za-z0-9_-]{22,80}$/.test(path))
     )
       return new Response(null, { status: 204, headers: responseHeaders });
     if (

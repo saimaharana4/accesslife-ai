@@ -139,6 +139,7 @@ def bootstrap() -> tuple[str, str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["start", "migrate", "test", "api", "status", "stop"])
+    parser.add_argument("--api-port", type=int, choices=[8002, 8004, 8005], default=8002)
     args, extra = parser.parse_known_args()
     os.chdir(ROOT)
     if args.command == "stop":
@@ -193,7 +194,7 @@ def main() -> int:
             "--host",
             "127.0.0.1",
             "--port",
-            "8002",
+            str(args.api_port),
         ]
     return subprocess.run(command, env=env).returncode
 

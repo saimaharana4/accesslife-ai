@@ -1,5 +1,16 @@
 # Taste Duel engineering rules
 
+### Prompt 12 rules now enforced - 27 October 2026
+
+Freeze delivered sides, not original pool orientation. Keep slug entropy at 256
+bits; bind creator/play retries to canonical signatures. Public invitations and
+OG expose only authorized seed/source/score/expiry. Never forward visitor cookies
+to metadata reads, accept request-controlled API/image URLs, assume a production
+domain, cache private pages or fetch unreviewed external artwork/fonts. Replay
+uses frozen evidence only. Clearing/revocation blocks dependent replays and their
+sole discovery support; do not describe this as rewriting backups or recalling
+third-party screenshots. Prohibit detached fixed-replay resharing. [Details](../apps/api/CHALLENGES.md).
+
 Prompt 11: correctness changes game performance only; never auto-save or infer
 likes/dislikes. Require explicit saves of accepted contestants and earliest
 supporting/session expiry. Keep selection policy/private seed immutable, preserve

@@ -94,6 +94,10 @@ class ChallengeCreateRequest(StrictRecord):
     game_id: UUID
 
 
+class ChallengePlayRequest(StrictRecord):
+    pass
+
+
 class CurationSummaryPublic(StrictRecord):
     status: Literal["succeeded"] = "succeeded"
     curator_mode: CuratorMode
@@ -302,6 +306,7 @@ class DiscoveriesPublic(StrictRecord):
 
 class GameResultPublic(StrictRecord):
     game_id: UUID
+    mode: GameMode = GameMode.SOLO
     phase: Literal["completed"] = "completed"
     score: Score
     total: Literal[5] = 5

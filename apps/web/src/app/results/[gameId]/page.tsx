@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
 import { LiveResults } from "@/features/gameplay/live-results";
+import { canonicalOrigin } from "@/lib/api/server-challenge";
+
+export const dynamic = "force-dynamic";
 
 export default async function ResultsPage({
   params,
@@ -13,5 +16,5 @@ export default async function ResultsPage({
     )
   )
     notFound();
-  return <LiveResults gameId={gameId} />;
+  return <LiveResults gameId={gameId} canonicalOrigin={canonicalOrigin()} />;
 }
