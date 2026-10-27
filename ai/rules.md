@@ -1,5 +1,34 @@
 # Taste Duel engineering rules
 
+**Current foundation status ? 27 October 2026:** the user approved a US$90 cumulative ceiling with seven backups preserved. The US$82.84 conservative planning review passed and the saved foundation plan applied. Repository: `saimaharana4/taste-duel`; keyless authentication and scoped secret metadata checks passed. Independent runtime/migration logins and live database privilege checks passed. No Taste Duel services/public traffic are deployed. Earlier US$80 blocked status is historical; see [current cost review](../infra/migration/cost-approval-2026-10-27.md).
+
+### Cloud preservation and cost controls — 27 October 2026
+
+Keep old SQL/database/user addresses and backend unchanged. Source now adds
+`prevent_destroy` and requires explicit reconciled cumulative billing, a total
+within US$80 and a priced horizon at least 7 November 04:45 UTC; later cutover
+requires repricing. Defaults remain blocked. Proposed common billing labels and
+additional notifications are unapplied and do not backfill past/unlabelled cost.
+Backend-free validation and synthetic gate plans are not an authenticated cloud
+plan. Never bypass missing billing, real image inputs or action review with
+`-target`, old saved plans or fabricated credentials. See the
+[independent preservation review](../infra/migration/preservation-review.md).
+
+### Product evidence and telemetry — 27 October 2026
+
+Only committed authoritative mutations emit the fixed private event allowlist.
+Exclude fixtures and test deployments from operational denominators; an operational
+cohort is activity, not proof of human users. Never store names, search text,
+correctness, affinities, hidden answers or model reasoning in analytics. Apply
+expiry filters, owner isolation, seven-day cleanup and documented backup limits.
+Do not enable production accounting before its physical cleanup is verified.
+See [definitions and exclusions](product-event-accounting.md).
+
+Preserve existing game/challenge snapshots when changing policy. The measured
+four-seed inspection supports retaining `duel-pool-v1`; human difficulty/surprise
+calibration requires [consenting observations](playtest-protocol.md). No synthetic
+or agent result counts as a participant; no UI popularity statistics are invented.
+
 ### Prompt 13 enforced audit rules - 27 October 2026
 
 Use fresh server script nonces, never a caller nonce or unrestricted production
@@ -70,7 +99,7 @@ as a server test seam, never an HTTP flag or silent production fallback. Preserv
 the original local database during clean checks; never reset its data or use the
 deployed AccessLife database. See [gameplay rules](../apps/api/GAMEPLAY.md).
 
-Prompt 8's [curator evidence record](prompt8-curator.md) specifies actual native
+Prompt 8's [curator evidence record](https://github.com/saimaharana4/accesslife-ai/blob/ef5c27c6b1aff925dd504b371dff99e128a2f77b/ai/prompt8-curator.md) specifies actual native
 tools, model configuration and live boundaries. Default providers remain disabled;
 model/transport configuration is explicit. An `http_ranked` choice may close the
 documented harness compact-score/type/sort gap behind the same guard, never switch
@@ -98,7 +127,7 @@ Require actual received body limits and safe validation envelopes: no submitted 
 
 Use available Codex agents with explicit independent file ownership, coordinated contracts and an independent reviewer. Those build roles are not deployed agents. The application starts with one bounded RoundCuratorAgent; extra frameworks/agents/services are not evidence of quality.
 
-Preserve original `/ai` reference bytes and a recoverable AccessLife source checkpoint/history. Publish only specifically allowlisted AI documents: the six maintained specs, ai/prompts.md, the dated [Qloo capability matrix](qloo-capability-matrix.md) and [Prompt 8 curator record](prompt8-curator.md); originals remain local/ignored. Never broad-stage credential history, private captures, state or original references. Keep dated short factual [memory.md](memory.md) entries and mark historical AccessLife evidence clearly. Do not edit external user memory without a direct request.
+Preserve original `/ai` reference bytes and a recoverable AccessLife source checkpoint/history. Publish only specifically allowlisted AI documents: the six maintained specs, ai/prompts.md, the dated [Qloo capability matrix](qloo-capability-matrix.md) and [Prompt 8 curator record](https://github.com/saimaharana4/accesslife-ai/blob/ef5c27c6b1aff925dd504b371dff99e128a2f77b/ai/prompt8-curator.md); originals remain local/ignored. Never broad-stage credential history, private captures, state or original references. Keep dated short factual [memory.md](memory.md) entries and mark historical AccessLife evidence clearly. Do not edit external user memory without a direct request.
 
 ## 2. Approved stack and dependencies
 
@@ -264,3 +293,8 @@ Every iteration updates maintained specs and appends one or two factual dated me
 Target freeze: 30 October; submission: 31 October 2026, 09:15 IST, subject to official recheck. Keep judging access through the reviewed window/follow-up. Prepare submission materials, but sending messages, submitting Devpost or purchasing requires separate user instruction. Do not claim unmeasured popularity or hackathon success. Teardown is deliberate after judging/follow-up and retention checks.
 
 References collected for later recheck: [official kit](https://github.com/qloo/qloo-hackathon-kit), [MCP starter](https://github.com/qloo/qloo-hackathon-kit/blob/main/starter/mcp-client/README.md), [API access](https://github.com/qloo/qloo-hackathon-kit/blob/main/docs/API_ACCESS.md), [safe use](https://github.com/qloo/qloo-hackathon-kit/blob/main/docs/SAFE_USE.md), [terms](https://www.qloo.com/legal/terms). Current capability/rights/pricing checks belong to their numbered iterations.
+
+
+## Verified operational status ? 27 October 2026
+
+Never apply the old root checkout to recreate obsolete services after retirement. Preserve shared SQL/data/users, state, registry, secrets and rollback assets. Current source includes exact forget-only removed blocks; a reviewed full plan and reconciled cumulative cost remain required before new provisioning. See [retirement record](../infra/migration/retirement-options.md).

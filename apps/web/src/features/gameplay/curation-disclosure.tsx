@@ -57,7 +57,7 @@ export function CurationDisclosure({
             {reasons
               .map(([key, count]) => `${count} ${REASONS[key]}`)
               .join("; ")}
-            . Counts describe validation findings and may overlap.
+            . Counts show primary validation exclusions.
           </p>
         )}
         <p>

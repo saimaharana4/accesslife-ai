@@ -138,7 +138,7 @@ def bootstrap() -> tuple[str, str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["start", "migrate", "test", "api", "status", "stop"])
+    parser.add_argument("command", choices=["start", "migrate", "test", "api", "status", "stop", "events-report", "events-purge"])
     parser.add_argument("--api-port", type=int, choices=[8002, 8004, 8005], default=8002)
     args, extra = parser.parse_known_args()
     os.chdir(ROOT)
@@ -149,6 +149,31 @@ def main() -> int:
         return 0
     start()
     owner, runtime = bootstrap()
+    if args.command in {"events-report", "events-purge"}:
+        # Restricted to the verified dedicated local container. Never discovers
+        # a cloud URL, writes credentials, or prints private event subjects.
+        admin, _, _ = credentials()
+        with psycopg.connect(
+            host="127.0.0.1", port=PORT, dbname=DATABASE,
+            user="tasteduel_admin", password=admin, autocommit=True,
+        ) as db:
+            if args.command == "events-purge":
+                removed = db.execute("DELETE FROM tasteduel.product_events WHERE expires_at<=clock_timestamp()")
+                print(json.dumps({"expired_events_removed": removed.rowcount}))
+            else:
+                values = db.execute("""
+                    SELECT event,source_mode,cohort,count(*) FROM tasteduel.product_events e
+                    JOIN tasteduel.sessions s ON s.id=e.session_id
+                    JOIN tasteduel.games g ON g.id=e.game_id AND g.session_id=e.session_id
+                    WHERE e.expires_at>clock_timestamp() AND s.revoked_at IS NULL
+                      AND s.expires_at>clock_timestamp() AND g.expires_at>clock_timestamp()
+                    GROUP BY event,source_mode,cohort ORDER BY event,source_mode,cohort
+                """).fetchall()
+                print(json.dumps({"retained_event_counts": [
+                    {"event": event, "source_mode": mode, "cohort": cohort, "count": count}
+                    for event, mode, cohort, count in values
+                ], "human_participants_inferred": False}))
+        return 0
     env = {
         **os.environ,
         "TASTEDUEL_MIGRATION_DATABASE_URL": owner,

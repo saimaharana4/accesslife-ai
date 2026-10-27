@@ -1,5 +1,34 @@
 # Taste Duel architecture
 
+**Current foundation status ? 27 October 2026:** the user approved a US$90 cumulative ceiling with seven backups preserved. The US$82.84 conservative planning review passed and the saved foundation plan applied. Repository: `saimaharana4/taste-duel`; keyless authentication and scoped secret metadata checks passed. Independent runtime/migration logins and live database privilege checks passed. No Taste Duel services/public traffic are deployed. Earlier US$80 blocked status is historical; see [current cost review](../infra/migration/cost-approval-2026-10-27.md).
+
+### Cloud ownership and release boundary — 27 October 2026
+
+Read-only inventory and allowlisted state review found 61 saved ownership records
+at serial 16. Preserve root-owned `accesslife` database/user and `accesslife-db`;
+new Taste Duel ownership is a planned separate module/address contract, not an
+implemented resource. [Foundation](../infra/migration/foundation-plan.md) and
+[image-dependent release](../infra/migration/release-plan.md) are separate reviews.
+Selected state/live fields match; source scheduler defaults differ from its live
+enabled setting. No refreshed authenticated action plan is approved. Cost is
+BLOCKED and cloud migrations/runtime still enforce local-only database guards.
+
+### Product validation and accounting — 27 October 2026
+
+`td0010` adds forced-owner-RLS `product_events`. Fixed-field facts commit with
+ready-game, accepted-answer, completion, explicit-save and challenge mutations;
+semantic unique keys deduplicate retries. No browser event endpoint, arbitrary
+payload, public analytics reader or second contract schema was added. Clear
+deletes live owner events; seven-day event expiry is independent of Qloo evidence
+TTL. Local report/purge commands are scope-checked; production expiry scheduling
+remains a deployment prerequisite. See [accounting policy](product-event-accounting.md).
+
+The [quality matrix](round-quality-validation.md) retains the versioned pool
+policy and frozen snapshots. Its eight sequential typed-HTTP calls do not resolve
+canonical harness gaps or demonstrate richer explanations/category diversity.
+[Human validation](playtest-protocol.md) remains pending. Earlier records below
+describe historical implementation checkpoints.
+
 ### Prompt 13 audit boundary - 27 October 2026
 
 A per-response proxy generates script nonces and forces request-time shell
@@ -94,7 +123,7 @@ through a typed model port. Actual application tools are `inspect_seed`,
 deterministic feedback; the model may select a known validated pool, make one
 reason-supported strategy correction or stop. It receives no candidate titles,
 scores, winners or private pairs. The full objective, limits, current live ledger
-and source links are in [Prompt 8 curator evidence](prompt8-curator.md).
+and source links are in [Prompt 8 curator evidence](https://github.com/saimaharana4/accesslife-ai/blob/ef5c27c6b1aff925dd504b371dff99e128a2f77b/ai/prompt8-curator.md).
 
 Pin `gemini-3.1-flash-lite`/`global`, Google Gen AI `2.33.0`, explicit IAM/ADC,
 minimal thinking, 512 output tokens and one SDK attempt. The generation boundary
@@ -518,3 +547,8 @@ These references were collected in prompts.md for later recheck; Prompt 1 makes 
 - [Next.js components](https://nextjs.org/docs/app/getting-started/server-and-client-components), [Cloud Run authentication](https://docs.cloud.google.com/run/docs/authenticating/service-to-service), [traffic/rollback](https://docs.cloud.google.com/run/docs/rollouts-rollbacks-traffic-migration), [WIF pipelines](https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines).
 
 Related: [PRD](prd.md), [rules](rules.md), [phases](phases.md), [design](design.md), [memory](memory.md), [iteration prompts](prompts.md).
+
+
+## Verified operational status ? 27 October 2026
+
+Legacy AccessLife runtime (three services, three jobs, scheduler and queue) was retired with explicit user authorization. Shared SQL/data, registry, state, secrets and rollback digests remain; source uses forget-only removed blocks. Taste Duel foundation module is disabled source preparation, not deployed architecture. See [retirement record](../infra/migration/retirement-options.md).

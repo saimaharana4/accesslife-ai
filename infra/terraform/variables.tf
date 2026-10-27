@@ -35,7 +35,7 @@ variable "database_password" {
 variable "budget_usd" {
 
   type    = number
-  default = 80
+  default = 90
 
 }
 
@@ -45,6 +45,24 @@ variable "cost_review_passed" {
   default     = false
   description = "Set only after a regional forecast and billing review pass; no resources should be applied before this."
 
+}
+
+variable "billing_reconciled" {
+  type        = bool
+  default     = false
+  description = "True only after dedicated-resource incurred charges, unlabeled spend and credits/tax treatment are reconciled."
+}
+
+variable "reviewed_total_usd" {
+  type        = number
+  default     = null
+  description = "Reviewed cumulative incurred plus remaining cost, including overlap, recovery, FX and tax; not a new allocation."
+}
+
+variable "reviewed_through_utc" {
+  type        = string
+  default     = ""
+  description = "RFC3339 end of priced judging/follow-up/rollback window; reprice after a later cutover."
 }
 
 
@@ -65,4 +83,10 @@ variable "budget_currency" {
 }
 variable "budget_alert_units" {
   type = number
+}
+
+variable "migration_alert_units" {
+  type        = number
+  default     = 6972
+  description = "Explicitly approved US$90 cumulative ceiling notification subtotal, at INR95.98875/USD reserving 18% tax and 5% FX. Recheck before apply; alert only, not a spending cap. Legacy alert amount remains unchanged."
 }

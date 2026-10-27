@@ -1,5 +1,10 @@
 # AccessLife incremental cost gate — 24 October 2026
 
+**Historical forecast, superseded for new work.** The
+[27 October cumulative cost/IAM review](migration/cost-and-iam.md) has **not passed**
+the US$80 gate: actual accrued charges are missing and legacy scheduling continues.
+The figures below remain an audit record, not approval or remaining headroom.
+
 Window: 24 October through 5 November (13 days / 312 hours). Target **US$80**, excluding unrelated existing workloads. This review authorizes only the AccessLife resources in this repository. Recalculate before extending the window or increasing limits.
 
 | Item | Conservative allowance | Basis |

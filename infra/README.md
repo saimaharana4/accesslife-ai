@@ -1,4 +1,67 @@
-# AccessLife operations
+# Taste Duel infrastructure review
+
+**Foundation execution passed:** reviewed saved plan applied; repository rename, keyless auth, database privileges and scoped secrets verified. Taste Duel services/public traffic remain undeployed. [Verified execution record](migration/foundation-execution-2026-10-27.md).
+
+**Current decision:** the user approved a US$90 ceiling preserving seven backups. The refreshed conservative cumulative forecast is US$82.84; the planning cost gate passes. Earlier US$80/BLOCKED findings below are historical. See [current cost approval](migration/cost-approval-2026-10-27.md). Foundation application and live verification are separate gates.
+
+The obsolete AccessLife runtime was retired with explicit authorization. Shared
+SQL/data, registry, state, secrets and rollback assets remain. Current foundation
+verification does not authorize public traffic or a release without image review.
+
+- [Resource inventory, actual rollback digests and migration map](migration/resource-map.md)
+- [Current cost, assumptions and IAM/WIF review](migration/cost-and-iam.md)
+- [State ownership and selected-field drift reconciliation](migration/state-and-drift.md)
+- [Foundation resource/action plan](migration/foundation-plan.md)
+- [Separate image-dependent release plan](migration/release-plan.md)
+- [Independent preservation review](migration/preservation-review.md)
+- [Executed runtime retirement](migration/retirement-options.md)
+- [Verified keyless authentication](migration/keyless-auth-check.md)
+
+The target is public `tasteduel-web`, private `tasteduel-api`, one migration job
+and a new logical `tasteduel` database on existing `accesslife-db`. Keep the old
+logical database/user, registry and state IDs. No new always-on SQL instance,
+queue, worker, embeddings or ingestion service is needed.
+
+## Read-only review commands
+
+```powershell
+uv run --project runtime/python --frozen python scripts/tasteduel_cloud_inventory.py
+uv run --project runtime/python --frozen python scripts/tasteduel_cloud_policy_review.py
+uv run --project runtime/python --frozen python scripts/tasteduel_state_review.py
+uv run --project runtime/python --frozen python scripts/tasteduel_infra_validate.py
+```
+
+Metadata tools use ADC in memory and never resolve secret payloads. The state
+reader holds the known state in memory and saves only allowlisted ownership
+metadata. Outputs stay ignored under `.data/tasteduel-cloud-review`. The last
+command validates Terraform 1.13.3/Google 6.50.0 without backend/ADC, tests the
+actual cost guard with five synthetic built-in-only plans, and checks Compose.
+It is not a refreshed cloud plan. Do not use the historical wrapper below for
+this metadata review: its plan path resolves legacy secret values/local controls.
+
+Actual incurred charges are missing. Conditional remaining cost is US$62.52
+through 7 November 10:15 IST, leaving US$17.48 for incurred cost, assuming legacy
+scheduling stops within 24 hours and no further legacy model traffic. The current
+enabled scheduler's timeout/retry exposure can exceed the whole envelope before
+accrued costs. See the cost report for the priced adjustment and missing evidence.
+
+Source-only guards now require reconciled cumulative billing and the full priced
+horizon; defaults block approval. Old SQL/DB/user have `prevent_destroy`. Proposed
+shared `cost_scope=qloo-hackathon` labels and an additional INR6,197 notification
+budget preserve legacy alert coverage; none is applied. Alerts are not caps or
+separate allocations. Historical/unlabelled charges still need manual attribution.
+
+Full saved foundation/release plans remain pending. Current cloud database guards,
+least-privilege bootstrap, new-identity model access, external gameplay, restore,
+expiry cleanup and human evaluation are distinct remaining gates. Recorded ready
+revisions are rollback targets, not a new rollback rehearsal. Keep data/images/
+required readers through the explicit rollback period; retaining recovery does
+not require obsolete scheduled execution to continue.
+
+## Historical AccessLife operations — recorded 24 October 2026
+
+The following is retained recovery context. Its rollout/ingestion commands are
+not the Taste Duel release procedure and must not be run as part of this review.
 
 The current deployment is scoped to project `project-bb13ecd8-9d67-408d-9a7`, region `asia-south1`. Existing unrelated resources are outside this state. See the dated [cost review](COST_REVIEW.md) and [project memory](../ai/memory.md) for measured outcomes. Static validation alone is not deployment proof.
 

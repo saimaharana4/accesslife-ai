@@ -63,6 +63,21 @@ class Created:
     )
 
 
+class ProductEvent(Owned, Created, Base):
+    __tablename__ = "product_events"
+    __table_args__ = (
+        UniqueConstraint("session_id", "event", "subject_id", name="uq_product_events_session_event_subject"),
+        ForeignKeyConstraint(["session_id"], [f"{SCHEMA}.sessions.id"], ondelete="CASCADE"),
+        ForeignKeyConstraint(["game_id", "session_id"], [f"{SCHEMA}.games.id", f"{SCHEMA}.games.session_id"], ondelete="CASCADE"),
+    )
+    game_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
+    subject_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
+    event: Mapped[str] = mapped_column(String(32), nullable=False)
+    source_mode: Mapped[str] = mapped_column(String(12), nullable=False)
+    cohort: Mapped[str] = mapped_column(String(12), nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class Session(Created, Base):
     __tablename__ = "sessions"
     __table_args__ = (

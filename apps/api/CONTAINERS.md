@@ -97,6 +97,12 @@ that volume.
 
 The test action connects the isolated integration suite to the Compose DB at
 loopback port 55436; it does not call the older helper that owns port 55435.
+The current migration head is `td0010`, which adds private first-party activity
+accounting. Rebuild the migration/API image and run the explicit migration action
+when upgrading an existing local volume; never remove the volume to update it.
+Accounting defaults to excluded test activity. See the
+[event definitions, retention and local report/purge commands](../../ai/product-event-accounting.md)
+before any operational opt-in.
 The persistence action uses the test-only `SyntheticCurator`, records one
 short-lived guest token/slug and expected public first-round choices under the
 ignored `.data/tasteduel-prompt14/` directory, restarts only this project's API,

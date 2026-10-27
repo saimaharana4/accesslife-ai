@@ -3,7 +3,15 @@
 
 Keep each dated entry to one or two lines. Record completed work and verified outcomes; distinguish requirements, measurements and blockers. Never include secrets, personal profiles or unverified success claims.
 
-**Production readiness - 27 October 2026:** Taste Duel local production images and CI passed; AccessLife services/data remain preserved. Taste Duel has not been deployed to GCP.
+**Production readiness - 27 October 2026:** Taste Duel local production images and baseline CI passed. AccessLife runtime is retired; shared data/rollback assets remain. Taste Duel foundation is applied and verified; its application services/public traffic remain undeployed.
+
+- **2026-10-27 - Foundation prerequisite audit:** Three independent reviews reconfirmed missing accrued billing and executable reviewed saved foundation plan; no external changes authorized under the conditional request. GitHub connector lacks rename capability; repository/remote, WIF, IAM, secrets, SQL and traffic remain unchanged by this check; no repeated cloud inventory or tests.
+
+- **2026-10-27 - Cloud migration review:** Reused dedicated metadata/IAM inventory and serial-16/61-record allowlisted state evidence; recorded real rollback digests, separate foundation/release designs and preserved old ownership. Cost BLOCKED: actual accrued charges missing; conditional remaining US$62.52 leaves US$17.48 through 7 November 10:15 IST under stated shutdown assumptions; no cloud changes or secret payload reads.
+- **2026-10-27 - Infrastructure validation:** Seven targeted metadata/preservation tests, five synthetic cost-gate plans, backend-free Terraform/Compose validation, Ruff, links and scoped secret scan passed. Source has no legacy address/name removals; full authenticated action plan remains unverified, no apply-ready plan or authorization for foundation work; prior application/user edits preserved.
+
+- **2026-10-27 - Product validation:** Four real artist/movie seed probes each produced a five-round/ten-contestant cross-domain path using exactly 8 Qloo requests, zero retries/Vertex; retained `duel-pool-v1`, implemented private retry-safe activity accounting/`td0010`, and prepared eight-outcome willing-user protocol. Human participants: 0; human value/calibration remains pending.
+- **2026-10-27 - Validation checks:** 681 backend checks passed/one Compose-only skip, six keyboard solo/replay journeys and 33 full axe scans/captures passed; build/typecheck/OpenAPI/fixture exclusion/secret checks passed. Fixed migration-head readiness and rejection wording; artifacts `.data/tasteduel-quality/`, new remote CI/cloud deployment and production expiry scheduling remain pending.
 
 - **2026-10-27 - Production validation:** Isolated Compose migrated through `td0009`; 666 backend tests, 61 Node checks, 36 audits and 21 fixture-browser cases passed, plus restart-safe replay with zero provider calls. Search uses an 18px SVG chevron; [CI run 40489370908](https://github.com/saimaharana4/accesslife-ai/actions/runs/40489370908) passed for `afb41e1`, including browser/axe, secret scanning and Terraform validation.
 
@@ -89,3 +97,14 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 
 - **2026-10-27 - Build phase 13:** Added td0009 private usage budgets, script nonce CSP and bounded/error-safe requests; fixed fixture labels, async announcements, mobile header CLS, guest-panel focus occlusion and rate-limited session clearing. No provider/cloud calls, credentials added or push.
 - **2026-10-27 - Build phase 13 verification:** 665 backend/61 Node checks, 36 unique browser cases and 117 unexcluded axe executions passed; identified lab targets passed, final smoke LCP 1.416/1.064s and CLS 0.04969/0.03103. Artifacts `.data/tasteduel-prompt13/`; manual AT/native zoom and operational release gates remain open, next Build phase 14.
+
+- **2026-10-27 ? Authorized runtime retirement:** Paused dispatch, then deleted exactly three AccessLife services, three jobs, scheduler and empty queue; all eight verified absent. Ten retained-asset metadata checks passed; state generation unchanged, no secret payload reads or shared-data mutation.
+- **2026-10-27 ? Foundation preparation:** Added disabled foundation module, numeric/environment-scoped WIF source, pinned auth-only workflow and forget-only retirement declarations. No apply, repo rename, new DB/secret creation, keyless success or Taste Duel deployment.
+- **2026-10-27 ? Billing evidence:** Labelled 24?27 October report showed 663.40 INR credits and 0.00 INR net; unlabelled attribution/reporting lag remain unresolved. Cumulative US$80 gate remains BLOCKED; 62.52 USD historical remaining forecast is not approval.
+
+- **2026-10-27 ? Retirement/foundation source verification:** 16 targeted contracts, Ruff, backend-free Terraform schema, five synthetic cost-gate plans, Compose configuration and scoped Gitleaks passed. No authenticated full saved plan, state apply, remote CI or foundation auth run is claimed.
+
+- **2026-10-27 ? Approved cost and exact foundation apply:** User raised cumulative ceiling to US$90 preserving backups; conservative gross-bound review is US$82.84. Independently reviewed saved plan applied: 24 creates, seven updates, 18 forgets, no deletion/replacement; state serial18, old DB/user/URL version unchanged.
+- **2026-10-27 ? Verified foundation access:** Repository renamed to saimaharana4/taste-duel; restricted keyless run40559171936 passed. Secret version1 grants/state secrecy and retained SQL/backups verified; independent DB logins, five runtime denial probes, migration rollback DDL and old application-table privilege denial passed. Application migrations/RLS and public deployment remain release work.
+
+- **2026-10-28 ? Foundation closure:** Independently reviewed one-field alert-label correction applied; INR6,972 preserved, state serial19. Seventy-three distinct targeted contracts, Ruff, six synthetic cost-gate plans, Terraform/Compose and staged secret checks passed; public application deployment remains unstarted.

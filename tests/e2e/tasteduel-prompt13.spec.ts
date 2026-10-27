@@ -540,6 +540,10 @@ for (const fixed of [false, true]) {
     await tabTo(page, curation.locator("summary"));
     await page.keyboard.press("Enter");
     await expect(curation).toContainText(/synthetic fixture.*no live qloo/i);
+    await expect(curation).toContainText(
+      "Counts show primary validation exclusions.",
+    );
+    await expect(curation).not.toContainText("may overlap");
     expect(await curation.ariaSnapshot()).not.toMatch(
       /SYNTHETIC discovery|affinity|winning_choice_id|chain.of.thought|prompt/i,
     );

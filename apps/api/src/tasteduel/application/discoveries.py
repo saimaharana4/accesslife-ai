@@ -12,6 +12,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import delete, func, select, text
 
 from tasteduel.application.errors import AppError, not_found
+from tasteduel.application.event_accounting import record
 from tasteduel.persistence import models as m
 from tasteduel.persistence.db import scoped_session
 
@@ -137,6 +138,15 @@ class DiscoveryService:
                 )
             )
             db.flush()
+            if created:
+                supporting_game = db.scalar(
+                    select(m.RoundContestant.game_id)
+                    .join(m.Answer, m.Answer.round_id == m.RoundContestant.round_id)
+                    .where(m.RoundContestant.session_id == owner, m.RoundContestant.entity_id == entity_id)
+                    .order_by(m.Answer.created_at.desc())
+                    .limit(1)
+                )
+                record(db, owner=owner, game_id=supporting_game, event="discovery_saved", subject_id=row.id)
             return SavedDiscovery(entity_id, created)
 
     def remove(self, owner, entity_id):

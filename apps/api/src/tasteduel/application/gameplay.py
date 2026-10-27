@@ -14,6 +14,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import select, text
 
 from tasteduel.application.errors import AppError, not_found
+from tasteduel.application.event_accounting import record
 from tasteduel.domain.curation import CurationReceipt as ReceiptValue
 from tasteduel.domain.adaptive import (
     SELECTION_VERSION,
@@ -467,6 +468,7 @@ class GameplayService:
             reservation.model_request_count = receipt.model_request_count
             reservation.lease_owner = reservation.lease_expires_at = None
             db.flush()
+            record(db, owner=claim.session_id, game_id=game.id, event="game_started", subject_id=game.id)
             return game.id
 
     def _deliver(self, db, session_id, game_id, ordinal):
@@ -704,6 +706,7 @@ class GameplayService:
                 )
             )
             db.flush()
+            record(db, owner=session_id, game_id=game_id, event="round_answered", subject_id=round_id)
             if delivered.ordinal == 5:
                 score = sum(
                     db.scalars(
@@ -722,6 +725,9 @@ class GameplayService:
                     )
                 )
                 db.flush()
+                record(db, owner=session_id, game_id=game_id, event="game_completed", subject_id=game_id)
+                if game.mode == "fixed":
+                    record(db, owner=session_id, game_id=game_id, event="challenge_complete", subject_id=game_id)
             return self._save(db, game, "answer", idempotency_key, digest, round_id)
 
     def advance(self, session_id, game_id, *, answered_round_id, expected_revision, idempotency_key):

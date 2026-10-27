@@ -1,5 +1,36 @@
 # Taste Duel implementation phases
 
+**Current foundation status ? 27 October 2026:** the user approved a US$90 cumulative ceiling with seven backups preserved. The US$82.84 conservative planning review passed and the saved foundation plan applied. Repository: `saimaharana4/taste-duel`; keyless authentication and scoped secret metadata checks passed. Independent runtime/migration logins and live database privilege checks passed. No Taste Duel services/public traffic are deployed. Earlier US$80 blocked status is historical; see [current cost review](../infra/migration/cost-approval-2026-10-27.md).
+
+### Infrastructure planning status — 27 October 2026
+
+Read-only resource/IAM/WIF/state inventory, current tariff review, preservation
+mapping and separate foundation/release designs are prepared in
+[infra](../infra/README.md). **The foundation stage is BLOCKED**, not authorized:
+actual accrued billing and a full authenticated non-destructive saved plan are
+missing. Conditional remaining US$62.52 is not a passed cumulative estimate.
+No provisioning, traffic change, secret payload access or repository rename
+occurred. The local application and prior human-validation status are unchanged.
+
+### Product validation status — 27 October 2026
+
+Four genuine cross-domain seed checks produced valid five-round paths within the
+eight-request ceiling; no model calls, retries, raw-response capture or cloud
+changes occurred. The pair policy remains unchanged after measured review. Minimal
+transactional event accounting and a willing-user protocol are implemented locally.
+See [technical results](round-quality-validation.md), [event definitions](product-event-accounting.md)
+and [human gate](playtest-protocol.md). Human participants: zero; enjoyment,
+discovery value and human-calibrated difficulty remain unmeasured.
+
+Next is the read-only GCP migration/cost review. It must carry forward the pending
+human gate and production expiry-cleanup prerequisite rather than claiming those
+passed. Earlier numbered records below are historical execution records.
+
+Verification: 681 backend checks passed, one separate Compose restart check
+skipped; six affected keyboard journeys/33 full axe scans and the production
+build/typecheck passed. New migration `td0010` is local only; readiness/preflight
+now expect it. Remote CI for these new changes has not been run.
+
 ### Prompt 13 outcome - 27 October 2026
 
 Audit fixes and production-build measurements passed: 665 backend/61 Node checks,
@@ -237,3 +268,8 @@ Owners: independent product/visual acceptance, source/security reproducibility a
 Prepare factual Devpost description/screenshots/walkthrough; recheck rules rather than assuming a video requirement. Do not submit or send without the user's instruction. Feature-freeze target: 30 October 2026. Submission target: 31 October 2026, 09:15 IST, subject to verification. Preserve judging through 6 November 2026, 10:15 IST plus required follow-up under refreshed budget. Teardown is a separate deliberate operation.
 
 Final gate: achieved outcomes, exact blockers, actual public/source/CI links, cost window and maintenance/teardown plan. A working MVP does not prove popularity, managed restore or hackathon success. At this Prompt 1 checkpoint, all Taste Duel application/cloud gates remain future work.
+
+
+## Verified operational status ? 27 October 2026
+
+Completed authorized legacy runtime retirement, with eight verified resource deletions and shared assets retained. Foundation source/auth-only workflow are prepared but unapplied; complete billing attribution and a reviewed saved foundation plan remain blockers. Image-dependent release stays separate. See [retirement record](../infra/migration/retirement-options.md).

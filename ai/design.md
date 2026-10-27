@@ -1,5 +1,26 @@
 # Taste Duel design specification
 
+**Current foundation status ? 27 October 2026:** the user approved a US$90 cumulative ceiling with seven backups preserved. The US$82.84 conservative planning review passed and the saved foundation plan applied. Repository: `saimaharana4/taste-duel`; keyless authentication and scoped secret metadata checks passed. Independent runtime/migration logins and live database privilege checks passed. No Taste Duel services/public traffic are deployed. Earlier US$80 blocked status is historical; see [current cost review](../infra/migration/cost-approval-2026-10-27.md).
+
+### Cloud configuration boundary — 27 October 2026
+
+No UI change is part of the read-only migration review. Preserve the game visual
+system; billing, WIF, Terraform actions and private inventory stay in operations
+documentation. Taste Duel has no verified production origin yet. Future share/
+metadata origins must come from actual service outputs, not the old AccessLife
+URL or an assumed domain. Candidate access, private API audience and exact mutation
+origins require the [separate release checks](../infra/migration/release-plan.md).
+
+### Product clarity review — 27 October 2026
+
+Keep the cultural fight-night game composition. The curation disclosure now calls
+its candidate counts primary validation exclusions rather than overlapping
+findings. Factual accepted-round ranking context remains secondary to the two
+choices and explicit Next. Original title cards remain the cleared artwork even
+when Qloo returns image URLs. No telemetry dashboard, invented live counts,
+testimonials or percentile labels are added. Technical renders are separate from
+[human clarity/discovery evaluation](playtest-protocol.md), which remains pending.
+
 ### Prompt 13 rendered audit - 27 October 2026
 
 Preserved the fight-night composition. Guest-session controls reserve a stable
@@ -82,7 +103,7 @@ Later integration may show an allowlisted accepted-round summary of actual mode,
 target domain, aggregate counts/corrections and path verification; never raw trace,
 private feedback, future contestants, gaps, scores, winner direction or opaque
 model continuation signatures. A model smoke is not a genuine-agent game badge.
-See [actual curator boundaries](prompt8-curator.md); no new screenshots or visual
+See [actual curator boundaries](https://github.com/saimaharana4/accesslife-ai/blob/ef5c27c6b1aff925dd504b371dff99e128a2f77b/ai/prompt8-curator.md); no new screenshots or visual
 acceptance claim arises from this backend prompt.
 
 The fresh Taste Duel shell implements this direction as a five-round local development fixture. Prompt 5 adds a separate local API/schema foundation without changing that composition or connecting it to live data. Deployed services/cloud remain AccessLife. Planner screenshots and historical accessibility results cannot satisfy this game's gates. Preserve original reference files unchanged.
@@ -255,3 +276,8 @@ Capture and inspect 390×844, 1440×1000 and 320px renders including long names,
 Run full axe without weakened coverage, complete keyboard journey, 200% zoom/reflow, reduced motion and computed contrast checks. Report actual screen-reader checks independently; automation is not user testing. Serious/critical accessibility defects block release. Attractive fixtures do not prove live Qloo, and a polished API does not prove a usable UI.
 
 References to recheck during implementation: [Next.js Server/Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components), [React Aria](https://react-spectrum.adobe.com/react-aria/components.html), [Motion accessibility](https://motion.dev/docs/react-accessibility), [Playwright accessibility](https://playwright.dev/docs/accessibility-testing), [WCAG 2.2](https://www.w3.org/TR/WCAG22/) and the dated [Qloo/source capability matrix](qloo-capability-matrix.md). Original title-card artwork is the complete baseline while external-image rights remain unestablished; image-field presence is not licence evidence. Links and source checks do not establish a passed UI/rendered-design gate.
+
+
+## Verified operational status ? 27 October 2026
+
+Old AccessLife endpoints are retired. Taste Duel is not yet deployed publicly; no UI may claim cloud launch, active users or completed infrastructure release from this retirement. See [retirement record](../infra/migration/retirement-options.md).

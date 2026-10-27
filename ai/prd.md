@@ -1,5 +1,28 @@
 # Taste Duel product requirements
 
+**Current foundation status ? 27 October 2026:** the user approved a US$90 cumulative ceiling with seven backups preserved. The US$82.84 conservative planning review passed and the saved foundation plan applied. Repository: `saimaharana4/taste-duel`; keyless authentication and scoped secret metadata checks passed. Independent runtime/migration logins and live database privilege checks passed. No Taste Duel services/public traffic are deployed. Earlier US$80 blocked status is historical; see [current cost review](../infra/migration/cost-approval-2026-10-27.md).
+
+### Cloud migration review — 27 October 2026
+
+The [dedicated-resource migration review](../infra/README.md) preserves AccessLife
+data and proposes two Taste Duel services, one migration job and a new logical
+database on the existing SQL instance. **Provisioning is BLOCKED**: actual accrued
+AccessLife charges are unavailable. Conditional remaining cost is US$62.52 through
+7 November 10:15 IST, leaving only US$17.48 for actual incurred charges, under the
+documented legacy shutdown assumptions. No cloud changes or release are approved.
+Human impact remains unmeasured; the prior technical product evidence is unchanged.
+
+### Product validation — 27 October 2026
+
+The four-seed [live quality matrix](round-quality-validation.md) now verifies both
+artist-to-film and film-to-artist pools, each with a five-round no-repeat path.
+This is sampled technical coverage, not universal coverage or human discovery
+value. The [playtest protocol](playtest-protocol.md) measures eight consent-based
+outcomes; no participants have been observed and the human gate remains pending.
+Private [event accounting](product-event-accounting.md) measures authoritative
+activity, never personal taste or verified human popularity. Earlier implementation
+records below are dated history; cloud release remains outstanding.
+
 ### Prompt 13 acceptance evidence - 27 October 2026
 
 Solo/fixed keyboard journeys, interrupted/expired states, evidence/curation,
@@ -63,7 +86,7 @@ useful bounded correction, finish only a validated known pool or stop. One
 test chose a 20-candidate movie strategy, consumed genuine Qloo feedback and
 finished a validated five-round path in 5.36 seconds. No natural corrective case
 was obtained; adaptive correction remains synthetic-tested rather than live-proven.
-The [dated curator record](prompt8-curator.md) states live
+The [dated curator record](https://github.com/saimaharana4/accesslife-ai/blob/ef5c27c6b1aff925dd504b371dff99e128a2f77b/ai/prompt8-curator.md) states live
 results and limits. Browser gameplay remains synthetic; SQL receipt extension,
 atomic authoritative generation/answers, sharing and GCP rollout remain later work.
 
@@ -223,3 +246,8 @@ Measure real completion, replay, challenge completion and discovery saves with e
 Target feature freeze: **30 October 2026**. Target submission: **31 October 2026, 09:15 IST**, subject to official-rule recheck. Preserve judging access through **6 November 2026, 10:15 IST** and required follow-up within refreshed cost review. Preparing materials does not authorize sending/submitting them.
 
 The MVP is complete only when a guest uses the real GCP app to select a supported real seed, finish five valid Qloo-backed rounds, see the actual score, save a discovery and create an identical friend replay, with visual/accessibility/security/recovery evidence and truthful operations documentation. After Prompt 5 this remains a live-product target; synthetic local play and database foundation checks do not complete it.
+
+
+## Verified operational status ? 27 October 2026
+
+Old AccessLife runtime is retired; Taste Duel public release remains unimplemented. Retirement does not establish product adoption, live production readiness or a passing cumulative cost gate. See [retirement record](../infra/migration/retirement-options.md).

@@ -11,6 +11,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import null, select, text
 
 from tasteduel.application.errors import AppError, not_found
+from tasteduel.application.event_accounting import record
 from tasteduel.application.gameplay import GameplayService, conflict, signature
 from tasteduel.persistence import models as m
 from tasteduel.persistence.db import scoped_session
@@ -159,6 +160,8 @@ class ChallengeService:
                     )
                 )
                 db.flush()
+            if created:
+                record(db, owner=owner, game_id=game_id, event="challenge_create", subject_id=challenge.id)
             return challenge.share_slug, created
 
     def revoke(self, owner, slug):
@@ -380,4 +383,6 @@ class ChallengeService:
                 )
             )
             db.flush()
+            for event in ("game_started", "replay", "challenge_open"):
+                record(db, owner=owner, game_id=game.id, event=event, subject_id=game.id)
             return game.id, True

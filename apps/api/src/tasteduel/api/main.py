@@ -408,6 +408,7 @@ def create_app(
                     .values(status="cancelled", lease_owner=None, lease_expires_at=None)
                 )
                 row.revoked_at = now
+                db.execute(m.ProductEvent.__table__.delete().where(m.ProductEvent.session_id == row.id))
         except AppError as failure:
             if failure.status != 401:
                 raise
@@ -797,7 +798,7 @@ def create_app(
             revision = connection.execute(
                 text("SELECT version_num FROM tasteduel.tasteduel_alembic_version LIMIT 1")
             ).scalar_one()
-            if revision != "td0009":
+            if revision != "td0010":
                 raise AppError(503, "SCHEMA_NOT_READY", "The local schema is not ready.", retryable=True)
         return s.HealthPublic(status="ok", generation_available=app.state.generator is not None)
 

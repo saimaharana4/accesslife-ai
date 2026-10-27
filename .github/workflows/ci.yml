@@ -27,6 +27,9 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+        with:
+          # Preservation contracts inspect the immutable pre-foundation baseline.
+          fetch-depth: 0
 
       - name: Install Node 24.18.1
         uses: actions/setup-node@v4
