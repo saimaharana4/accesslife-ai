@@ -118,7 +118,13 @@ jobs:
           TASTEDUEL_TEST_WEB_URL=http://127.0.0.1:13001 corepack pnpm test:audit
 
       - name: Scan tracked source for secrets
-        run: docker run --rm -v "$PWD:/repo:ro" zricethezav/gitleaks:v8.28.0 detect --source /repo --no-git --redact --exit-code 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          tracked_source="$(mktemp -d)"
+          trap 'rm -rf "$tracked_source"' EXIT
+          git archive --format=tar HEAD | tar -xf - -C "$tracked_source"
+          docker run --rm -v "$tracked_source:/repo:ro" zricethezav/gitleaks:v8.28.0 detect --source /repo --config /repo/.gitleaks.toml --no-git --redact --exit-code 1
 
       - name: Validate Terraform without a backend or credentials
         uses: hashicorp/setup-terraform@v3

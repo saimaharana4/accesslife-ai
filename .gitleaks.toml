@@ -1,0 +1,12 @@
+[[allowlists]]
+description = "Exact empty Secret Manager bindings and stable synthetic identifiers"
+regexTarget = "line"
+regexes = [
+  '''^QLOO_API_KEY_SECRET=$''',
+  '''^OPENAI_API_KEY_SECRET=$''',
+  '''^TFL_API_KEY_SECRET=$''',
+  '''^CTA_API_KEY_SECRET=$''',
+  '''^const storageKey = "tasteduel\.generation-intent\.v1";$''',
+  '''^\s*key === "tasteduel\.generation-intent\.v1" \|\|$''',
+  '''^\s*headers=\{"Idempotency-Key": "synthetic-prompt11-save"\},$''',
+]
