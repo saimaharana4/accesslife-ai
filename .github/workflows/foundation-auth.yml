@@ -1,0 +1,63 @@
+name: Taste Duel keyless identity check
+run-name: Taste Duel foundation authentication only
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tasteduel-foundation-auth
+  cancel-in-progress: false
+
+jobs:
+  identity:
+    name: Verify reviewed deploy identity without deployment
+    if: >-
+      github.repository_id == '1431472864' &&
+      github.repository_owner_id == '60200140' &&
+      github.ref == 'refs/heads/main' &&
+      vars.FOUNDATION_AUTH_ENABLED == 'true'
+    environment: foundation-review
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      EXPECTED_PROJECT: project-bb13ecd8-9d67-408d-9a7
+      EXPECTED_SERVICE_ACCOUNT: tasteduel-deploy@project-bb13ecd8-9d67-408d-9a7.iam.gserviceaccount.com
+      REVIEWED_WIF_PROVIDER: ${{ vars.TASTEDUEL_WIF_PROVIDER }}
+      REVIEWED_SERVICE_ACCOUNT: ${{ vars.TASTEDUEL_DEPLOY_SERVICE_ACCOUNT }}
+      CLOUDSDK_CORE_DISABLE_PROMPTS: '1'
+    steps:
+      - name: Validate explicit reviewed identity references
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$REVIEWED_WIF_PROVIDER" =~ ^projects/[0-9]+/locations/global/workloadIdentityPools/accesslife-github/providers/github$ ]] || { echo 'Missing or invalid reviewed WIF provider reference'; exit 1; }
+          [[ "$REVIEWED_SERVICE_ACCOUNT" == "$EXPECTED_SERVICE_ACCOUNT" ]] || { echo 'Unexpected deploy service account'; exit 1; }
+
+      - name: Authenticate using restricted GitHub OIDC
+        uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2
+        with:
+          project_id: project-bb13ecd8-9d67-408d-9a7
+          workload_identity_provider: ${{ vars.TASTEDUEL_WIF_PROVIDER }}
+          service_account: ${{ vars.TASTEDUEL_DEPLOY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Install gcloud tooling
+        uses: google-github-actions/setup-gcloud@e427ad8a34f8676edf47cf7d7925499adf3eb74f # v2
+
+      - name: Verify active account and read existing registry metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_account="$(gcloud auth list --filter=status:ACTIVE --format='value(account)')"
+          [[ "$actual_account" == "$EXPECTED_SERVICE_ACCOUNT" ]] || { echo 'Active identity mismatch'; exit 1; }
+          printf 'Verified active account: %s\n' "$actual_account"
+          gcloud artifacts repositories describe accesslife \
+            --project="$EXPECTED_PROJECT" --location=asia-south1 \
+            --format='value(name,format)'
