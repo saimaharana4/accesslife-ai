@@ -13,10 +13,8 @@ export default defineConfig({
   expect: { timeout: 15_000 },
   workers: 1,
   outputDir: "test-results/tasteduel-prompt13",
-  reporter: [
-    ["list"],
-    ["json", { outputFile: ".data/tasteduel-prompt13/browser-review.json" }],
-  ],
+  // Screenshot and failure evidence use Playwright's guaranteed per-test output directory.
+  reporter: [["list"]],
   use: {
     baseURL,
     browserName: "chromium",

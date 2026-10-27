@@ -19,6 +19,8 @@ RUN uv sync --frozen --no-dev --no-cache
 WORKDIR /app
 COPY --from=qloo /runtime/qloo runtime/qloo
 COPY apps/api/src/tasteduel apps/api/src/tasteduel
+COPY apps/api/tasteduel_migrations apps/api/tasteduel_migrations
+COPY apps/api/tasteduel-alembic.ini apps/api/tasteduel-alembic.ini
 COPY scripts/tasteduel_qloo_offline.py scripts/tasteduel_qloo_offline.py
 ENV PATH="/app/runtime/python/.venv/bin:$PATH" \
     PYTHONPATH=/app/apps/api/src PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 \

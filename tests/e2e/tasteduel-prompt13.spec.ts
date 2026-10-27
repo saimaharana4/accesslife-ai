@@ -461,6 +461,21 @@ for (const fixed of [false, true]) {
     await tabTo(page, input);
     await page.keyboard.type("Synthetic");
     await expect(page.getByRole("option")).toHaveCount(2);
+    const searchToggle = page.getByRole("button", {
+      name: "Show search results",
+    });
+    const chevron = searchToggle.locator("svg.seed-toggle-icon");
+    await expect(chevron).toBeVisible();
+    await expect(chevron.locator("path")).toHaveAttribute("d", "m6 9 6 6 6-6");
+    const iconBox = await chevron.boundingBox();
+    expect(iconBox?.width).toBeGreaterThanOrEqual(16);
+    expect(iconBox?.height).toBeGreaterThanOrEqual(16);
+    await expect(searchToggle).toHaveAttribute("aria-expanded", "true");
+    await searchToggle.click();
+    await expect(searchToggle).toHaveAttribute("aria-expanded", "false");
+    await searchToggle.click();
+    await expect(searchToggle).toHaveAttribute("aria-expanded", "true");
+    await expect(chevron).toHaveCSS("transform", "matrix(-1, 0, 0, -1, 0, 0)");
     await page.keyboard.press("ArrowDown");
     await expect(input).toHaveAttribute("aria-activedescendant", /option/);
     await page.keyboard.press("Escape");

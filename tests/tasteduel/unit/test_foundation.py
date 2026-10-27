@@ -78,6 +78,27 @@ def test_runtime_rejects_remote_legacy_wrong_role_or_wrong_driver(url):
         validate_local_url(url)
 
 
+def test_compose_database_allowlist_is_explicit_and_non_external(monkeypatch):
+    url = "postgresql+psycopg://tasteduel_runtime:synthetic@database:5432/tasteduel_prompt5"
+    monkeypatch.delenv("TASTEDUEL_CONTAINER_MODE", raising=False)
+    with pytest.raises(ValueError, match="dedicated local"):
+        validate_local_url(url)
+    monkeypatch.setenv("TASTEDUEL_CONTAINER_MODE", "true")
+    assert validate_local_url(url) == url
+    assert validate_local_url(
+        "postgresql+psycopg://tasteduel_migrator:synthetic@127.0.0.1:55436/tasteduel_prompt5",
+        migration=True,
+    ).endswith("/tasteduel_prompt5")
+    for unsafe in (
+        "postgresql+psycopg://tasteduel_runtime:synthetic@db:5432/tasteduel_prompt5",
+        "postgresql+psycopg://tasteduel_runtime:synthetic@database:5433/tasteduel_prompt5",
+        "postgresql+psycopg://tasteduel_runtime:synthetic@database:5432/accesslife",
+        "postgresql+psycopg://tasteduel_runtime:synthetic@cloud.example.invalid:5432/tasteduel_prompt5",
+    ):
+        with pytest.raises(ValueError, match="dedicated local"):
+            validate_local_url(unsafe)
+
+
 def test_no_config_does_not_import_legacy_or_contact_database():
     app = create_app(Settings(database_url=None))
     with TestClient(app, raise_server_exceptions=False) as client:

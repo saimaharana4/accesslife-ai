@@ -287,7 +287,7 @@ a svg {
   align-items: center;
   gap: 12px;
 }
-.seed-search-row > svg {
+.seed-search-row > svg:first-child {
   position: absolute;
   margin-left: 17px;
   color: var(--muted);
@@ -1421,6 +1421,16 @@ h1.arena-heading {
 }
 .seed-toggle:hover {
   background: #383440;
+}
+.seed-toggle-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: auto;
+  transition: transform 140ms ease;
+}
+.seed-toggle[aria-expanded="true"] .seed-toggle-icon {
+  transform: rotate(180deg);
 }
 .seed-popover {
   z-index: 30;

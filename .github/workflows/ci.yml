@@ -1,53 +1,148 @@
-name: Local application checks
-on: [push, pull_request]
+name: Taste Duel verification
+
+on:
+  push:
+  pull_request:
+
 permissions:
   contents: read
+
+concurrency:
+  group: tasteduel-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  application:
+  verify:
+    name: Synthetic contracts, runtime, browser and infra checks
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     env:
-      GENERATION_PROVIDER: template
-      LIVE_PROVIDERS: "false"
-      PYTHONPATH: apps/api/src
       NEXT_TELEMETRY_DISABLED: "1"
+      PYTHONPATH: .:apps/api/src
+      TASTEDUEL_QLOO_ENABLED: "false"
+      TASTEDUEL_GENERATION_ENABLED: "false"
+      TASTEDUEL_TEST_DATABASE_URL: postgresql+psycopg://tasteduel_runtime:local_only_tasteduel_runtime@127.0.0.1:55436/tasteduel_prompt5
+      TASTEDUEL_TEST_MIGRATION_DATABASE_URL: postgresql+psycopg://tasteduel_migrator:local_only_tasteduel_migrator@127.0.0.1:55436/tasteduel_prompt5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install Node 24
+        uses: actions/setup-node@v4
         with:
           node-version: 24
-      - uses: pnpm/action-setup@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 10.28.2
-      - uses: astral-sh/setup-uv@v6
+
+      - name: Install Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install locked uv
+        uses: astral-sh/setup-uv@v6
         with:
           version: 0.11.32
-      - run: uv sync --frozen --extra retrieval --group dev
-      - run: pnpm install --frozen-lockfile
-      - run: docker compose up -d --wait db
-      - run: docker compose exec -T db createdb -U accesslife accesslife_test
-      - run: uv run alembic -c apps/api/alembic.ini upgrade head
-        env:
-          DATABASE_URL: postgresql+psycopg://accesslife:accesslife_local@127.0.0.1:5432/accesslife_test
-      - run: uv run ruff check apps/api tests scripts
-      - run: uv run pytest -q
-      - run: uv run python scripts/export_contracts.py
-      - run: pnpm contracts
-      - run: git diff --exit-code packages/contracts/openapi.json apps/web/src/lib/api/schema.d.ts
-      - run: pnpm typecheck
-      - run: docker compose up -d --build api worker web
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:e2e
-      - name: Validate deployment configuration without applying
+          enable-cache: true
+          cache-dependency-glob: runtime/python/uv.lock
+
+      - name: Install locked application and test dependencies
         run: |
-          docker run --rm -v "$PWD/infra/terraform:/work" -w /work hashicorp/terraform:1.13.3 init -backend=false -no-color
-          docker run --rm -v "$PWD/infra/terraform:/work" -w /work hashicorp/terraform:1.13.3 validate -no-color
-      - uses: actions/upload-artifact@v4
-        if: failure()
+          corepack pnpm install --frozen-lockfile
+          uv sync --project runtime/python --frozen --group dev
+          npm ci --prefix runtime/qloo --ignore-scripts --no-audit --no-fund
+
+      - name: Lint Python and TypeScript sources
+        run: |
+          uv run --project runtime/python --frozen ruff check apps/api/src/tasteduel tests/tasteduel scripts
+          corepack pnpm exec prettier --check .github/workflows/ci.yml .github/workflows/cloud-release.yml apps/web/src
+
+      - name: Run web contracts and isolated state checks
+        run: |
+          corepack pnpm test:web-contracts
+          corepack pnpm test:fixture-state
+          corepack pnpm check:fixture-production
+          node --test runtime/qloo/typed-response.test.mjs
+
+      - name: Start isolated Taste Duel PostgreSQL
+        run: docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml up --detach --wait database
+
+      - name: Apply the immutable Taste Duel migrations
+        run: docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml run --rm migrate
+
+      - name: Run provider contracts and real PostgreSQL integration tests
+        env:
+          TASTEDUEL_QLOO_ENABLED: "false"
+          TASTEDUEL_GENERATION_ENABLED: "false"
+        run: uv run --project runtime/python --frozen pytest -c pytest.tasteduel.ini --confcutdir=tests/tasteduel tests/tasteduel -q
+
+      - name: Check generated OpenAPI and TypeScript contracts
+        run: |
+          uv run --project runtime/python --frozen python scripts/export_contracts.py
+          corepack pnpm exec openapi-typescript packages/contracts/openapi.json -o apps/web/src/lib/api/schema.d.ts
+          corepack pnpm exec prettier --write apps/web/src/lib/api/schema.d.ts
+          git diff --exit-code -- packages/contracts/openapi.json apps/web/src/lib/api/schema.d.ts
+
+      - name: Run strict TypeScript checks and production build
+        run: |
+          corepack pnpm typecheck
+          corepack pnpm build
+
+      - name: Build and smoke test immutable local containers
+        run: |
+          docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml build api web
+          docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml up --detach --wait api web
+          curl --fail --silent --show-error http://127.0.0.1:18005/v1/health/live
+          curl --fail --silent --show-error http://127.0.0.1:13001/ --output /dev/null
+
+      - name: Run complete desktop, mobile and narrow-reflow Playwright plus full axe scans
+        shell: bash
+        run: |
+          set -euo pipefail
+          corepack pnpm exec playwright install --with-deps chromium
+          corepack pnpm dev:fixtures > /tmp/tasteduel-fixtures.log 2>&1 &
+          fixture_pid=$!
+          cleanup_fixture() { kill "$fixture_pid" 2>/dev/null || true; }
+          trap cleanup_fixture EXIT
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:3001/ >/dev/null; then break; fi
+            if [ "$attempt" = 60 ]; then cat /tmp/tasteduel-fixtures.log; exit 1; fi
+            sleep 2
+          done
+          TASTEDUEL_FIXTURE_URL=http://127.0.0.1:3001 corepack pnpm test:fixtures
+          # Prompt 13 journeys mock only the browser API. Run them against the
+          # real production-mode web shell, not the separate fictional demo.
+          TASTEDUEL_TEST_WEB_URL=http://127.0.0.1:13001 corepack pnpm test:audit
+
+      - name: Scan tracked source for secrets
+        run: docker run --rm -v "$PWD:/repo:ro" zricethezav/gitleaks:v8.28.0 detect --source /repo --no-git --redact --exit-code 1
+
+      - name: Validate Terraform without a backend or credentials
+        uses: hashicorp/setup-terraform@v3
         with:
-          name: application-failure-evidence
+          terraform_version: 1.13.3
+          terraform_wrapper: false
+
+      - name: Initialize and statically validate Terraform
+        run: |
+          terraform -chdir=infra/terraform init -backend=false -input=false -lockfile=readonly
+          terraform -chdir=infra/terraform validate -no-color
+
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tasteduel-playwright-evidence-${{ github.sha }}
           path: |
-            playwright-report/
-            test-results/
-      - if: always()
-        run: docker compose down
+            test-results/tasteduel-fixtures/
+            test-results/tasteduel-prompt13/
+            playwright-report/tasteduel-fixtures/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Stop containers and retain the project volume
+        if: always()
+        run: docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml down

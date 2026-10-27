@@ -1,4 +1,5 @@
 .git
+.github
 .venv
 **/node_modules
 **/.next
@@ -9,6 +10,19 @@ ai
 .data
 data
 datasets
+third_party
+ingestion
+infra/terraform
+test-results
+playwright-report
+screenshots
+**/screenshots
+**/artifacts
+**/coverage
+**/.pytest_cache
+**/.ruff_cache
+**/.uv-cache
+**/.terraform
 **/qloo_responses
 **/qloo-responses
 **/provider_responses

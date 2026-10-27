@@ -15,11 +15,17 @@ if config.config_file_name:
 
 url = os.environ.get("TASTEDUEL_MIGRATION_DATABASE_URL", "")
 parsed = make_url(url) if url else None
+local_foundation = parsed is not None and parsed.host in {"127.0.0.1", "localhost", "::1"} and parsed.port in {55435, 55436}
+compose_database = (
+    parsed is not None
+    and os.environ.get("TASTEDUEL_CONTAINER_MODE") == "true"
+    and parsed.host == "database"
+    and parsed.port == 5432
+)
 if (
     parsed is None
     or parsed.drivername != "postgresql+psycopg"
-    or parsed.host not in {"127.0.0.1", "localhost"}
-    or parsed.port != 55435
+    or not (local_foundation or compose_database)
     or parsed.database != "tasteduel_prompt5"
     or parsed.username != "tasteduel_migrator"
 ):

@@ -1,11 +1,20 @@
 # Taste Duel
 
-**Current status - Prompt 13, 27 October 2026:** local audit and hardening added
+**Current status - Prompt 14, 27 October 2026:** Taste Duel now has its own
+Compose project, PostgreSQL volume, one-shot migrations, production/fixture images,
+PowerShell preflight/runtime helper and synthetic CI workflow. Clean Compose DB
+migrated through `td0009`; API/web health returned 200. The synthetic creator
+result and fixed challenge replay survived an API restart with zero provider calls.
+The search disclosure is now an 18px SVG chevron; desktop render and keyboard
+open/close checks pass. **666 backend tests, 61 Node checks, 36 full audit cases
+and 21 fixture-browser cases** pass; remote CI is pending. No cloud resources
+were provisioned.
+
+**Historical Prompt 13 status - 27 October 2026:** local audit and hardening added
 per-response script nonces, shared guest/provider budgets, bounded request bodies,
 safe exception handling, stable guest controls and accessible async-state feedback.
-Passed **665 backend tests, 61 Node checks and 36 distinct browser cases** with
-117 full axe executions, no rule exclusions. Inspected renders and secrecy checks
-cover Why-this-duel, curation, HTML/RSC/DTOs, logs and original OG output.
+Inspected renders and secrecy checks cover Why-this-duel, curation, HTML/RSC/DTOs,
+logs and original OG output.
 
 Final production-build smoke: LCP **1.416/1.064 s** (landing/gameplay), CLS
 **0.04969/0.03103**, JS **144.6 kB initial + 8.3 kB gameplay**, pressed DOM feedback
@@ -17,8 +26,8 @@ Provider-free production preview: **http://127.0.0.1:3001**.
 [Changes, exact commands, evidence and release boundaries](apps/api/AUDIT.md).
 Actual screen-reader/native browser-zoom acceptance remains unverified (CSS 200%
 emulation passed; native helper unavailable). Legacy key coordination, retention
-cleanup and deployed checks remain release gates. No provider/cloud calls or push.
-Next: **Prompt 14**. Earlier milestone descriptions below are historical.
+cleanup and deployed checks remain release gates. Earlier milestone descriptions
+below are historical.
 
 **Historical Prompt 12 status, 27 October 2026:** completed solo games can create
 an idempotent, expiring friend challenge. Isolated guests replay exactly the five

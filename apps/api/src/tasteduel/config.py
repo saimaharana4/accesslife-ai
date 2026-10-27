@@ -1,6 +1,7 @@
 """Explicit local configuration. No legacy .env or import-time cloud lookup."""
 
 from typing import Literal
+import os
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -10,13 +11,19 @@ from sqlalchemy.engine import make_url
 def validate_local_url(value: str, *, migration: bool = False) -> str:
     try:
         url = make_url(value)
-        valid = (
-            url.drivername == "postgresql+psycopg"
-            and url.host in {"127.0.0.1", "localhost", "::1"}
-            and url.port == 55435
+        expected_user = "tasteduel_migrator" if migration else "tasteduel_runtime"
+        local_foundation = (
+            url.host in {"127.0.0.1", "localhost", "::1"}
+            and url.port in {55435, 55436}
             and url.database == "tasteduel_prompt5"
-            and url.username == ("tasteduel_migrator" if migration else "tasteduel_runtime")
         )
+        compose_database = (
+            os.environ.get("TASTEDUEL_CONTAINER_MODE") == "true"
+            and url.host == "database"
+            and url.port == 5432
+            and url.database == "tasteduel_prompt5"
+        )
+        valid = url.drivername == "postgresql+psycopg" and (local_foundation or compose_database) and url.username == expected_user
     except Exception:
         valid = False
     if not valid:

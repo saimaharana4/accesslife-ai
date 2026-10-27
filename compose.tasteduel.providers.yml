@@ -1,0 +1,13 @@
+services:
+  api:
+    environment:
+      TASTEDUEL_QLOO_ENABLED: "true"
+      TASTEDUEL_GENERATION_ENABLED: "true"
+      TASTEDUEL_QLOO_SECRET_VERSION: ${TASTEDUEL_QLOO_SECRET_VERSION:-projects/project-bb13ecd8-9d67-408d-9a7/secrets/accesslife-qloo-api-key/versions/latest}
+      TASTEDUEL_VERTEX_PROJECT: ${TASTEDUEL_VERTEX_PROJECT:-project-bb13ecd8-9d67-408d-9a7}
+      GOOGLE_APPLICATION_CREDENTIALS: /run/adc/application_default_credentials.json
+    volumes:
+      - type: bind
+        source: ${TASTEDUEL_ADC_PATH:?Set TASTEDUEL_ADC_PATH to the local ADC JSON path}
+        target: /run/adc/application_default_credentials.json
+        read_only: true

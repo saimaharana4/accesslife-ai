@@ -1,86 +1,114 @@
-name: accesslife
-x-api: &api
-  image: accesslife-api:local
-  build:
-    context: .
-    dockerfile: infra/containers/api.Dockerfile
-  env_file:
-    - path: .env
-      required: false
-  environment: &api-env
-    DATABASE_URL: postgresql+psycopg://accesslife:${POSTGRES_PASSWORD:-accesslife_local}@db:5432/accesslife
-    APP_PUBLIC_URL: http://localhost:3000
-    GOOGLE_APPLICATION_CREDENTIALS: /credentials/application_default_credentials.json
-    GENERATION_PROVIDER: ${GENERATION_PROVIDER:-vertex_ai}
-    GENERATION_FALLBACK: ${GENERATION_FALLBACK:-groq}
-    GCP_PROJECT_ID: ${GCP_PROJECT_ID:-project-bb13ecd8-9d67-408d-9a7}
-    VERTEX_AI_MODEL: ${VERTEX_AI_MODEL:-gemini-3.8-flash}
-    VERTEX_AI_LOCATION: ${VERTEX_AI_LOCATION:-global}
-    TASTE_PROVIDER: ${TASTE_PROVIDER:-development}
-    TASK_BACKEND: postgres
-    LIVE_PROVIDERS: ${LIVE_PROVIDERS:-true}
-  volumes:
-    - type: bind
-      source: ${GCP_ADC_DIRECTORY:-./.data/credentials}
-      target: /credentials
-      read_only: true
-    - model-cache:/data/models
-  depends_on:
-    migrate:
-      condition: service_completed_successfully
-  restart: unless-stopped
+name: taste-duel
+
 services:
-  db:
-    build:
-      context: .
-      dockerfile: infra/containers/database.Dockerfile
+  database:
+    image: postgres:16.10-bookworm@sha256:38471f330eb885e04de130b768d6db4e10469e2311879c7e5c699f6d2d8a1c74
     environment:
-      POSTGRES_DB: accesslife
-      POSTGRES_USER: accesslife
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-accesslife_local}
-    ports: ["127.0.0.1:5432:5432"]
-    volumes: ["postgres-data:/var/lib/postgresql/data"]
+      POSTGRES_DB: tasteduel_prompt5
+      POSTGRES_USER: tasteduel_admin
+      POSTGRES_PASSWORD: local_only_tasteduel_admin
+      TASTEDUEL_MIGRATOR_PASSWORD: local_only_tasteduel_migrator
+      TASTEDUEL_RUNTIME_PASSWORD: local_only_tasteduel_runtime
+    ports:
+      - "127.0.0.1:${TASTEDUEL_DATABASE_PORT:-55436}:5432"
+    volumes:
+      - tasteduel-data:/var/lib/postgresql/data
+      - ./infra/containers/tasteduel-db-init.sh:/docker-entrypoint-initdb.d/10-tasteduel.sh:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U accesslife -d accesslife"]
-      interval: 3s
+      test: ["CMD-SHELL", "pg_isready -U tasteduel_admin -d tasteduel_prompt5"]
+      interval: 2s
       timeout: 3s
       retries: 30
     restart: unless-stopped
+
   migrate:
-    <<: *api
-    command: ["alembic", "-c", "apps/api/alembic.ini", "upgrade", "head"]
+    image: tasteduel-api:local
+    build:
+      context: .
+      dockerfile: infra/containers/tasteduel-api.Dockerfile
+    environment: &database_environment
+      TASTEDUEL_CONTAINER_MODE: "true"
+      TASTEDUEL_MIGRATION_DATABASE_URL: postgresql+psycopg://tasteduel_migrator:local_only_tasteduel_migrator@database:5432/tasteduel_prompt5
+      TASTEDUEL_DATABASE_URL: postgresql+psycopg://tasteduel_runtime:local_only_tasteduel_runtime@database:5432/tasteduel_prompt5
+      TASTEDUEL_ALLOWED_ORIGINS: '["http://127.0.0.1:13001","http://localhost:13001"]'
+      TASTEDUEL_COOKIE_SECURE: "false"
+      TASTEDUEL_QLOO_ENABLED: "false"
+      TASTEDUEL_GENERATION_ENABLED: "false"
+      TASTEDUEL_QLOO_SECRET_VERSION: ${TASTEDUEL_QLOO_SECRET_VERSION:-projects/project-bb13ecd8-9d67-408d-9a7/secrets/accesslife-qloo-api-key/versions/latest}
+      TASTEDUEL_VERTEX_PROJECT: ${TASTEDUEL_VERTEX_PROJECT:-project-bb13ecd8-9d67-408d-9a7}
+      GOOGLE_APPLICATION_CREDENTIALS: /run/adc/application_default_credentials.json
     depends_on:
-      db:
+      database:
         condition: service_healthy
-    restart: "no"
+    command: ["alembic", "-c", "apps/api/tasteduel-alembic.ini", "upgrade", "head"]
+
   api:
-    <<: *api
-    ports: ["127.0.0.1:8000:8000"]
+    image: tasteduel-api:local
+    build:
+      context: .
+      dockerfile: infra/containers/tasteduel-api.Dockerfile
+    environment:
+      <<: *database_environment
+    ports:
+      - "127.0.0.1:${TASTEDUEL_API_PORT:-18005}:8000"
+    depends_on:
+      database:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/v1/health/ready')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/health/live', timeout=2)"]
       interval: 5s
       timeout: 3s
-      retries: 20
-  worker:
-    <<: *api
-    command: ["python", "-m", "accesslife.worker"]
-  ingest:
-    <<: *api
-    profiles: ["tools"]
-    command: ["python", "-m", "accesslife.adapters.retrieval"]
-    restart: "no"
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
   web:
+    image: tasteduel-web:local
     build:
       context: .
       dockerfile: infra/containers/web.Dockerfile
     environment:
-      API_INTERNAL_URL: http://api:8000
-      APP_PUBLIC_URL: http://localhost:3000
-    ports: ["127.0.0.1:3000:3000"]
+      NODE_ENV: production
+      TASTEDUEL_API_URL: http://api:8000
+      TASTEDUEL_WEB_ORIGINS: http://127.0.0.1:13001,http://localhost:13001
+      TASTEDUEL_CANONICAL_ORIGIN: http://127.0.0.1:13001
+      TASTEDUEL_ALLOW_LOCAL_HTTP: "true"
+      TASTEDUEL_API_IAM: "false"
+    ports:
+      - "127.0.0.1:${TASTEDUEL_WEB_PORT:-13001}:3000"
     depends_on:
       api:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
     restart: unless-stopped
+
+  fixture-demo:
+    profiles: [fixture]
+    image: tasteduel-fixture-demo:local
+    build:
+      context: .
+      dockerfile: infra/containers/web.Dockerfile
+      target: fixture-dev
+    environment:
+      NODE_ENV: development
+      TASTEDUEL_FIXTURES: "1"
+    ports:
+      - "127.0.0.1:13002:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+    restart: unless-stopped
+
 volumes:
-  postgres-data:
-  model-cache:
+  tasteduel-data:
+    name: taste-duel-data
