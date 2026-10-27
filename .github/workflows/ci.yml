@@ -64,7 +64,6 @@ jobs:
         run: |
           corepack pnpm test:web-contracts
           corepack pnpm test:fixture-state
-          corepack pnpm check:fixture-production
           node --test runtime/qloo/typed-response.test.mjs
 
       - name: Start isolated Taste Duel PostgreSQL
@@ -90,6 +89,7 @@ jobs:
         run: |
           corepack pnpm typecheck
           corepack pnpm build
+          corepack pnpm check:fixture-production
 
       - name: Build and smoke test immutable local containers
         run: |
