@@ -1,5 +1,15 @@
 # Taste Duel design specification
 
+### Prompt 13 rendered audit - 27 October 2026
+
+Preserved the fight-night composition. Guest-session controls reserve a stable
+footprint, close on Escape/focus departure/clearing, and leave the next keyboard
+target visible. Async fallback screens announce politely; accepted reveals still
+focus/announce once. Fixtures override contradictory agent labels. Rendered
+1440/390/320, 200% CSS emulation, failed art and long titles were reviewed with
+loaded local fonts; sampled enabled opaque-text contrast minimum was 8.29:1.
+Manual screen-reader and native zoom remain unverified. [Audit](../apps/api/AUDIT.md).
+
 ### Prompt 12 sharing design - 27 October 2026
 
 The result ticket leads into a secondary friend challenge section with real-score

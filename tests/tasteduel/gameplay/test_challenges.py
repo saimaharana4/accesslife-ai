@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 from sqlalchemy import func, select, update
+import pytest
 
 from tasteduel.persistence import models as m
 from tasteduel.persistence.db import scoped_session
@@ -79,6 +80,32 @@ def test_two_guests_exact_frozen_rounds_independent_scores_no_providers(gameplay
                 == "fixed-path-v1"
             )
     assert curator.calls == 1
+
+
+@pytest.mark.parametrize("state", ["expired", "revoked"])
+def test_public_invitation_does_not_require_an_unrelated_guest_cookie(
+    gameplay, owned_seed, db_engine, expired_guest_cookie, state
+):
+    _, _, _, _, _, share = shared(gameplay, owned_seed)
+    guest, owner, _ = gameplay()
+    if state == "expired":
+        guest.cookies.set("tasteduel_session", expired_guest_cookie, domain="testserver.local", path="/")
+    else:
+        with scoped_session(db_engine, owner) as db:
+            row = db.get(m.Session, owner)
+            row.revoked_at = datetime.now(UTC)
+    assert guest.get("/v1/sessions/current").status_code == 401
+    invitation = guest.get(f"/v1/challenges/{share['invitation']['slug']}")
+    assert invitation.status_code == 200
+    assert invitation.json() == share["invitation"]
+    assert (
+        guest.post(
+            f"/v1/challenges/{share['invitation']['slug']}/plays",
+            json={},
+            headers={"Idempotency-Key": "stale-guest-play-denied-0001"},
+        ).status_code
+        == 401
+    )
 
 
 def test_create_idempotency_concurrent_retries_and_changed_body(gameplay, owned_seed):
@@ -203,7 +230,9 @@ def test_incomplete_source_and_arbitrary_slug_fail_without_source_leak(gameplay,
 def test_fixed_replay_cannot_fork_around_creator_revocation(gameplay, owned_seed):
     _, _, _, _, reveals, share = shared(gameplay, owned_seed)
     guest, _, _ = gameplay()
-    game = post(guest, f"/v1/challenges/{share['invitation']['slug']}/plays", {}, "no-fork-play-key-0001").json()
+    game = post(
+        guest, f"/v1/challenges/{share['invitation']['slug']}/plays", {}, "no-fork-play-key-0001"
+    ).json()
     completed, _ = complete(guest, game, choose_winner=True, expected=reveals)
     result = guest.get(f"/v1/games/{completed['game_id']}/results")
     assert result.status_code == 200 and result.json()["mode"] == "fixed"
@@ -218,7 +247,9 @@ def test_revocation_removes_replay_only_discovery_evidence(gameplay, owned_seed)
     guest, _, _ = gameplay()
     game = post(guest, f"/v1/challenges/{slug}/plays", {}, "discovery-play-key-0001").json()
     current = game["current_round"]
-    accepted = post(guest, f"/v1/games/{game['game_id']}/answer", answer_body(current), "discovery-answer-key-0001")
+    accepted = post(
+        guest, f"/v1/games/{game['game_id']}/answer", answer_body(current), "discovery-answer-key-0001"
+    )
     assert accepted.status_code == 200
     entity_id = current["choices"][0]["entity"]["id"]
     saved = post(guest, "/v1/discoveries", {"entity_id": entity_id}, "replay-save-key-0001")
@@ -227,4 +258,6 @@ def test_revocation_removes_replay_only_discovery_evidence(gameplay, owned_seed)
     assert creator.delete(f"/v1/challenges/{slug}").status_code == 204
     collection = guest.get("/v1/discoveries").json()
     assert collection["discoveries"] == [] and collection["expired_count"] == 1
-    assert post(guest, "/v1/discoveries", {"entity_id": entity_id}, "revoked-save-key-0001").status_code == 404
+    assert (
+        post(guest, "/v1/discoveries", {"entity_id": entity_id}, "revoked-save-key-0001").status_code == 404
+    )

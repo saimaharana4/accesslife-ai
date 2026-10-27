@@ -15,6 +15,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
 
 from tasteduel.ports.qloo import ProviderFailure, QlooPort, QlooResult
+from tasteduel.adapters.usage_budget import UsageDenied, reserve
 
 
 class AdmissionDenied(Exception):
@@ -61,17 +62,27 @@ class PostgresAdmissionStore:
     A legacy service that bypasses this store is not covered by these controls.
     """
 
-    def __init__(self, engine: Engine, *, requests_per_minute: int = 30, spacing_seconds: float = 0.2):
+    def __init__(
+        self,
+        engine: Engine,
+        *,
+        requests_per_minute: int = 30,
+        spacing_seconds: float = 0.2,
+        requests_per_day: int = 1000,
+    ):
         if (
             type(requests_per_minute) is not int
             or not 1 <= requests_per_minute <= 120
             or not math.isfinite(spacing_seconds)
             or not 0.05 <= spacing_seconds <= 1
+            or type(requests_per_day) is not int
+            or not 1 <= requests_per_day <= 10000
         ):
             raise ValueError("Invalid shared admission limits")
         self.engine = engine
         self.limit = requests_per_minute
         self.spacing = spacing_seconds
+        self.daily_limit = requests_per_day
 
     def _transaction(self, scope, *, admit=False, failed=False, auth=False):
         import re
@@ -115,6 +126,7 @@ class PostgresAdmissionStore:
                         if used >= limit:
                             denial = "QLOO_SHARED_RATE_LIMIT"
                         else:
+                            reserve(db, scope, "qloo-requests-day", limit=self.daily_limit, seconds=86400)
                             db.execute(
                                 text("""UPDATE tasteduel.provider_controls SET used=:used,
                                 limit_value=:limit, window_start=CASE WHEN :reset THEN :now ELSE window_start END,
@@ -144,6 +156,8 @@ class PostgresAdmissionStore:
                             "now": now,
                         },
                     )
+        except UsageDenied:
+            raise AdmissionDenied("QLOO_DAILY_BUDGET_EXCEEDED") from None
         except SQLAlchemyError:
             raise AdmissionDenied("QLOO_ADMISSION_UNAVAILABLE") from None
         if denial:

@@ -195,6 +195,7 @@ def main() -> int:
             "127.0.0.1",
             "--port",
             str(args.api_port),
+            "--no-access-log",
         ]
     return subprocess.run(command, env=env).returncode
 

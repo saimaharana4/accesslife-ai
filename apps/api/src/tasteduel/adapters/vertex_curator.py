@@ -21,7 +21,7 @@ MAX_OUTPUT_TOKENS = 512
 class VertexCuratorModel:
     model_version = MODEL
 
-    def __init__(self, *, project: str, client=None):
+    def __init__(self, *, project: str, client=None, daily_budget=None):
         if not isinstance(project, str) or not project or len(project) > 100:
             raise ValueError("A Vertex project is required")
         if client is None:
@@ -41,6 +41,7 @@ class VertexCuratorModel:
                 ),
             )
         self.client = client
+        self.daily_budget = daily_budget
 
     @staticmethod
     def input_token_upper_bound(messages, available_tools):
@@ -63,8 +64,11 @@ class VertexCuratorModel:
     async def decide(self, messages, available_tools, *, timeout_seconds):
         if not math.isfinite(timeout_seconds) or timeout_seconds <= 0:
             raise ModelUnavailable("VERTEX_DEADLINE")
-        if self.input_token_upper_bound(messages, available_tools) > 10000:
+        input_bound = self.input_token_upper_bound(messages, available_tools)
+        if input_bound > 10000:
             raise ModelUnavailable("VERTEX_INPUT_BOUND")
+        if self.daily_budget is not None:
+            await self.daily_budget.admit(input_bound + MAX_OUTPUT_TOKENS)
         contents = []
         for message in messages:
             if message["role"] == "model":

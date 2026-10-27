@@ -84,3 +84,6 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 
 - **2026-10-27 - Prompt 12:** Implemented td0008 exact delivered-round challenges, fixed guest replay, idempotent sharing/revocation, canonical-origin metadata and original social cards; no provider or cloud calls, and original references/prior migrations remain preserved.
 - **2026-10-27 - Prompt 12 verification:** 648 backend/58 Node checks, 15 browser cases and a real two-replay journey passed with 23 successful full axe captures; identical rounds yielded 3/5 and 2/5, and clear revoked access. Fixed the quoted-empty-cookie forwarding defect; artifacts `.data/tasteduel-prompt12/`, next Prompt 13.
+
+- **2026-10-27 - Prompt 13:** Added td0009 private usage budgets, script nonce CSP and bounded/error-safe requests; fixed fixture labels, async announcements, mobile header CLS, guest-panel focus occlusion and rate-limited session clearing. No provider/cloud calls, credentials added or push.
+- **2026-10-27 - Prompt 13 verification:** 665 backend/61 Node checks, 36 unique browser cases and 117 unexcluded axe executions passed; identified lab targets passed, final smoke LCP 1.416/1.064s and CLS 0.04969/0.03103. Artifacts `.data/tasteduel-prompt13/`; manual AT/native zoom and operational release gates remain open, next Prompt 14.

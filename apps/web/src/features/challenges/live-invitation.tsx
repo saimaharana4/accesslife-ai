@@ -122,6 +122,7 @@ export function LiveInvitation({ slug }: { slug: string }) {
     }[status];
     return (
       <StatusPanel
+        live="polite"
         headingLevel={1}
         title={title}
         eyebrow="TASTE DUEL · FRIEND CHALLENGE"

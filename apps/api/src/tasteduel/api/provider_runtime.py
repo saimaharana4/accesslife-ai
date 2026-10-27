@@ -51,7 +51,11 @@ async def build_qloo_runtime(settings: Settings, engine: Engine) -> QlooRuntime:
         async with asyncio.timeout(settings.qloo_startup_timeout):
             key = await asyncio.to_thread(_secret_payload, settings.qloo_secret_version)
         scope = hashlib.sha256(key.encode()).hexdigest()
-        store = PostgresAdmissionStore(engine, requests_per_minute=settings.qloo_requests_per_minute)
+        store = PostgresAdmissionStore(
+            engine,
+            requests_per_minute=settings.qloo_requests_per_minute,
+            requests_per_day=settings.qloo_requests_per_day,
+        )
 
         async def reserve(path):
             await guarded.reserve_upstream(path)

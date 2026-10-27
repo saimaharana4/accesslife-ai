@@ -25,6 +25,23 @@ const error = (code = "QLOO_UNAVAILABLE") => ({
   },
 });
 
+for (const [status, code] of [
+  [429, "SESSION_RATE_LIMITED"],
+  [408, "REQUEST_TIMEOUT"],
+] as const) {
+  test(`preserves typed ${code} without upstream diagnostic text`, async () => {
+    const response = await forwardApi(
+      request("/sessions/current"),
+      settings(async () => Response.json(error(code), { status })),
+    );
+    assert.equal(response.status, status);
+    const result = await response.json();
+    assert.equal(result.error.code, code);
+    assert.equal(result.error.retryable, true);
+    assert.ok(!JSON.stringify(result).includes("PRIVATE_PROVIDER_DIAGNOSTIC"));
+  });
+}
+
 test("challenge forwarding requires keyed strict mutations and never exposes invitation answer fields", async () => {
   const invitation = {
     slug: SLUG,

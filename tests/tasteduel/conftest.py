@@ -1,15 +1,37 @@
 """Dedicated fixtures. Run with --confcutdir=tests/tasteduel; no AccessLife imports."""
 
 from contextlib import ExitStack
+from datetime import UTC, datetime, timedelta
+import hashlib
 import os
-from uuid import UUID
+import secrets
+from uuid import UUID, uuid4
 
 from fastapi.testclient import TestClient
 import pytest
 
 from tasteduel.api.main import create_app
 from tasteduel.config import Settings
-from tasteduel.persistence.db import local_engine
+from tasteduel.persistence.db import local_engine, scoped_session
+from tasteduel.persistence.models import Session
+
+
+@pytest.fixture
+def expired_guest_cookie(db_engine):
+    """Insert an expired synthetic identity; never rewrite immutable session TTLs."""
+    owner = uuid4()
+    token = f"{owner}.{secrets.token_urlsafe(32)}"
+    now = datetime.now(UTC)
+    with scoped_session(db_engine, owner) as db:
+        db.add(
+            Session(
+                id=owner,
+                token_hash=hashlib.sha256(token.encode()).hexdigest(),
+                created_at=now - timedelta(days=2),
+                expires_at=now - timedelta(days=1),
+            )
+        )
+    return token
 
 
 @pytest.fixture(scope="session")

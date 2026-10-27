@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Link from "next/link";
+import { connection } from "next/server";
 import { FixtureProvider } from "tasteduel-fixture-entry";
 import { fixturesEnabled } from "@/features/mode/config";
 import { GuestSessionControls } from "@/features/seed/guest-session-controls";
@@ -28,9 +29,11 @@ export const metadata: Metadata = {
     "One favourite. Five Qloo-ranked cultural duels. Predict connections and discover something new.",
   robots: { index: false, follow: false },
 };
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Per-response CSP nonces require request-time rendering, including landing.
+  await connection();
   return (
     <html lang="en">
       <body className={`${displayFont.variable} ${bodyFont.variable}`}>

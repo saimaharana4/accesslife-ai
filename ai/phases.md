@@ -1,5 +1,15 @@
 # Taste Duel implementation phases
 
+### Prompt 13 outcome - 27 October 2026
+
+Audit fixes and production-build measurements passed: 665 backend/61 Node checks,
+36 distinct browser cases and 117 full axe executions including affected reruns.
+Independent security review found no unresolved serious defect in inspected code.
+Original CLS, fixture-label, async announcement and focus-occlusion findings were
+fixed. Manual AT/native zoom, deployed verification, legacy key coordination and
+retention remain release checks. Next Prompt 14; no provisioning or CI push here.
+[Commands and evidence](../apps/api/AUDIT.md).
+
 ### Prompt 12 gate - 27 October 2026
 
 Implemented exact fixed challenges, capability lookup, idempotent replay, bounded

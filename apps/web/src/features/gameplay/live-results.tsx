@@ -75,6 +75,7 @@ export function LiveResults({
   if (!result)
     return (
       <StatusPanel
+        live="polite"
         title={error ? "No result to show yet." : "Opening your result."}
         eyebrow="TASTE DUEL · SAVED SCORE"
         headingLevel={1}

@@ -1,5 +1,14 @@
 # Taste Duel product requirements
 
+### Prompt 13 acceptance evidence - 27 October 2026
+
+Solo/fixed keyboard journeys, interrupted/expired states, evidence/curation,
+long titles, missing images, reduced motion and 320px reflow passed automated
+production-build checks. Local lab targets passed; these are not field metrics.
+No prediction becomes an implicit preference. Manual screen-reader/native browser
+zoom and deployed/legacy/retention gates remain open; no release clearance or
+fresh live generation is claimed. [Audit and counts](../apps/api/AUDIT.md).
+
 ### Prompt 12 implemented locally - 27 October 2026
 
 Completed solo games now create an expiring friend invitation with the creator's

@@ -14,6 +14,7 @@ export function GuestSessionControls() {
     [pending, setPending] = useState(false),
     [message, setMessage] = useState("");
   const controller = useRef<AbortController | null>(null);
+  const details = useRef<HTMLDetailsElement | null>(null);
   const refresh = useCallback(async () => {
     controller.current?.abort();
     const request = new AbortController();
@@ -41,6 +42,7 @@ export function GuestSessionControls() {
         controller.current?.abort();
         setActive(false);
         setConfirm(false);
+        if (details.current) details.current.open = false;
       } else if (kind === "session-updated") void refresh();
     });
     window.addEventListener("focus", refresh);
@@ -61,6 +63,7 @@ export function GuestSessionControls() {
       publishSessionChange("session-cleared");
       setActive(false);
       setConfirm(false);
+      if (details.current) details.current.open = false;
       document.querySelector<HTMLAnchorElement>(".wordmark")?.focus();
       setMessage(
         "Guest session cleared. Private games and saved discoveries are no longer accessible.",
@@ -75,39 +78,63 @@ export function GuestSessionControls() {
   }
   return (
     <div className="guest-session-controls">
-      {active && (
-        <details>
-          <summary>Guest session</summary>
-          <div className="guest-session-panel">
+      <details
+        ref={details}
+        onKeyDown={(event) => {
+          if (event.key === "Escape" && event.currentTarget.open) {
+            event.preventDefault();
+            event.currentTarget.open = false;
+            event.currentTarget.querySelector("summary")?.focus();
+          }
+        }}
+        onBlur={(event) => {
+          if (
+            event.relatedTarget &&
+            !event.currentTarget.contains(event.relatedTarget)
+          )
+            event.currentTarget.open = false;
+        }}
+      >
+        <summary>Guest session</summary>
+        <div className="guest-session-panel">
+          {active ? (
+            <>
+              <p>
+                Anonymous play. Saves expire with this session or their
+                supporting evidence.
+              </p>
+              {confirm ? (
+                <>
+                  <p>
+                    Clear private access, discoveries and dependent share links
+                    for this session? Existing backups are not rewritten.
+                  </p>
+                  <Button onClick={() => void clear()} pending={pending}>
+                    Clear this session
+                  </Button>
+                  <Button
+                    variant="quiet"
+                    onClick={() => setConfirm(false)}
+                    disabled={pending}
+                  >
+                    Keep playing
+                  </Button>
+                </>
+              ) : (
+                <Button variant="quiet" onClick={() => setConfirm(true)}>
+                  Clear guest session
+                </Button>
+              )}
+            </>
+          ) : (
             <p>
-              Anonymous play. Saves expire with this session or their supporting
-              evidence.
+              No active guest session is confirmed. Choose a favourite and start
+              a duel to begin anonymous play. Saved games and discoveries stay
+              within that guest session.
             </p>
-            {confirm ? (
-              <>
-                <p>
-                  Clear private access, discoveries and dependent share links
-                  for this session? Existing backups are not rewritten.
-                </p>
-                <Button onClick={() => void clear()} pending={pending}>
-                  Clear this session
-                </Button>
-                <Button
-                  variant="quiet"
-                  onClick={() => setConfirm(false)}
-                  disabled={pending}
-                >
-                  Keep playing
-                </Button>
-              </>
-            ) : (
-              <Button variant="quiet" onClick={() => setConfirm(true)}>
-                Clear guest session
-              </Button>
-            )}
-          </div>
-        </details>
-      )}
+          )}
+        </div>
+      </details>
       <span role="status">{message}</span>
     </div>
   );

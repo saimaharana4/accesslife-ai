@@ -1,6 +1,17 @@
 # Taste Duel architecture
 
-### Prompt 12 current boundary - 27 October 2026
+### Prompt 13 audit boundary - 27 October 2026
+
+A per-response proxy generates script nonces and forces request-time shell
+rendering. Shared PostgreSQL usage_budgets/td0009 admits verified guests and
+reserves daily Qloo/Vertex envelopes across participating instances. Request
+bytes/chunks/time, error messages and provider/cache boundaries are bounded.
+Curation/evidence stays allowlisted and accepted-state authorized. Production
+HTML/RSC/DTO/OG and log contracts passed synthetic exposure checks; no upstream
+provider call occurred. The stable guest header removes a measured CLS failure.
+[Measured setup, policy and remaining release gates](../apps/api/AUDIT.md).
+
+### Historical Prompt 12 boundary - 27 October 2026
 
 `ChallengeService` creates one high-entropy capability per completed owned solo
 game, with idempotency receipts. `td0008` freezes delivered orientations, order,

@@ -1,5 +1,16 @@
 # Taste Duel engineering rules
 
+### Prompt 13 enforced audit rules - 27 October 2026
+
+Use fresh server script nonces, never a caller nonce or unrestricted production
+inline scripts. Keep React Aria inline-style compatibility explicit. Do not
+identity-throttle by the forwarding IP. Verified guest scopes and shared private
+provider reservations enforce bounded calls before execution; failed work is not
+refunded. Bound request bytes, chunk count and receive time, and contain raw
+exception text before ASGI logging. Never equate axe/CSS zoom with screen-reader
+or native-zoom acceptance, lab samples with field INP, or zero advisories with
+zero risk. [Exact limits and exclusions](../apps/api/AUDIT.md).
+
 ### Prompt 12 rules now enforced - 27 October 2026
 
 Freeze delivered sides, not original pool orientation. Keep slug entropy at 256

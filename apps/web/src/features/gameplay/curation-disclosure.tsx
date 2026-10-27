@@ -38,10 +38,10 @@ export function CurationDisclosure({
             : "QLOO · CULTURAL RANKING SOURCE"}
         </p>
         <p>
-          {summary.curator_mode === "genuine_agent"
-            ? "A bounded agent selected the curation strategy. Deterministic validators controlled eligibility and winners."
-            : fixture
-              ? "Prewritten test evidence, not real cultural ranking."
+          {fixture
+            ? "Prewritten test evidence, not real cultural ranking."
+            : summary.curator_mode === "genuine_agent"
+              ? "A bounded agent selected the curation strategy. Deterministic validators controlled eligibility and winners."
               : "A deterministic curator constructed this journey from Qloo evidence. No live agent is claimed."}
         </p>
         <p>

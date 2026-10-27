@@ -345,6 +345,7 @@ export function LiveGame({ gameId }: { gameId: string }) {
   if (!game || !round)
     return (
       <StatusPanel
+        live="polite"
         eyebrow="TASTE DUEL · YOUR SAVED GAME"
         title={
           expired

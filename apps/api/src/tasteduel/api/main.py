@@ -25,6 +25,7 @@ from starlette.exceptions import HTTPException
 from pydantic import ValidationError
 
 from tasteduel.adapters.read_repository import SqlReadRepository
+from tasteduel.adapters.usage_budget import ModelDailyBudget, UsageDenied, reserve
 from tasteduel.api import presenters, schemas as s
 from tasteduel.api.body_limit import BoundedBodyMiddleware
 from tasteduel.application.errors import AppError
@@ -43,7 +44,9 @@ from tasteduel.ports.qloo import ResolveSeedRequest
 Key = Annotated[
     str, Header(alias="Idempotency-Key", min_length=16, max_length=128, pattern=r"^[A-Za-z0-9_-]+$")
 ]
-ERRORS = {code: {"model": s.ErrorEnvelope} for code in (401, 403, 404, 409, 410, 413, 422, 429, 501, 503)}
+ERRORS = {
+    code: {"model": s.ErrorEnvelope} for code in (401, 403, 404, 408, 409, 410, 413, 422, 429, 501, 503)
+}
 
 
 def create_app(
@@ -68,12 +71,22 @@ def create_app(
             except (AppError, SQLAlchemyError):
                 app.state.qloo_status = "QLOO_DATABASE_UNAVAILABLE"
         if generator is None and settings.generation_enabled and app.state.qloo is not None:
-            from tasteduel.adapters.vertex_curator import VertexCuratorModel
+            from tasteduel.adapters.vertex_curator import MODEL, VertexCuratorModel
             from tasteduel.agents.round_curator import RoundCuratorAgent
 
             try:
                 async with asyncio.timeout(5):
-                    model = await asyncio.to_thread(VertexCuratorModel, project=settings.vertex_project)
+                    model = await asyncio.to_thread(
+                        VertexCuratorModel,
+                        project=settings.vertex_project,
+                        daily_budget=ModelDailyBudget(
+                            database(),
+                            project=settings.vertex_project,
+                            model=MODEL,
+                            requests=settings.vertex_requests_per_day,
+                            tokens=settings.vertex_tokens_per_day,
+                        ),
+                    )
             except Exception:
                 # Explicitly labelled deterministic-Qloo resilience; never fixtures.
                 model = None
@@ -141,9 +154,42 @@ def create_app(
                     request, AppError(403, "ORIGIN_NOT_ALLOWED", "This request origin is not allowed.")
                 )
             length = request.headers.get("content-length", "0")
-            if not length.isdigit() or int(length) > 16_384:
+            if len(length) > 8 or not length.isascii() or not length.isdigit() or int(length) > 16_384:
                 return error(request, AppError(413, "REQUEST_TOO_LARGE", "This request is too large."))
-        response = await call_next(request)
+        if (
+            request.url.path.startswith("/v1/")
+            and not request.url.path.startswith("/v1/health/")
+            and not (request.method == "DELETE" and request.url.path == "/v1/sessions/current")
+            and request.cookies.get(settings.cookie_name)
+        ):
+            try:
+                await asyncio.to_thread(admit_guest_request, request)
+            except AppError as failure:
+                optional_cookie = (request.method == "POST" and request.url.path == "/v1/sessions") or (
+                    request.method == "GET"
+                    and re.fullmatch(r"/v1/challenges/[A-Za-z0-9_-]{22,80}", request.url.path) is not None
+                )
+                if not (failure.status == 401 and optional_cookie):
+                    return error(request, failure)
+            except SQLAlchemyError:
+                return error(
+                    request,
+                    AppError(
+                        503, "DATABASE_UNAVAILABLE", "The service is temporarily unavailable.", retryable=True
+                    ),
+                )
+        try:
+            response = await call_next(request)
+        except Exception:
+            # ServerErrorMiddleware otherwise rethrows after its response, allowing
+            # ASGI server exception logging to print arbitrary secret-bearing text.
+            # Cancellation remains BaseException and is deliberately propagated.
+            return error(
+                request,
+                AppError(
+                    503, "SERVICE_UNAVAILABLE", "The service is temporarily unavailable.", retryable=True
+                ),
+            )
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Request-ID"] = str(request.state.request_id)
         return response
@@ -265,6 +311,34 @@ def create_app(
             )
         )
         return s.SessionPublic(active=True, expires_at=row.expires_at, resumable_game_ids=ids)
+
+    def admit_guest_request(request):
+        # Only a verified random guest token determines scope. No IP, forwarding
+        # header, fingerprint, search text or personal preference is recorded.
+        try:
+            with owned_db(request) as (db, row):
+                scope = hashlib.sha256(f"guest-admission:{row.id}".encode()).hexdigest()
+                path = request.url.path
+                if path == "/v1/entities/search":
+                    bucket, limit, seconds = "guest-search", settings.guest_searches_per_minute, 60
+                elif path == "/v1/games" and request.method == "POST":
+                    bucket, limit, seconds = (
+                        "guest-generation",
+                        settings.guest_generations_per_ten_minutes,
+                        600,
+                    )
+                elif request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+                    bucket, limit, seconds = "guest-mutation", settings.guest_mutations_per_minute, 60
+                else:
+                    bucket, limit, seconds = "guest-read", settings.guest_reads_per_minute, 60
+                reserve(db, scope, bucket, limit=limit, seconds=seconds)
+        except UsageDenied:
+            raise AppError(
+                429,
+                "SESSION_RATE_LIMITED",
+                "Too many requests in this guest session. Wait briefly and retry.",
+                retryable=True,
+            ) from None
 
     @app.post(
         "/v1/sessions",
@@ -723,7 +797,7 @@ def create_app(
             revision = connection.execute(
                 text("SELECT version_num FROM tasteduel.tasteduel_alembic_version LIMIT 1")
             ).scalar_one()
-            if revision != "td0008":
+            if revision != "td0009":
                 raise AppError(503, "SCHEMA_NOT_READY", "The local schema is not ready.", retryable=True)
         return s.HealthPublic(status="ok", generation_available=app.state.generator is not None)
 

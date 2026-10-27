@@ -165,6 +165,10 @@ function safeSetCookie(
   return `${COOKIE}=${token}; Path=/; Max-Age=${age}; HttpOnly; SameSite=Lax${local ? "" : "; Secure"}`;
 }
 const messages: Record<string, string> = {
+  SESSION_RATE_LIMITED:
+    "This guest session has made too many requests. Pause, then retry the same saved action.",
+  REQUEST_TIMEOUT:
+    "The request body took too long. Retry the same saved action.",
   CHALLENGE_EXPIRED: "This challenge has expired. Start a new solo game.",
   CHALLENGE_REVOKED:
     "This challenge is no longer available. Start a new solo game.",

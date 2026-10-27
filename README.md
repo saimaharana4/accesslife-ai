@@ -1,6 +1,26 @@
 # Taste Duel
 
-**Current status — Prompt 12, 27 October 2026:** completed solo games can create
+**Current status - Prompt 13, 27 October 2026:** local audit and hardening added
+per-response script nonces, shared guest/provider budgets, bounded request bodies,
+safe exception handling, stable guest controls and accessible async-state feedback.
+Passed **665 backend tests, 61 Node checks and 36 distinct browser cases** with
+117 full axe executions, no rule exclusions. Inspected renders and secrecy checks
+cover Why-this-duel, curation, HTML/RSC/DTOs, logs and original OG output.
+
+Final production-build smoke: LCP **1.416/1.064 s** (landing/gameplay), CLS
+**0.04969/0.03103**, JS **144.6 kB initial + 8.3 kB gameplay**, pressed DOM feedback
+**76 ms**. One final sample per route/press; the linked full lab has 16 navigations,
+five presses and 30 accepted warm answers (p95 **132.71 ms**, five warm-ups excluded).
+These are identified local lab results, not field INP/p75 or cloud cold starts.
+
+Provider-free production preview: **http://127.0.0.1:3001**.
+[Changes, exact commands, evidence and release boundaries](apps/api/AUDIT.md).
+Actual screen-reader/native browser-zoom acceptance remains unverified (CSS 200%
+emulation passed; native helper unavailable). Legacy key coordination, retention
+cleanup and deployed checks remain release gates. No provider/cloud calls or push.
+Next: **Prompt 14**. Earlier milestone descriptions below are historical.
+
+**Historical Prompt 12 status, 27 October 2026:** completed solo games can create
 an idempotent, expiring friend challenge. Isolated guests replay exactly the five
 delivered comparisons, order and sides with independent scores and no new provider
 calls. Invitations, copy/share fallback, owner revocation and original social
@@ -302,7 +322,7 @@ Duel delivery infrastructure.
 
 ## Execute one iteration at a time
 
-The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next numbered step: Prompt 13 - accessibility, performance and security.** Prompt 8's stronger live corrective-value gate and broader coverage remain open. Historical Prompt 2 used exactly twelve Qloo requests; Prompts 3–7 added zero live calls or Secret Manager payload access. Prompt 8 and Prompt 10 have separately recorded non-renewing budgets. Do not reset an exhausted or closed ledger on resume or in a clean clone.
+The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next numbered step: Prompt 14 - packaging and CI.** Prompt 8's stronger live corrective-value gate and broader coverage remain open. Historical Prompt 2 used exactly twelve Qloo requests; Prompts 3–7 added zero live calls or Secret Manager payload access. Prompt 8 and Prompt 10 have separately recorded non-renewing budgets. Do not reset an exhausted or closed ledger on resume or in a clean clone.
 
 Read its shared requirements, then paste the complete numbered prompt. Do not run all prompts as a single implementation request. Independent synthetic visual work can proceed during a provider outage, but it cannot pass the genuine integration gate.
 
