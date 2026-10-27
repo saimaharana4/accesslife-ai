@@ -1,4 +1,5 @@
-name: Taste Duel verification
+name: Taste Duel production verification
+run-name: Taste Duel production checks
 
 on:
   push:
@@ -113,7 +114,7 @@ jobs:
             sleep 2
           done
           TASTEDUEL_FIXTURE_URL=http://127.0.0.1:3001 corepack pnpm test:fixtures
-          # Prompt 13 journeys mock only the browser API. Run them against the
+          # Browser journeys mock only the browser API. Run them against the
           # real production-mode web shell, not the separate fictional demo.
           TASTEDUEL_TEST_WEB_URL=http://127.0.0.1:13001 corepack pnpm test:audit
 
