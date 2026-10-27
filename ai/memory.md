@@ -3,9 +3,9 @@
 
 Keep each dated entry to one or two lines. Record completed work and verified outcomes; distinguish requirements, measurements and blockers. Never include secrets, personal profiles or unverified success claims.
 
-**Current direction - 27 October 2026:** Taste Duel is the active local application; Prompt 14 packages Compose/CI and preserves AccessLife services and data. No cloud resources are provisioned; earlier AccessLife results below are historical.
+**Current direction - 27 October 2026:** Taste Duel is the active local application; Prompt 14's isolated Compose runtime and CI passed, while AccessLife services/data remain preserved. No cloud resources are provisioned; earlier AccessLife results below are historical.
 
-- **2026-10-27 - Prompt 14:** Isolated Compose migrated through `td0009`; 666 backend tests, 61 Node checks, 36 audits and 21 fixture-browser cases passed, plus replay-after-API-restart with zero provider calls. Search dropdown now renders an 18px SVG chevron; remote CI remains pending.
+- **2026-10-27 - Prompt 14:** Isolated Compose migrated through `td0009`; 666 backend tests, 61 Node checks, 36 audits and 21 fixture-browser cases passed, plus replay-after-API-restart with zero provider calls. Search uses an 18px SVG chevron; remote CI run [40486806414](https://github.com/saimaharana4/accesslife-ai/actions/runs/40486806414) passed browser/axe, secret-scan and Terraform checks for `ba8cf914`.
 
 ## Historical AccessLife milestones (recorded at the time)
 

@@ -7,8 +7,11 @@ migrated through `td0009`; API/web health returned 200. The synthetic creator
 result and fixed challenge replay survived an API restart with zero provider calls.
 The search disclosure is now an 18px SVG chevron; desktop render and keyboard
 open/close checks pass. **666 backend tests, 61 Node checks, 36 full audit cases
-and 21 fixture-browser cases** pass; remote CI is pending. No cloud resources
-were provisioned.
+and 21 fixture-browser cases** pass. Remote CI passed for commit
+[`ba8cf914`](https://github.com/saimaharana4/accesslife-ai/commit/ba8cf914df4d546d405b00914aa601b3fd183791)
+in [run 40486806414](https://github.com/saimaharana4/accesslife-ai/actions/runs/40486806414),
+including full browser/axe, tracked-source secret scanning and Terraform static
+validation. No cloud resources were provisioned.
 
 **Historical Prompt 13 status - 27 October 2026:** local audit and hardening added
 per-response script nonces, shared guest/provider budgets, bounded request bodies,
@@ -326,12 +329,12 @@ before hydration. Visual review corrected desktop action placement, mobile
 headline sizing, clipped fallback content and the seam between unequal stacked
 cards. Computed enabled-action contrast is 16.70:1. Human screen-reader testing,
 actual browser zoom, other browser engines and real-user playtesting remain
-unverified. The Compose stack/CI are legacy and were not validated as Taste
-Duel delivery infrastructure.
+unverified. AccessLife-specific Compose and cloud workflows remain historical;
+the isolated Taste Duel Compose runtime and CI were validated in Prompt 14.
 
 ## Execute one iteration at a time
 
-The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next numbered step: Prompt 14 - packaging and CI.** Prompt 8's stronger live corrective-value gate and broader coverage remain open. Historical Prompt 2 used exactly twelve Qloo requests; Prompts 3–7 added zero live calls or Secret Manager payload access. Prompt 8 and Prompt 10 have separately recorded non-renewing budgets. Do not reset an exhausted or closed ledger on resume or in a clean clone.
+The source of execution instructions is [ai/prompts.md](ai/prompts.md), containing 21 bounded prompts with agent ownership and completion gates. **Next numbered step: Prompt 15 - test whether the game is genuinely enjoyable and understandable.** Prompt 8's stronger live corrective-value gate and broader coverage remain open. Historical Prompt 2 used exactly twelve Qloo requests; Prompts 3–7 added zero live calls or Secret Manager payload access. Prompt 8 and Prompt 10 have separately recorded non-renewing budgets. Do not reset an exhausted or closed ledger on resume or in a clean clone.
 
 Read its shared requirements, then paste the complete numbered prompt. Do not run all prompts as a single implementation request. Independent synthetic visual work can proceed during a provider outage, but it cannot pass the genuine integration gate.
 
@@ -382,7 +385,7 @@ git show accesslife-before-taste-duel-2026-10-24:README.md
 git rev-parse 'accesslife-before-taste-duel-2026-10-24^{commit}'
 ```
 
-The existing `scripts/dev.ps1`, Compose stack, application E2E suite and cloud workflows still describe legacy backend integration and are **not** the new fixture frontend's startup/verification path. Use the commands above and isolated `test:fixtures` suite. Legacy CI has not been migrated or run as Taste Duel CI; no push was made to trigger it. Container/CI replacement remains Prompt 14.
+The existing `scripts/dev.ps1` and AccessLife cloud workflows remain historical. Taste Duel now uses the isolated Compose stack and CI described in [the runtime guide](apps/api/CONTAINERS.md); the Prompt 14 workflow passed on 27 October 2026. `test:fixtures` remains an explicitly synthetic UI suite, separate from genuine provider integration.
 
 For source rollback, inspect the tag or use an explicitly isolated worktree outside the new build context; do not hard-reset user work or roll back a live database automatically. [Legacy operations](infra/README.md) and [legacy cost review](infra/COST_REVIEW.md) remain AccessLife baseline documents until their migration stages.
 
