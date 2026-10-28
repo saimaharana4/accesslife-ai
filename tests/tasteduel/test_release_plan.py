@@ -262,6 +262,36 @@ def test_apply_inputs_cannot_change_approved_images_source_tester_or_phase():
         applier.plan_inputs(plan, {**review, "phase": "services"}, IMAGES, TESTER)
 
 
+@pytest.mark.parametrize("actual,expected,valid", [
+    ("true", True, True), ("false", False, True), ("84.03", 84.03, True),
+    ("90", 90, True), ("TRUE", True, False), (1, True, False),
+    ("1", True, False), (True, 1, False), ("false", True, False),
+    ("01", 1, False), ("https://fixed.run.app", "https://fixed.run.app", True),
+])
+def test_saved_environment_scalar_validation_is_typed_and_fail_closed(actual, expected, valid):
+    assert applier.saved_input_matches(actual, expected) is valid
+
+
+def test_image_tools_resolve_platform_executables_without_shell_or_credentials(monkeypatch):
+    from types import SimpleNamespace
+
+    captured = []
+    monkeypatch.setattr(publisher.shutil, "which", lambda name: "/reviewed/bin/" + name)
+
+    def run(arguments, **kwargs):
+        captured.append((arguments, kwargs))
+        return SimpleNamespace(returncode=0, stdout="safe-result")
+
+    monkeypatch.setattr(publisher.subprocess, "run", run)
+    assert publisher.process(["gcloud", "auth", "configure-docker", "--quiet"]) == "safe-result"
+    assert captured[0][0][0] == "/reviewed/bin/gcloud"
+    assert captured[0][1].get("shell") is not True
+    monkeypatch.setattr(publisher.shutil, "which", lambda name: None)
+    with pytest.raises(release.PlanBlocked, match="IMAGE_TOOL_UNAVAILABLE"):
+        publisher.process(["gcloud"])
+    assert len(captured) == 1
+
+
 def test_apply_command_is_saved_plan_only_with_environment_names_and_read_only_adc(tmp_path):
     marker = "SYNTHETIC_PRIVATE_CREDENTIAL_NOT_ARGV"
     command = applier.apply_command(tmp_path, tmp_path / "adc.json", {"TF_VAR_database_password": marker})

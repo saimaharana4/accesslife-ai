@@ -39,13 +39,29 @@ def verify(directory: Path, review: dict, approval: dict, cost: dict) -> dict:
     return variables
 
 
+def saved_input_matches(actual, expected) -> bool:
+    # Terraform 1.13's plan JSON can retain TF_VAR scalar input strings before
+    # type conversion. Decode only an expected boolean/number, never strings,
+    # credential values or provider attributes.
+    if type(expected) in (bool, int, float) and isinstance(actual, str):
+        try:
+            actual = json.loads(actual)
+        except (ValueError, TypeError):
+            return False
+    if type(expected) is bool:
+        return type(actual) is bool and actual == expected
+    if type(expected) in (int, float):
+        return type(actual) in (int, float) and actual == expected
+    return type(actual) is type(expected) and actual == expected
+
+
 def plan_inputs(plan: dict, review: dict, images: dict, tester: str) -> dict:
     actual = {key: item.get("value") for key, item in plan.get("variables", {}).items()}
     expected = {"tasteduel_release_migration_enabled": True,
                 "tasteduel_release_services_enabled": review["phase"] == "services",
                 "tasteduel_release_api_image": images["api"], "tasteduel_release_web_image": images["web"],
                 "tasteduel_release_source_sha": images["source_sha"], "tasteduel_candidate_tester": tester}
-    if images["source_sha"] != review["image_source_sha"] or any(actual.get(key) != value for key, value in expected.items()):
+    if images["source_sha"] != review["image_source_sha"] or any(not saved_input_matches(actual.get(key), value) for key, value in expected.items()):
         raise foundation.PlanBlocked("RELEASE_SAVED_INPUTS_MISMATCH")
     return expected
 
@@ -79,7 +95,7 @@ def main() -> int:
         adc = foundation.adc_path()
         plan = json.loads(foundation.terraform(directory, adc, {}, "show", "-json", "release.tfplan"))
         saved_variables = {key: item.get("value") for key, item in plan.get("variables", {}).items()}
-        if any(saved_variables.get(key) != value for key, value in variables.items()):
+        if any(not saved_input_matches(saved_variables.get(key), value) for key, value in variables.items()):
             raise foundation.PlanBlocked("COST_OR_FOUNDATION_INPUTS_CHANGED_AFTER_PLAN")
         variables.update(plan_inputs(plan, review, images, args.tester))
         audited = audit_release(plan, phase=review["phase"], images=images, tester=args.tester, project_number=args.project_number)

@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 import re
 import secrets
+import shutil
 import subprocess
 import tarfile
 from urllib.request import Request, urlopen
@@ -36,6 +37,10 @@ def verified_ci(run: dict, source_sha: str) -> dict:
 
 
 def process(arguments: list[str], *, binary: bool = False) -> str | bytes:
+    executable = shutil.which(arguments[0])
+    if executable is None:
+        raise PlanBlocked("IMAGE_TOOL_UNAVAILABLE")
+    arguments = [executable, *arguments[1:]]
     result = subprocess.run(arguments, cwd=ROOT, capture_output=True, text=not binary)
     if result.returncode:
         # Docker/gcloud/git diagnostics can contain local credential context.
