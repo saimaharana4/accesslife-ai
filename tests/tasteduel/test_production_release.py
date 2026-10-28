@@ -65,7 +65,9 @@ def service(actor, phase, record):
 
 def plan(phase, record=None):
     record = record or manifest()
-    prior = "production-pin" if phase in {"production-pin", "production-candidate"} else "production-candidate"
+    prior = ("production-pin" if phase in {"production-pin", "production-candidate"} else
+             "production-seal" if phase == "production-rollback" else
+             "production-rollback" if phase == "production-rollforward" else "production-candidate")
     changes = []
     for actor in ("api", "web"):
         after, before = service(actor, phase, record), service(actor, prior, record)
@@ -103,7 +105,7 @@ def test_declared_finite_production_phases_are_reviewable_not_automatically_appl
     result = production.audit_production(plan(phase), manifest(), phase)
     assert result["status"] == "REVIEWABLE"
     assert result["requires_independent_review"] is True
-    assert result["public_access"] == (phase in {"production-promote", "production-rollback"})
+    assert result["public_access"] == (phase in {"production-promote", "production-rollback", "production-rollforward"})
 
 
 def test_rollback_pair_is_prepared_privately_before_reused_for_public_traffic():
@@ -119,6 +121,32 @@ def test_rollback_pair_is_prepared_privately_before_reused_for_public_traffic():
     assert rollback["tasteduel_observability_enabled"] is True
     assert rollback["tasteduel_vertex_requests_per_day"] == 50
     assert rollback["tasteduel_qloo_requests_per_day"] == 100
+
+
+@pytest.mark.parametrize("phase", ["production-rollback", "production-rollforward"])
+def test_live_revision_rehearsal_preserves_public_access_monitoring_and_configuration(phase):
+    record = manifest()
+    variables = production.phase_variables(record, phase)
+    assert variables["tasteduel_public_enabled"] is True
+    assert variables["tasteduel_observability_enabled"] is True
+    assert variables["tasteduel_api_candidate_revision"] == record["release"]["api_revision"]
+    target = record["rollback" if phase == "production-rollback" else "release"]
+    assert variables["tasteduel_api_traffic_revision"] == target["api_revision"]
+    assert variables["tasteduel_web_traffic_revision"] == target["web_revision"]
+    declared = plan(phase, record)
+    assert production.audit_production(declared, record, phase)["status"] == "REVIEWABLE"
+    # A traffic-only rehearsal cannot silently add a temporary origin or change quota.
+    environment = declared["resource_changes"][0]["change"]["before"]["template"][0]["containers"][0]["env"]
+    next(item for item in environment if item["name"] == "TASTEDUEL_VERTEX_REQUESTS_PER_DAY")["value"] = "10"
+    assert production.audit_production(declared, record, phase)["status"] == "BLOCKED"
+    declared = plan(phase, record)
+    declared["resource_changes"][0]["change"]["before"]["template"][0]["revision"] = "tasteduel-api-unreviewed"
+    assert production.audit_production(declared, record, phase)["status"] == "BLOCKED"
+    declared = plan(phase, record)
+    declared["resource_changes"].append({"address": "google_cloud_run_v2_service_iam_member.tasteduel_web_public[0]",
+        "change": {"actions": ["create"], "after": {"project": production.PROJECT, "location": production.REGION,
+            "name": "tasteduel-web", "member": "allUsers", "role": "roles/run.invoker"}}})
+    assert production.audit_production(declared, record, phase)["status"] == "BLOCKED"
 
 
 @pytest.mark.parametrize("phase", ["production-candidate", "production-seal", "production-pin"])

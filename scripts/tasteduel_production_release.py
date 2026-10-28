@@ -20,7 +20,7 @@ from tasteduel_foundation_plan import PROJECT, REGION, PlanBlocked, approved_var
 from tasteduel_release_images import REPOSITORY, immutable_reference, process, verified_ci
 
 PHASES = ("production-pin", "production-prepare", "production-candidate", "production-rollback-ready", "production-seal",
-          "production-promote", "production-rollback", "production-observability")
+          "production-promote", "production-rollback", "production-rollforward", "production-observability")
 ORIGIN = "https://tasteduel-web-902056825143.asia-south1.run.app"
 MODEL_LIMIT, QLOO_LIMIT = 50, 100
 
@@ -113,8 +113,8 @@ def phase_variables(manifest: dict, phase: str) -> dict:
     return {
         "tasteduel_release_api_image": images["api"], "tasteduel_release_web_image": images["web"],
         "tasteduel_release_source_sha": images["source_sha"],
-        "tasteduel_public_enabled": phase in {"production-promote", "production-rollback", "production-observability"},
-        "tasteduel_observability_enabled": phase in {"production-observability", "production-rollback"},
+        "tasteduel_public_enabled": phase in {"production-promote", "production-rollback", "production-rollforward", "production-observability"},
+        "tasteduel_observability_enabled": phase in {"production-observability", "production-rollback", "production-rollforward"},
         "tasteduel_api_traffic_revision": target["api_revision"], "tasteduel_web_traffic_revision": target["web_revision"],
         "tasteduel_api_candidate_revision": template["api_revision"] if template else None,
         "tasteduel_web_candidate_revision": template["web_revision"] if template else None,
@@ -210,7 +210,7 @@ def audit_production(plan: dict, manifest: dict, phase: str) -> dict:
             if safe:
                 expected_before = deepcopy(before)
                 expected_before["traffic"] = deepcopy(after["traffic"])
-                if phase != "production-pin":
+                if phase not in {"production-pin", "production-rollback", "production-rollforward"}:
                     environment = {env["name"]: env for env in expected_before["template"][0]["containers"][0]["env"]}
                     replacements = ({"TASTEDUEL_VERTEX_REQUESTS_PER_DAY": str(MODEL_LIMIT),
                         "TASTEDUEL_QLOO_REQUESTS_PER_DAY": str(QLOO_LIMIT),
@@ -220,6 +220,10 @@ def audit_production(plan: dict, manifest: dict, phase: str) -> dict:
                     for name, value in replacements.items():
                         environment[name]["value"] = value
                 safe = image_only_update(expected_before, after, actor=actor)
+                if safe and phase in {"production-rollback", "production-rollforward"}:
+                    safe = (before["template"][0]["containers"][0]["image"] == after["template"][0]["containers"][0]["image"]
+                            and before["template"][0].get("revision") == after["template"][0].get("revision")
+                            and all(before.get(key) == after.get(key) for key in ("labels", "terraform_labels", "effective_labels")))
         elif address == ADDRESSES["migrate"] and phase in {"production-prepare", "production-candidate", "production-rollback-ready", "production-seal", "production-rollback"} and operation == ["update"]:
             expected_before = deepcopy(before)
             container = expected_before.get("template", [{}])[0].get("template", [{}])[0].get("containers", [{}])[0]
@@ -240,7 +244,7 @@ def audit_production(plan: dict, manifest: dict, phase: str) -> dict:
         actions.append({"address": address if address in {*ADDRESSES.values(), public_address} else "outside_production_scope", "actions": operation, "approved_scope": bool(safe)})
     blocked |= services_seen != {ADDRESSES["api"], ADDRESSES["web"]}
     return {"status": "BLOCKED" if blocked else "REVIEWABLE", "phase": phase, "actions": actions,
-            "manifest_sha256": digest(manifest), "public_access": phase in {"production-promote", "production-rollback"},
+            "manifest_sha256": digest(manifest), "public_access": phase in {"production-promote", "production-rollback", "production-rollforward"},
             "requires_independent_review": True, "provider_attributes_exported": False}
 
 

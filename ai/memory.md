@@ -122,3 +122,4 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 
 - **2026-10-28 — Candidate gate closed:** User-approved one-attempt verification passed genuine five-round/save/exact replay and eleven axe scans; actual usage ten Qloo HTTP/ten Vertex, counters/windows preserved. Cold web request correlated at 3,361.83ms; public access remains restricted.
 - **2026-10-28 — Production preparation:** Added restricted td0011 expiry operations and compatible release/rollback safeguards; fresh gross-bound forecast US$88.15/US$90. Source validation/release are in progress, not a completed public deployment.
+- **2026-10-28 — Release source checks:** Local full suite passed 980 tests (one separate Compose restart test skipped), production build/typecheck and 66 web contracts passed; strict cloud-browser types, 17 browser secrecy/access contracts, Terraform validation and six cost-guard tests passed. New remote CI and actual public cutover remain pending.

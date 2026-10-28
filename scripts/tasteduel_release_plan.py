@@ -40,7 +40,7 @@ VERIFICATION_ALLOWANCES = {
 }
 PHASES = ("migration", "services", "refresh", *VERIFICATION_ALLOWANCES)
 PRODUCTION_PHASES = ("production-pin", "production-prepare", "production-candidate", "production-rollback-ready", "production-seal",
-                     "production-promote", "production-rollback", "production-observability")
+                     "production-promote", "production-rollback", "production-rollforward", "production-observability")
 
 
 def images_input(record: dict) -> dict:
