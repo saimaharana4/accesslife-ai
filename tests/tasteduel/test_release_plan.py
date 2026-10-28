@@ -418,9 +418,48 @@ def test_apply_inputs_cannot_change_approved_images_source_tester_or_phase():
     ("90", 90, True), ("TRUE", True, False), (1, True, False),
     ("1", True, False), (True, 1, False), ("false", True, False),
     ("01", 1, False), ("https://fixed.run.app", "https://fixed.run.app", True),
+    (None, None, True), ("null", None, False), (None, "null", False),
 ])
 def test_saved_environment_scalar_validation_is_typed_and_fail_closed(actual, expected, valid):
     assert applier.saved_input_matches(actual, expected) is valid
+
+
+def test_nullable_environment_inputs_are_absent_not_literal_null_and_other_values_remain_typed():
+    values = {"candidate_revision": None, "candidate_tag": None, "enabled": False, "limit": 10,
+              "origin": "https://example.invalid", "literal_string": "null", "empty": ""}
+    result = release.terraform_environment(values)
+    assert "TF_VAR_candidate_revision" not in result
+    assert "TF_VAR_candidate_tag" not in result
+    assert result == {"TF_VAR_enabled": "false", "TF_VAR_limit": "10", "TF_VAR_origin": "https://example.invalid",
+                      "TF_VAR_literal_string": "null", "TF_VAR_empty": ""}
+    assert values["candidate_revision"] is None
+    assert not applier.saved_input_matches(result["TF_VAR_literal_string"], None)
+
+
+def test_credential_environment_omits_nullable_inputs_without_changing_existing_secret_resolution(monkeypatch):
+    from types import SimpleNamespace
+    from google.cloud import secretmanager
+
+    references = []
+
+    def access_secret_version(*, request):
+        reference = request["name"]
+        references.append(reference)
+        if reference == release.LEGACY_PASSWORD:
+            value = "synthetic-password-not-a-real-credential"
+        else:
+            role = "tasteduel_runtime" if reference == release.secret_reference("api") else "tasteduel_migrator"
+            value = f"postgresql+psycopg://{role}:synthetic-password@/tasteduel?host=/cloudsql/{release.CONNECTION}"
+        return SimpleNamespace(payload=SimpleNamespace(data=value.encode()))
+
+    monkeypatch.setattr(secretmanager, "SecretManagerServiceClient",
+                        lambda: SimpleNamespace(access_secret_version=access_secret_version))
+    environment = release.credential_environment({"tasteduel_candidate_tag": None, "tasteduel_public_enabled": False})
+    assert "TF_VAR_tasteduel_candidate_tag" not in environment
+    assert environment["TF_VAR_tasteduel_public_enabled"] == "false"
+    assert environment["TF_VAR_database_password"] == "synthetic-password-not-a-real-credential"
+    assert environment["TF_VAR_tasteduel_runtime_password"] == environment["TF_VAR_tasteduel_migration_password"] == "synthetic-password"
+    assert references == [release.LEGACY_PASSWORD, release.secret_reference("api"), release.secret_reference("migrate")]
 
 
 def test_image_tools_resolve_platform_executables_without_shell_or_credentials(monkeypatch):

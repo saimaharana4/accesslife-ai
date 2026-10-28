@@ -254,6 +254,17 @@ def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_
             "requires_independent_review": True, "provider_attributes_exported": False}
 
 
+def terraform_environment(values: dict) -> dict[str, str]:
+    """Omit Python None so nullable Terraform inputs retain their null defaults.
+
+    TF_VAR string inputs use literal string parsing: the text "null" would be
+    a real string, not Terraform null. Keep actual strings unchanged; serialize
+    booleans/numbers as before. Required missing inputs still fail Terraform.
+    """
+    return {"TF_VAR_" + key: value if isinstance(value, str) else json.dumps(value)
+            for key, value in values.items() if value is not None}
+
+
 def credential_environment(variables: dict) -> dict:
     from google.cloud import secretmanager
     from sqlalchemy.engine import make_url
@@ -271,7 +282,7 @@ def credential_environment(variables: dict) -> dict:
                 or url.query.get("host") != "/cloudsql/" + CONNECTION or not url.password):
             raise PlanBlocked("ESTABLISHED_DATABASE_CREDENTIAL_REFERENCE_INVALID")
         values[variable] = url.password
-    return {"TF_VAR_" + key: json.dumps(value) if not isinstance(value, str) else value for key, value in values.items()}
+    return terraform_environment(values)
 
 
 def main() -> int:
