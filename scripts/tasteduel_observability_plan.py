@@ -23,6 +23,10 @@ EXCLUSION_DESCRIPTION = ("Exclude only Taste Duel Cloud Run HTTP request logs; r
 ALERT_DOCUMENTATION = ("Taste Duel canonical readiness has failed for fifteen minutes. Inspect sanitized "
     "generation/error/admission events and shared quota state. Keep the API private; do not reset counters or retry "
     "providers without a bounded review. Incidents appear in Monitoring; no external notification recipient is configured.")
+TEXT_EVENT_PATTERN = r'^INFO: +[{]"event":"(generation|request_error|provider_admission_snapshot)",'
+SANITIZED_EVENT_FILTER = ('resource.type="cloud_run_revision" AND resource.labels.service_name="tasteduel-api" AND '
+    '(jsonPayload.event="generation" OR jsonPayload.event="request_error" OR jsonPayload.event="provider_admission_snapshot" '
+    f'OR textPayload=~{json.dumps(TEXT_EVENT_PATTERN)})')
 
 
 def dashboard_document() -> dict:
@@ -42,9 +46,7 @@ def dashboard_document() -> dict:
                         "crossSeriesReducer": "REDUCE_SUM", "groupByFields": ["metric.label.response_code_class"]}}}}]}}},
         {"xPos": 0, "yPos": 8, "width": 12, "height": 6, "widget": {
             "title": "Sanitized generation, errors and admission observations", "logsPanel": {
-                "resourceNames": [f"projects/{PROJECT}"], "filter": 'resource.type="cloud_run_revision" AND '
-                    'resource.labels.service_name="tasteduel-api" AND (jsonPayload.event="generation" OR '
-                    'jsonPayload.event="request_error" OR jsonPayload.event="provider_admission_snapshot")'}}},
+                "resourceNames": [f"projects/{PROJECT}"], "filter": SANITIZED_EVENT_FILTER}}},
     ]}}
 
 

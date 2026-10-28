@@ -4,6 +4,12 @@ variable "tasteduel_observability_enabled" {
   default = false
 }
 
+locals {
+  # The locked Uvicorn formatter prefixes our JSON facts with INFO. Cloud Logging
+  # therefore ingests these as textPayload rather than a structured JSON record.
+  tasteduel_operational_event_text_pattern = "^INFO: +[{]\"event\":\"(generation|request_error|provider_admission_snapshot)\","
+}
+
 resource "terraform_data" "tasteduel_monitoring_gate" {
   count = var.tasteduel_observability_enabled ? 1 : 0
   lifecycle {
@@ -71,7 +77,7 @@ resource "google_monitoring_dashboard" "tasteduel" {
       } },
       { xPos = 0, yPos = 8, width = 12, height = 6, widget = {
         title     = "Sanitized generation, errors and admission observations"
-        logsPanel = { resourceNames = ["projects/${var.project_id}"], filter = "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"tasteduel-api\" AND (jsonPayload.event=\"generation\" OR jsonPayload.event=\"request_error\" OR jsonPayload.event=\"provider_admission_snapshot\")" }
+        logsPanel = { resourceNames = ["projects/${var.project_id}"], filter = "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"tasteduel-api\" AND (jsonPayload.event=\"generation\" OR jsonPayload.event=\"request_error\" OR jsonPayload.event=\"provider_admission_snapshot\" OR textPayload=~${jsonencode(local.tasteduel_operational_event_text_pattern)})" }
       } }
     ] }
   })

@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "project": "project-bb13ecd8-9d67-408d-9a7",
+  "region": "asia-south1",
+  "origin": "https://tasteduel-web-902056825143.asia-south1.run.app",
+  "images": {
+    "source_sha": "e49564c6c4c36840fbc7b4a101793863bd8c330c",
+    "ci": {
+      "id": 40696917534,
+      "html_url": "https://github.com/saimaharana4/taste-duel/actions/runs/40696917534",
+      "head_sha": "e49564c6c4c36840fbc7b4a101793863bd8c330c",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "source_archive_sha256": "8411db09a51b7e16dbdd998873d17fe4a577b959a36e55d156c5683ecdc0e9f1",
+    "images": {
+      "api": {
+        "reference": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-api@sha256:ae65102f9f9a0ac8bac4e9012b27c9a77a36e45e4545bc4f0f2601294c5b442d",
+        "digest": "sha256:ae65102f9f9a0ac8bac4e9012b27c9a77a36e45e4545bc4f0f2601294c5b442d"
+      },
+      "web": {
+        "reference": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-web@sha256:0802225b647d07d38677e81b24a9398d2d410862b5f5ebfe4ab867f3d8bc5dcb",
+        "digest": "sha256:0802225b647d07d38677e81b24a9398d2d410862b5f5ebfe4ab867f3d8bc5dcb"
+      }
+    },
+    "platform": "linux/amd64",
+    "deployed": false,
+    "cost_reviewed_total_usd": 88.15,
+    "cost_ceiling_usd": 90
+  },
+  "baseline": {
+    "api_revision": "tasteduel-api-00005-kdm",
+    "web_revision": "tasteduel-web-00003-9xv",
+    "api_image": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-api@sha256:fe3eed0e056ad9a72c3b63919c9effb26c0d7030945be76b2b9f6f6834e1102f",
+    "web_image": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-web@sha256:0e80d82503a71404e05ed5e0ff4762eac5eec916e0f2783ba2fe7dd0e0e1cddd",
+    "source_sha": "83ede4499ef53ebfcafc9895835b047fbed4b5c6",
+    "vertex_limit": 10,
+    "qloo_limit": 12
+  },
+  "candidate": {
+    "api_revision": "tasteduel-api-r19c-e49564c",
+    "web_revision": "tasteduel-web-r19c-e49564c",
+    "tag": "review-e49564c",
+    "origin": "https://review-e49564c---tasteduel-web-dfthmgvvaa-el.a.run.app",
+    "api_url": "https://review-e49564c---tasteduel-api-dfthmgvvaa-el.a.run.app"
+  },
+  "release": {
+    "api_revision": "tasteduel-api-r19p-e49564c",
+    "web_revision": "tasteduel-web-r19p-e49564c"
+  },
+  "rollback": {
+    "api_revision": "tasteduel-api-r19r-e49564c",
+    "web_revision": "tasteduel-web-r19r-e49564c",
+    "api_image": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-api@sha256:ae65102f9f9a0ac8bac4e9012b27c9a77a36e45e4545bc4f0f2601294c5b442d",
+    "web_image": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-web@sha256:0802225b647d07d38677e81b24a9398d2d410862b5f5ebfe4ab867f3d8bc5dcb",
+    "source_sha": "e49564c6c4c36840fbc7b4a101793863bd8c330c",
+    "vertex_limit": 50,
+    "qloo_limit": 100
+  },
+  "cost_sha256": "9e3c7186d22ffc26f68474205f5e6cfccc49b89ee752c5ef7c1c643c397d0bbc",
+  "reviewed_through_utc": "2026-11-07T04:45:00Z",
+  "schema": {
+    "from": "td0010",
+    "to": "td0011",
+    "backward_compatible": true
+  },
+  "preview_guard": "iam-private-initial"
+}

@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 import json
+import re
 
 import pytest
 
@@ -140,3 +141,24 @@ def test_dashboard_cannot_add_private_raw_logs_or_unrelated_metric_sources():
     dashboard["mosaicLayout"]["tiles"][2]["widget"]["logsPanel"]["filter"] = 'resource.type="cloud_run_revision"'
     after(proposed, review.DASHBOARD)["dashboard_json"] = json.dumps(dashboard)
     assert review.audit_observability(proposed, source.manifest())["status"] == "BLOCKED"
+
+
+@pytest.mark.parametrize("event", ["generation", "request_error", "provider_admission_snapshot"])
+def test_dashboard_matches_actual_uvicorn_text_and_structured_event_envelopes(event):
+    # Observed in the locked local Docker runtime using Uvicorn's default
+    # formatter, no provider/network access or application logger changes.
+    line = "INFO:     " + json.dumps({"event": event, "status": 201}, separators=(",", ":"))
+    assert re.search(review.TEXT_EVENT_PATTERN, line)
+    assert f'jsonPayload.event="{event}"' in review.SANITIZED_EVENT_FILTER
+    assert "textPayload=~" + json.dumps(review.TEXT_EVENT_PATTERN) in review.SANITIZED_EVENT_FILTER
+    assert review.dashboard_document()["mosaicLayout"]["tiles"][2]["widget"]["logsPanel"]["filter"] == review.SANITIZED_EVENT_FILTER
+
+
+@pytest.mark.parametrize("line", [
+    'INFO:     {"event":"arbitrary_metadata","status":200}',
+    'INFO:     request /entities/search?query=SYNTHETIC',
+    'INFO:     {"message":"prefix","event":"generation"}',
+    'ERROR:    {"event":"generation","private":"SYNTHETIC"}',
+])
+def test_dashboard_text_branch_does_not_become_a_generic_text_log_filter(line):
+    assert re.search(review.TEXT_EVENT_PATTERN, line) is None
