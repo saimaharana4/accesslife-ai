@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 function handler(request: Request) {
   return forwardApi(request, {
     apiUrl: process.env.TASTEDUEL_API_URL ?? "",
+    apiAudience: process.env.TASTEDUEL_API_AUDIENCE,
     allowedOrigins: (process.env.TASTEDUEL_WEB_ORIGINS ?? "")
       .split(",")
       .map((s) => s.trim())

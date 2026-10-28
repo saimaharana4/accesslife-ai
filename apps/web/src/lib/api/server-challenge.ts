@@ -9,6 +9,7 @@ import { metadataIdentityToken } from "./identity-token";
 function settings() {
   return {
     apiUrl: process.env.TASTEDUEL_API_URL ?? "",
+    apiAudience: process.env.TASTEDUEL_API_AUDIENCE,
     allowedOrigins: (process.env.TASTEDUEL_WEB_ORIGINS ?? "")
       .split(",")
       .map((s) => s.trim())

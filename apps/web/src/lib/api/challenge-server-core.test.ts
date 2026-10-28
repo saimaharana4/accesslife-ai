@@ -74,6 +74,26 @@ test("public server rendering carries no visitor credentials and uses bounded no
   assert.equal(calls, 1);
 });
 
+test("tagged SSR invitation fetching uses canonical API audience", async () => {
+  const result = await readPublicChallenge(slug, {
+    apiUrl: "https://candidate---private-api.example",
+    apiAudience: "https://private-api.example",
+    allowedOrigins: [origin],
+    identityToken: async (audience) => {
+      assert.equal(audience, "https://private-api.example");
+      return "server-iam";
+    },
+    fetch: async (input) => {
+      assert.equal(
+        String(input),
+        `https://candidate---private-api.example/v1/challenges/${slug}`,
+      );
+      return Response.json(invitation);
+    },
+  });
+  assert.deepEqual(result, { status: 200, invitation });
+});
+
 test("invitation rendering rejects extra answer fields, mismatched slug, stale evidence and redirect/size attacks", async () => {
   const settings = {
     apiUrl: "https://private-api.example",

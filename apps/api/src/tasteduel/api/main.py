@@ -25,6 +25,7 @@ from starlette.exceptions import HTTPException
 from pydantic import ValidationError
 
 from tasteduel.adapters.read_repository import SqlReadRepository
+from tasteduel.adapters.database_secrets import DatabaseConfigurationError, resolve_database_url
 from tasteduel.adapters.usage_budget import ModelDailyBudget, UsageDenied, reserve
 from tasteduel.api import presenters, schemas as s
 from tasteduel.api.body_limit import BoundedBodyMiddleware
@@ -38,7 +39,7 @@ from tasteduel.api.provider_runtime import ProviderStartupFailure, build_qloo_ru
 from tasteduel.config import Settings
 from tasteduel.domain.types import EntityType
 from tasteduel.persistence import models as m
-from tasteduel.persistence.db import local_engine, scoped_session
+from tasteduel.persistence.db import database_engine, scoped_session
 from tasteduel.ports.qloo import ResolveSeedRequest
 
 Key = Annotated[
@@ -122,11 +123,13 @@ def create_app(
 
     def database() -> Engine:
         if app.state.engine is None:
-            if settings.database_url is None:
+            try:
+                value = resolve_database_url(settings)
+                app.state.engine = database_engine(value, mode=settings.database_mode)
+            except DatabaseConfigurationError:
                 raise AppError(
-                    503, "DATABASE_UNAVAILABLE", "The local database is not configured.", retryable=True
-                )
-            app.state.engine = local_engine(settings.database_url.get_secret_value())
+                    503, "DATABASE_UNAVAILABLE", "The database is unavailable.", retryable=True
+                ) from None
         return app.state.engine
 
     def error(request: Request, failure: AppError, fields=()):

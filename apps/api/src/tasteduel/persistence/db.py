@@ -7,18 +7,23 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
-from tasteduel.config import validate_local_url
+from tasteduel.config import validate_database_url
 
 
 def local_engine(url: str, *, migration: bool = False) -> Engine:
-    validate_local_url(url, migration=migration)
+    return database_engine(url, migration=migration)
+
+
+def database_engine(url: str, *, migration: bool = False, mode: str = "local") -> Engine:
+    validate_database_url(url, migration=migration, mode=mode)
     return create_engine(
         url,
         hide_parameters=True,
         pool_pre_ping=True,
-        pool_size=3,
-        max_overflow=1,
-        connect_args={"connect_timeout": 3, "application_name": "tasteduel-foundation"},
+        pool_size=2 if mode == "cloud_sql" else 3,
+        max_overflow=0 if mode == "cloud_sql" else 1,
+        connect_args={"connect_timeout": 3, "application_name": "tasteduel-api",
+                      "options": "-csearch_path=tasteduel,pg_catalog"},
     )
 
 

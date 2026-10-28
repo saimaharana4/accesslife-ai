@@ -7,6 +7,10 @@ COPY runtime/qloo/runner.mjs runtime/qloo/typed-response.mjs runtime/qloo/discov
 
 FROM ghcr.io/astral-sh/uv:0.9.5@sha256:f459f6f73a8c4ef5d69f4e6fbbdb8af751d6fa40ec34b39a1ab469acd6e289b7 AS uv
 FROM python:3.12.13-slim-bookworm@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+ARG SOURCE_REVISION
+LABEL org.opencontainers.image.source="https://github.com/saimaharana4/taste-duel" \
+    org.opencontainers.image.revision="${SOURCE_REVISION}" \
+    org.opencontainers.image.title="Taste Duel API"
 COPY --from=uv /uv /usr/local/bin/uv
 # Node and Python stages use the same Debian generation; Node needs libstdc++.
 RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 \

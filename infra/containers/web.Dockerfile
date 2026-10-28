@@ -22,6 +22,10 @@ EXPOSE 3000
 CMD ["pnpm", "--filter", "web", "dev"]
 
 FROM node:24.18.1-bookworm-slim@sha256:235600a8101ab264e117b1768e925532262668dc9b581ef1dd7d96ced463b8e7
+ARG SOURCE_REVISION
+LABEL org.opencontainers.image.source="https://github.com/saimaharana4/taste-duel" \
+    org.opencontainers.image.revision="${SOURCE_REVISION}" \
+    org.opencontainers.image.title="Taste Duel web"
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 COPY --from=build --chown=node:node /app/apps/web/.next/standalone ./

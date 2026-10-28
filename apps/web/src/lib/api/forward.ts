@@ -6,6 +6,9 @@ import {
 
 export type ForwardSettings = {
   apiUrl: string;
+  // Cloud Run ID-token audience stays the canonical service origin even when
+  // apiUrl targets a reviewed revision tag. Server configuration only.
+  apiAudience?: string;
   allowedOrigins: string[];
   allowLocalHttp?: boolean;
   // Server-only IAM factory. Never accept an inbound Authorization value.
@@ -242,9 +245,20 @@ export async function forwardApi(
   request: Request,
   settings: ForwardSettings,
 ): Promise<Response> {
-  let api: URL, incoming: URL;
+  let api: URL, incoming: URL, audience: string;
   try {
     api = new URL(settings.apiUrl);
+    audience = settings.apiAudience ?? api.origin;
+    if (settings.apiAudience !== undefined) {
+      const configuredAudience = new URL(settings.apiAudience);
+      if (
+        configuredAudience.protocol !== "https:" ||
+        configuredAudience.origin !== settings.apiAudience ||
+        configuredAudience.username ||
+        configuredAudience.password
+      )
+        throw new Error();
+    }
     const publicUrl = publicRequestUrl(request, settings);
     if (
       api.username ||
@@ -365,7 +379,7 @@ export async function forwardApi(
     if (settings.identityToken)
       headers.set(
         "Authorization",
-        `Bearer ${await settings.identityToken(api.origin)}`,
+        `Bearer ${await settings.identityToken(audience)}`,
       );
     if (body !== undefined) headers.set("Content-Type", "application/json");
     const target = new URL(path, api);

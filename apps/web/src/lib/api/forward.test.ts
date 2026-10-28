@@ -201,6 +201,60 @@ function settings(
   };
 }
 
+test("revision-tag requests retain the configured canonical IAM audience", async () => {
+  let calls = 0;
+  const response = await forwardApi(request("/sessions/current"), {
+    ...settings(async (input, init) => {
+      calls++;
+      assert.equal(
+        String(input),
+        "https://candidate---private-api.example/v1/sessions/current",
+      );
+      assert.equal(
+        new Headers(init?.headers).get("authorization"),
+        "Bearer SERVER_ONLY",
+      );
+      return Response.json(session);
+    }),
+    apiUrl: "https://candidate---private-api.example",
+    apiAudience: "https://private-api.example",
+    identityToken: async (audience) => {
+      assert.equal(audience, "https://private-api.example");
+      return "SERVER_ONLY";
+    },
+  });
+  assert.equal(response.status, 200);
+  assert.equal(calls, 1);
+});
+
+test("invalid configured IAM audiences fail closed before fetching metadata or API", async () => {
+  for (const apiAudience of [
+    "",
+    "http://private-api.example",
+    "https://user:pass@private-api.example",
+    "https://private-api.example/",
+    "https://private-api.example/path",
+    "https://private-api.example?query=x",
+    "https://private-api.example#fragment",
+  ]) {
+    let calls = 0;
+    const response = await forwardApi(request("/sessions/current"), {
+      ...settings(async () => {
+        calls++;
+        return Response.json(session);
+      }),
+      apiAudience,
+      identityToken: async () => {
+        calls++;
+        return "UNEXPECTED";
+      },
+    });
+    assert.equal(response.status, 503);
+    assert.equal((await response.json()).error.code, "WEB_API_UNCONFIGURED");
+    assert.equal(calls, 0);
+  }
+});
+
 test("forwards only method/path/query, own cookie, idempotency and configured IAM", async () => {
   let calls = 0;
   const response = await forwardApi(
