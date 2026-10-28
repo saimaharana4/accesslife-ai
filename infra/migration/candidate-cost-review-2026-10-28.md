@@ -56,3 +56,47 @@ upper bound plus latency reserve is intentional. [Billing reporting delay and
 day boundaries](https://docs.cloud.google.com/billing/docs/how-to/reports) remain
 limitations. Alerts notify; they do not cap spending. Refresh again before
 public release, extra resources, a longer rollback window or changed limits.
+
+## Bounded verification allowance revision
+
+After three genuine generations used six Qloo and six Vertex calls, a completed
+five-round browser run stopped on a test selector for a closed discovery
+disclosure. The corrected remaining selectors were checked against the actual
+components. One additional generation is bounded by **two more Vertex calls**:
+the stage ceiling becomes **eight total Vertex calls**, while Qloo stays at
+**twelve total upstream calls**, including retries/internal lookups. This is an
+explicit finite revision, not a counter reset or an unlimited retry allowance.
+
+The unchanged US$1.80 model reserve already prices up to 50 requests/day,
+500,000 input tokens/day and 25,600 output tokens/day. Eight calls are below
+50; even eight maximum 10,000-token inputs plus 512-token outputs are below
+those token reserves. The cumulative forecast therefore remains **US$84.03**;
+no new pricing discount or dollar allocation is assumed. SQL, backups, identities,
+Qloo ceiling, runtime limits and the reviewed horizon remain unchanged.
+
+This needs a separately reviewed full-root plan changing only API admission
+configuration from six to eight. The database's lower-limit rule intentionally
+prevents an environment update from raising an existing window automatically.
+Any explicit allowance operation must preserve `used=6`, the existing window
+and expiry, changing only that model counter's limit from six to eight under
+the migration identity. No counter deletion, usage reset or window extension
+is authorized. After the one additional attempt, stop genuine generation tests;
+all replay/restore/expiry checks must be provider-free.
+
+## Final billing refresh — 28 October 10:51:08 IST
+
+The same visible 23–28 October report, currently posted through 27 October
+Pacific, now shows AccessLife gross **INR787.39**, Taste Duel **INR0.01** and
+all unallocated gross **INR1,670.84**. Unrelated labelled usage is excluded.
+The conservative accrued upper bound is **INR2,458.24 / US$25.609668**;
+unlabelled attribution remains unknown and posted/future credits remain ignored.
+
+Remaining hours to 7 November 10:15 IST: **239.397778**. Keeping the full runtime,
+model, storage, miscellaneous and restore reserves, pre-tax components are:
+SQL19.415160 + SSD2.625653 + backup8.649210 + accrued25.609668 + latency2 +
+runtime2.01 + Vertex1.80 + registry/GCS2 + miscellaneous3 + restore0.50 =
+**US$67.6096906598**. After the unchanged 18% tax and 5% FX reserves and upward
+rounding, the refreshed gate is **PASS at US$83.77 of US$90, US$6.23 headroom**.
+This supersedes US$84.03 as the current forecast, not the historical applied-plan
+approval. Private evidence: `final-release-cost-evidence.json`. Billing latency
+and gross attribution remain limitations; this is not a final settled bill.

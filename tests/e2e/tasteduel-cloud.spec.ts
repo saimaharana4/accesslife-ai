@@ -5,10 +5,12 @@ import {
   type Page,
   type TestInfo,
   type Locator,
+  type Route,
 } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { writeFile } from "node:fs/promises";
 import type { ApiSchemas } from "../../apps/web/src/lib/api/contracts";
+import { createResponseAudit } from "../browser-contracts/cloud-response-audit.mjs";
 
 const enabled = process.env.TASTEDUEL_CLOUD_BROWSER_ENABLED === "true";
 test.skip(
@@ -28,7 +30,13 @@ async function persist(
 
 async function tabTo(page: Page, control: Locator) {
   for (let index = 0; index < 36; index++) {
-    if (await control.evaluate((element) => element === document.activeElement))
+    if (
+      await control.evaluate(
+        (element) => element === document.activeElement,
+        undefined,
+        { timeout: 1000 },
+      )
+    )
       return;
     await page.keyboard.press("Tab");
   }
@@ -36,6 +44,7 @@ async function tabTo(page: Page, control: Locator) {
 }
 
 async function inspect(page: Page, info: TestInfo, name: string) {
+  await page.waitForLoadState("networkidle");
   await page.evaluate(() => document.fonts.ready);
   for (const artwork of await page.locator('img[src^="/art/"]').all()) {
     await expect(artwork).toHaveJSProperty("complete", true);
@@ -93,7 +102,9 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
   const token = process.env.TASTEDUEL_CANDIDATE_ID_TOKEN;
   if (!token) throw new Error("Candidate identity unavailable");
   const origin = new URL(baseURL).origin;
-  const responseFindings: string[] = [];
+  const audit = createResponseAudit(token);
+  const responseFindings = audit.findings;
+  const controlledResponses = new Map<string, Promise<void>>();
   const timings: {
     operation: string;
     milliseconds: number;
@@ -144,34 +155,18 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
           observed.replay++;
         checks.push(
           (async () => {
+            let text: string;
             try {
-              const text = await response.text();
-              if (
-                /raw_payload|private_pool|answer_key|thought_signature|chain_of_thought|query_context_hash|"affinity"|hack_[a-z0-9]{20}|sk-proj-/i.test(
-                  text,
-                )
-              )
-                responseFindings.push(
-                  "Forbidden private field in browser API response",
-                );
-              if (text.includes(token!))
-                responseFindings.push(
-                  "Candidate IAM credential echoed in browser response",
-                );
-              const body = JSON.parse(text);
-              if (
-                body.current_round?.state === "unanswered" &&
-                /winning_choice_id|selected_choice_id|curation_summary/.test(
-                  JSON.stringify(body.current_round),
-                )
-              )
-                responseFindings.push("Pre-answer reveal metadata");
+              text = await response.text();
             } catch {
-              if (response.status() < 500)
-                responseFindings.push(
-                  "Unexpected non-JSON browser API response",
-                );
+              const key = response.request().headers()["idempotency-key"];
+              await controlledResponses.get(key);
+              audit.unavailable(key);
+              return;
             }
+            if (response.status() === 204 && method === "DELETE" && !text)
+              return;
+            audit.inspect(text);
           })(),
         );
       });
@@ -239,12 +234,9 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
     // response; retries restore authoritative state, never regenerate a game.
     let lostAnswer = false,
       lostAdvance = false;
-    await page.route("**/api/v1/games/*/answer", async (route) => {
-      if (new URL(route.request().url()).origin !== origin)
-        return route.fallback();
-      if (lostAnswer) return route.fallback();
-      lostAnswer = true;
-      const accepted = await route
+    async function loseAcceptedResponse(route: Route) {
+      const key = route.request().headers()["idempotency-key"];
+      const work = route
         .fetch({
           headers: {
             ...route.request().headers(),
@@ -253,31 +245,35 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
         })
         .catch(() => {
           throw new Error(
-            "Controlled answer request could not confirm acceptance; diagnostics redacted",
+            "Controlled request failed; authenticated diagnostics redacted",
+          );
+        })
+        .then(async (accepted) => {
+          expect(accepted.ok()).toBe(true);
+          expect(audit.confirmControlled(key, await accepted.text())).toBe(
+            true,
           );
         });
-      expect(accepted.ok()).toBe(true);
+      controlledResponses.set(
+        key,
+        work.catch(() => {}),
+      );
+      await work;
       await route.abort("failed");
+    }
+    await page.route("**/api/v1/games/*/answer", async (route) => {
+      if (new URL(route.request().url()).origin !== origin)
+        return route.fallback();
+      if (lostAnswer) return route.fallback();
+      lostAnswer = true;
+      await loseAcceptedResponse(route);
     });
     await page.route("**/api/v1/games/*/advance", async (route) => {
       if (new URL(route.request().url()).origin !== origin)
         return route.fallback();
       if (lostAdvance) return route.fallback();
       lostAdvance = true;
-      const accepted = await route
-        .fetch({
-          headers: {
-            ...route.request().headers(),
-            "X-Serverless-Authorization": `Bearer ${token}`,
-          },
-        })
-        .catch(() => {
-          throw new Error(
-            "Controlled advance request could not confirm acceptance; diagnostics redacted",
-          );
-        });
-      expect(accepted.ok()).toBe(true);
-      await route.abort("failed");
+      await loseAcceptedResponse(route);
     });
 
     async function recover(kind: "answer" | "advance") {
@@ -285,20 +281,11 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
         kind === "answer"
           ? page.getByTestId("reveal-panel")
           : page.getByRole("group", { name: "Round 2 of 5", exact: true });
-      const button = page
-        .getByRole("button", { name: /check saved game|retry|recover/i })
-        .first();
-      // The client may restore accepted server state before an explicit retry
-      // is needed. Both paths must settle the actual accepted mutation.
-      await expect
-        .poll(
-          async () => (await settled.isVisible()) || (await button.isVisible()),
-        )
-        .toBe(true);
-      if (!(await settled.isVisible())) {
-        await tabTo(page, button);
-        await page.keyboard.press("Enter");
-      }
+      // Acceptance was confirmed before aborting the response. Refresh must
+      // restore it without racing focus against an automatically removed retry.
+      await page.waitForLoadState("networkidle");
+      await Promise.all(checks);
+      await page.reload({ waitUntil: "domcontentloaded", timeout: 25_000 });
       await expect(settled).toBeVisible();
     }
     for (let ordinal = 1; ordinal <= 5; ordinal++) {
@@ -311,6 +298,7 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
       expect(state.current_round?.source).toBe("qloo");
       expect(state.curator_mode).toBe("genuine_agent");
       await expect(page.getByTestId("why-this-duel")).toHaveCount(0);
+      await expect(page.getByTestId("curation-disclosure")).toHaveCount(0);
       if (ordinal === 1) {
         await inspect(page, info, "desktop-unanswered");
         await page.setViewportSize({ width: 390, height: 844 });
@@ -372,7 +360,20 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
         ),
       ).size,
     ).toBe(10);
+    await tabTo(
+      page,
+      page.getByTestId("curation-disclosure").locator("summary"),
+    );
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("curation-disclosure")).toContainText(
+      "QLOO · CULTURAL RANKING SOURCE",
+    );
     await inspect(page, info, "mobile-result");
+    await tabTo(
+      page,
+      page.locator("summary").filter({ hasText: "Explore answered choices" }),
+    );
+    await page.keyboard.press("Enter");
     const save = page.getByRole("button", { name: /^Save discovery:/ }).first();
     await tabTo(page, save);
     await page.keyboard.press("Enter");
@@ -394,6 +395,13 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
     const sharePath = await invitation.getAttribute("href");
     if (!sharePath || !/^\/c\/[A-Za-z0-9_-]{22,80}$/.test(sharePath))
       throw new Error("Invalid fixed invitation path");
+    await persist(info, "private-challenge-ref.json", {
+      body: JSON.stringify({
+        creator_session_id: activeOwner,
+        challenge_slug: sharePath.split("/").at(-1),
+      }),
+      contentType: "application/json",
+    });
     const friend = await context({ width: 390, height: 844 });
     const friendPage = await friend.newPage();
     await friendPage.goto(`${baseURL}${sharePath}`);
@@ -446,9 +454,19 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
         `/games/${friendGame}`,
       );
       expect(state.mode).toBe("fixed");
+      // Guest-owned row UUIDs differ by design. Compare displayed frozen
+      // identities/order; private provider identity is checked separately in SQL.
       expect(
-        state.current_round?.choices.map((choice) => choice.entity.id),
-      ).toEqual(frozen[index].choices.map((choice) => choice.entity.id));
+        state.current_round?.choices.map((choice) => [
+          choice.entity.name,
+          choice.entity.type,
+        ]),
+      ).toEqual(
+        frozen[index].choices.map((choice) => [
+          choice.entity.name,
+          choice.entity.type,
+        ]),
+      );
       await tabTo(friendPage, friendPage.getByTestId("choice-card").first());
       await friendPage.keyboard.press("Enter");
       await expect(friendPage.getByTestId("reveal-panel")).toBeVisible();
@@ -459,11 +477,14 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
         throw new Error("Friend answer reveal unavailable");
       const winner = accepted.choices.find(
         (choice) => choice.id === accepted.winning_choice_id,
-      )?.entity.id;
+      )?.entity;
       const originalWinner = frozen[index].choices.find(
         (choice) => choice.id === frozen[index].winning_choice_id,
-      )?.entity.id;
-      expect(winner).toBe(originalWinner);
+      )?.entity;
+      expect([winner?.name, winner?.type]).toEqual([
+        originalWinner?.name,
+        originalWinner?.type,
+      ]);
       await tabTo(friendPage, friendPage.getByTestId("next-action"));
       await friendPage.keyboard.press("Enter");
     }
@@ -490,6 +511,7 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
       await inspect(friendPage, info, "mobile-expired-challenge");
     }
     await Promise.all(checks);
+    expect(audit.confirmedControlled).toBe(2);
     expect(responseFindings).toEqual([]);
     expect(observed.generation).toBe(1);
     expect(observed.search).toBeLessThanOrEqual(2);
@@ -538,8 +560,18 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
   } finally {
     await Promise.all(
       contexts.map(async (session) => {
+        await Promise.all(
+          session
+            .pages()
+            .map((page) =>
+              page.unrouteAll({ behavior: "ignoreErrors" }).catch(() => {}),
+            ),
+        );
         await session.unrouteAll({ behavior: "ignoreErrors" }).catch(() => {});
-        await session.close().catch(() => {});
+        await Promise.race([
+          session.close().catch(() => {}),
+          new Promise((resolve) => setTimeout(resolve, 3000)),
+        ]);
       }),
     );
   }

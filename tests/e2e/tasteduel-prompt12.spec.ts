@@ -82,6 +82,7 @@ async function fixture(
     playKeys: string[] = [],
     unexpected: string[] = [],
     errors: string[] = [];
+  let saved: S["DiscoveryPublic"] | null = null;
   context.on("page", (page) =>
     page.on("pageerror", (error) => errors.push(error.name)),
   );
@@ -107,9 +108,18 @@ async function fixture(
         req.method() === "POST" ? 201 : 200,
       );
     if (path === `/games/${GAME}/results`) return reply(result);
+    if (path === "/discoveries" && req.method() === "POST") {
+      const requested = req.postDataJSON().entity_id;
+      const entity = result.answered_rounds
+        .flatMap((round) => round.choices)
+        .find((choice) => choice.entity.id === requested)?.entity;
+      if (!entity) return reply({}, 400);
+      saved = { entity, saved_at: stamp, expires_at: expires };
+      return reply(saved, 201);
+    }
     if (path === "/discoveries")
       return reply({
-        discoveries: [],
+        discoveries: saved ? [saved] : [],
         expired_count: 0,
         session_expires_at: expires,
       });
@@ -250,6 +260,32 @@ for (const [code, title] of [
     h.check();
   });
 }
+test("synthetic result opens answered choices before an explicit keyboard save", async ({
+  page,
+  context,
+  baseURL,
+}, info) => {
+  const h = await fixture(context, new URL(baseURL!).origin, {});
+  await page.goto(`/results/${GAME}`);
+  await expect(page.getByTestId("result-ticket")).toContainText(/fixture/i);
+  await expect(
+    page.getByRole("button", { name: /^Save discovery:/ }),
+  ).toHaveCount(0);
+  const explore = page
+    .locator("summary")
+    .filter({ hasText: "Explore answered choices" });
+  await explore.focus();
+  await page.keyboard.press("Enter");
+  const save = page.getByRole("button", { name: /^Save discovery:/ }).first();
+  await expect(save).toBeEnabled();
+  await save.focus();
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("button", { name: /^Remove discovery:/ }),
+  ).toBeVisible();
+  await inspect(page, info, "explicit-save-from-answered-choices");
+  h.check();
+});
 test("create response loss retains its key and accessible manual copy does not claim success", async ({
   page,
   context,

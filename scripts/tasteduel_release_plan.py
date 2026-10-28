@@ -7,6 +7,7 @@ explicit execution. No apply, job execution, public IAM, state edit or targeting
 from __future__ import annotations
 
 import argparse
+from copy import deepcopy
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -126,7 +127,7 @@ def safe_service(after: dict, actor: str, images: dict, origin: str, *, api_uri:
                 "TASTEDUEL_QLOO_HTTP_TYPED_SEARCH": "true",
                 "TASTEDUEL_QLOO_SECRET_VERSION": f"projects/{PROJECT}/secrets/accesslife-qloo-api-key/versions/1",
                 "TASTEDUEL_GENERATION_ENABLED": "true", "TASTEDUEL_VERTEX_PROJECT": PROJECT,
-                "TASTEDUEL_VERTEX_REQUESTS_PER_DAY": "6", "TASTEDUEL_VERTEX_TOKENS_PER_DAY": "500000",
+                "TASTEDUEL_VERTEX_REQUESTS_PER_DAY": "8", "TASTEDUEL_VERTEX_TOKENS_PER_DAY": "500000",
                 "TASTEDUEL_QLOO_REQUESTS_PER_DAY": "12", "TASTEDUEL_QLOO_REQUESTS_PER_MINUTE": "12",
             }
         expected_keys = {"TASTEDUEL_API_URL", "TASTEDUEL_API_AUDIENCE", "TASTEDUEL_API_IAM", "TASTEDUEL_WEB_ORIGINS",
@@ -148,9 +149,44 @@ def safe_service(after: dict, actor: str, images: dict, origin: str, *, api_uri:
         return False
 
 
+def image_only_update(before: dict, after: dict, *, actor: str) -> bool:
+    """Permit reviewed candidate digest/source labels only, never policy drift."""
+    old, new = deepcopy(before), deepcopy(after)
+    # Provider-computed output metadata changes as a revision reconciles.
+    computed = {"uid", "etag", "create_time", "update_time", "delete_time", "expire_time",
+                "creator", "last_modifier", "generation", "observed_generation", "reconciling",
+                "terminal_condition", "conditions", "latest_created_revision", "latest_ready_revision",
+                "traffic_statuses", "urls"}
+    try:
+        for value in (old, new):
+            for key in computed:
+                value.pop(key, None)
+            for key in ("labels", "terraform_labels", "effective_labels"):
+                labels = value.get(key)
+                if labels is not None:
+                    labels.pop("source_ref", None)
+            template = value["template"][0]
+            if actor == "migrate":
+                template = template["template"][0]
+            else:
+                template.pop("revision", None)  # generated revision identifier
+            image = template["containers"][0].pop("image")
+            if not re.fullmatch(
+                rf"{REGION}-docker\.pkg\.dev/{PROJECT}/accesslife/tasteduel-{'api' if actor == 'migrate' else actor}@sha256:[0-9a-f]{{64}}",
+                image,
+            ):
+                return False
+        return old == new
+    except (KeyError, IndexError, TypeError, AttributeError):
+        return False
+
+
 def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_number: str) -> dict:
     origin = f"https://tasteduel-web-{project_number}.{REGION}.run.app"
-    allowed = {ADDRESSES[key] for key in (("gate", "migrate", "job_deploy") if phase == "migration" else ADDRESSES)}
+    keys = (("gate", "migrate", "job_deploy") if phase == "migration" else
+            ("migrate", "api", "web") if phase == "refresh" else
+            ("api",) if phase == "verification-budget" else ADDRESSES)
+    allowed = {ADDRESSES[key] for key in keys}
     actions, blocked = [], False
     api_uri = next(((resource.get("change", {}).get("after") or {}).get("uri") for resource in plan.get("resource_changes", [])
                     if resource.get("address") == ADDRESSES["api"]), None)
@@ -160,7 +196,7 @@ def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_
         if operation in (["no-op"], ["read"]):
             continue
         after = change.get("after") or {}
-        safe = address in allowed and operation == ["create"]
+        safe = address in allowed and operation == (["update"] if phase in {"refresh", "verification-budget"} else ["create"])
         if safe and address == ADDRESSES["migrate"]:
             safe = safe_job(after, images)
         elif safe and address in (ADDRESSES["api"], ADDRESSES["web"]):
@@ -176,11 +212,30 @@ def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_
             }[address]
             safe = ((after.get("name"), after.get("role"), after.get("member")) == expected
                     and after.get("project") == PROJECT and after.get("location") == REGION)
+        if safe and phase == "refresh":
+            actor = "migrate" if address == ADDRESSES["migrate"] else "api" if address == ADDRESSES["api"] else "web"
+            safe = (after.get("labels", {}).get("source_ref") == images["source_sha"][:12]
+                    and image_only_update(change.get("before") or {}, after, actor=actor))
+        if safe and phase == "verification-budget":
+            before = deepcopy(change.get("before") or {})
+            try:
+                old_container = before["template"][0]["containers"][0]
+                new_container = after["template"][0]["containers"][0]
+                old_env = env_values(old_container)
+                safe = (old_env.get("TASTEDUEL_VERTEX_REQUESTS_PER_DAY") == "6"
+                        and old_container["image"] == new_container["image"]
+                        and all(before.get(key) == after.get(key) for key in ("labels", "terraform_labels", "effective_labels")))
+                for item in old_container["env"]:
+                    if item["name"] == "TASTEDUEL_VERTEX_REQUESTS_PER_DAY":
+                        item["value"] = "8"
+                safe = safe and image_only_update(before, after, actor="api")
+            except (KeyError, IndexError, TypeError, AttributeError):
+                safe = False
         blocked |= not safe
         actions.append({"address": address if address in ADDRESSES.values() else "outside_release_scope",
                         "actions": operation, "approved_scope": bool(safe)})
     return {"status": "BLOCKED" if blocked or plan.get("errored") else "REVIEWABLE", "phase": phase,
-            "actions": actions, "public_access": False, "initial_service_allocation_percent": 100 if phase == "services" else None,
+            "actions": actions, "public_access": False, "initial_service_allocation_percent": 100 if phase != "migration" else None,
             "requires_independent_review": True, "provider_attributes_exported": False}
 
 
@@ -208,7 +263,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--review", type=Path, required=True)
     parser.add_argument("--images", type=Path, required=True)
-    parser.add_argument("--phase", choices=("migration", "services"), required=True)
+    parser.add_argument("--phase", choices=("migration", "services", "refresh", "verification-budget"), required=True)
     parser.add_argument("--tester", required=True, help="One reviewed user:email IAM principal; no public/group grants")
     parser.add_argument("--project-number", required=True)
     args = parser.parse_args()
@@ -218,7 +273,7 @@ def main() -> int:
         review = json.loads(args.review.read_text(encoding="utf-8"))
         variables = approved_variables(review)
         images = images_input(json.loads(args.images.read_text(encoding="utf-8")))
-        variables.update({"tasteduel_release_migration_enabled": True, "tasteduel_release_services_enabled": args.phase == "services",
+        variables.update({"tasteduel_release_migration_enabled": True, "tasteduel_release_services_enabled": args.phase != "migration",
                           "tasteduel_release_api_image": images["api"], "tasteduel_release_web_image": images["web"],
                           "tasteduel_release_source_sha": images["source_sha"], "tasteduel_candidate_tester": args.tester})
         directory = ROOT / ".data/tasteduel-cloud-review" / ("release-" + args.phase + "-plan-" + secrets.token_hex(8))

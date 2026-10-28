@@ -1,13 +1,13 @@
 # Taste Duel
 
-**Production readiness — 27 October 2026.** The production-mode application, isolated local runtime, and baseline CI checks are verified. Taste Duel is **not deployed to GCP and is not yet a public production service**. The recorded [production verification run](https://github.com/saimaharana4/taste-duel/actions/runs/40491218493) passed on commit `ef5c27c`, including database migrations, provider contracts, container smoke, Playwright, full axe scans, secret scanning, and Terraform validation. The new product-validation changes require their own CI run.
+**Restricted cloud candidate - 28 October 2026.** Genuine Qloo/Vertex solo play, five rounds, explicit discovery save, sharing/social image, exact friend replay and scoped logical recovery have verified cloud evidence. The candidate remains IAM restricted, with no public promotion. A measured cold-start forwarding correction is awaiting its final CI/image refresh. [Execution, immutable images, tests and limitations](infra/migration/candidate-execution-2026-10-28.md).
 
 Taste Duel is a five-round cultural prediction game. A player chooses a familiar artist or film, then predicts which of two Qloo-ranked entities appears higher for that specific seed and query. Qloo supplies the cultural ranking; deterministic code controls eligibility, winners, scoring, and replay. A correct guess measures game performance only. It is never recorded as a preference.
 
 Cloud foundation is verified: the saved plan applied, restricted keyless access
 and new database privileges passed, and shared rollback assets remain preserved.
-The conservative forecast is US$82.84 under the approved US$90 ceiling.
-[Taste Duel application deployment remains pending](infra/migration/foundation-execution-2026-10-27.md).
+The refreshed conservative forecast is US$83.77 under the approved US$90 ceiling.
+[Candidate acceptance remains in progress](infra/migration/candidate-execution-2026-10-28.md).
 
 ## Product experience
 
@@ -43,16 +43,16 @@ The web application uses Next.js App Router and strict TypeScript. The API uses 
 
 The private Qloo adapter resolves seeds and ranked candidates. A bounded Vertex curator can choose among supported sources and refine an inadequate candidate strategy. Deterministic validators and transactions retain authority over every answer. Qloo and Vertex credentials remain server-side; browser DTOs omit future answers and private pools. Challenges store immutable delivered rounds rather than querying providers again.
 
-The local Compose runtime uses separate web, API, migration, and database roles, pinned dependencies, non-root application containers, and a persistent database volume. GCP deployment is a separate release operation and has not been performed.
+The local Compose runtime uses separate web, API, migration, and database roles, pinned dependencies, non-root application containers, and a persistent database volume. The GCP candidate uses IAM-restricted services and managed SQL connectivity; public release is a separate operation.
 
 ## Verification and release status
 
-The [foundation cost review](infra/migration/cost-approval-2026-10-27.md) passes at
-**US$82.84 under the user-approved US$90 ceiling**, preserving seven backups.
+The [current candidate cost review](infra/migration/candidate-cost-review-2026-10-28.md) passes at
+**US$83.77 under the user-approved US$90 ceiling**, preserving seven backups.
 It conservatively includes all unallocated gross usage and assumes no future
 credits. The independently reviewed saved foundation plan applied successfully;
 keyless [authentication passed](https://github.com/saimaharana4/taste-duel/actions/runs/40559171936).
-The repository is now `saimaharana4/taste-duel`. Live database privilege checks passed; Taste Duel services and public traffic have not been deployed.
+The repository is now `saimaharana4/taste-duel`. Live database privilege checks passed; Taste Duel services are IAM restricted; no public product traffic is authorized.
 
 A bounded live quality audit checked Radiohead and Beyoncé → films, and Inception and Spirited Away → artists. All four produced valid five-round paths with ten distinct contestants, using exactly eight Qloo requests and no model calls. Original title cards remain the approved artwork; image metadata alone does not grant reuse rights. Difficulty remains a versioned engineering heuristic, not human calibration. See the [round-quality results](ai/round-quality-validation.md).
 

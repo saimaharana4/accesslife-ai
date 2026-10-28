@@ -1,7 +1,8 @@
 # Taste Duel engineering rules
 
-**Current foundation status ? 27 October 2026:** the user approved a US$90 cumulative ceiling with seven backups preserved. The US$82.84 conservative planning review passed and the saved foundation plan applied. Repository: `saimaharana4/taste-duel`; keyless authentication and scoped secret metadata checks passed. Independent runtime/migration logins and live database privilege checks passed. No Taste Duel services/public traffic are deployed. Earlier US$80 blocked status is historical; see [current cost review](../infra/migration/cost-approval-2026-10-27.md).
+**Current candidate status - 28 October 2026:** IAM-restricted cloud solo generation, five rounds, save/share/OG, exact isolated replay, controlled-response recovery, full axe and scoped logical restore have verified evidence. No public promotion. A measured cold-start forwarding fix is awaiting CI and candidate refresh. Current cumulative forecast: US$83.77 under the approved US$90 ceiling, seven backups retained. Stage usage: eight Qloo/eight Vertex calls; no more genuine generation in this review. See [execution and remaining gates](../infra/migration/candidate-execution-2026-10-28.md).
 
+Dated checkpoints below are historical implementation evidence; superseded deployment/cost statements are not the current operational status. The current record above takes precedence.
 ### Cloud preservation and cost controls — 27 October 2026
 
 Keep old SQL/database/user addresses and backend unchanged. Source now adds
@@ -280,7 +281,7 @@ Reuse accesslife-db with a new tasteduel logical DB. Keep old DB/user resources 
 
 Preserve remote-state bucket/prefix/ownership during app migration. Reviewed moved/import operations only: no fresh empty state, broad destroy, deletion-protection removal or unrelated PharmaGuard modification. Preserve required Qloo readers until rollback expires; copying a key is not rotation. Repository rename needs coordinated narrow WIF/remote/workflows, not owner-wide trust.
 
-The **US$80 budget is cumulative**: AccessLife incurred cost plus pivot/shared SQL/storage/backups/models/API usage, overlap/builds/restore/currency/tax through at least **6 November 2026, 10:15 IST**, plus required follow-up. Historical US$78.48 through 5 November is not fresh headroom. Reprice before provisioning; stop if it fails. Alerts are not caps; reconcile old/new labels and unlabeled costs.
+The **user-approved US$90 budget is cumulative**: AccessLife incurred cost plus pivot/shared SQL/storage/backups/models/API usage, overlap/builds/restore/currency/tax through at least **6 November 2026, 10:15 IST**, plus required follow-up. Historical US$78.48 through 5 November is not fresh headroom. Reprice before provisioning; stop if it fails. Alerts are not caps; reconcile old/new labels and unlabeled costs.
 
 New Cloud Run first revisions cannot be assumed zero-traffic. Use controlled maintenance/IAM bootstrap or document actual restricted allocation, then candidate revisions. Tags may still be reachable at zero-percent; access is separate. Verify exact canonical/candidate origins, API audience, real browser journey and compatible rollback. Different services are not cross-product percentage splits.
 

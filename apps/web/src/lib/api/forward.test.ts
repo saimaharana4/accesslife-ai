@@ -14,6 +14,49 @@ const session = {
   expires_at: "2026-10-27T00:00:00Z",
   resumable_game_ids: [],
 };
+
+test("a measured cold API start can finish without a premature forwarding abort", async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  let release: (value: Response) => void = () => {};
+  let signal: AbortSignal | undefined;
+  const pending = forwardApi(
+    request("/health/ready"),
+    settings(async (_input, init) => {
+      signal = init?.signal ?? undefined;
+      return new Promise<Response>((resolve) => {
+        release = resolve;
+      });
+    }),
+  );
+  t.mock.timers.tick(18000);
+  assert.equal(signal?.aborted, false);
+  release(Response.json({ status: "ok", generation_available: true }));
+  assert.equal((await pending).status, 200);
+});
+
+test("an unresponsive API still reaches a bounded sanitized retryable deadline", async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const pending = forwardApi(
+    request("/health/ready"),
+    settings(
+      async (_input, init) =>
+        new Promise<Response>((_resolve, reject) =>
+          init?.signal?.addEventListener(
+            "abort",
+            () => reject(new Error("SYNTHETIC_PRIVATE_TIMEOUT_DIAGNOSTIC")),
+            { once: true },
+          ),
+        ),
+    ),
+  );
+  t.mock.timers.tick(25000);
+  const response = await pending;
+  assert.equal(response.status, 504);
+  const value = await response.json();
+  assert.equal(value.error.code, "REQUEST_INTERRUPTED");
+  assert.equal(value.error.retryable, true);
+  assert.ok(!JSON.stringify(value).includes("PRIVATE_TIMEOUT"));
+});
 const error = (code = "QLOO_UNAVAILABLE") => ({
   error: {
     code,

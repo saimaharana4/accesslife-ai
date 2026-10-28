@@ -370,7 +370,13 @@ export async function forwardApi(
   const controller = new AbortController();
   const timeout = setTimeout(
     () => controller.abort(),
-    method === "POST" && path === "/v1/games" ? 30000 : 12000,
+    // Cloud Run cold API startup measured 15-18s. Keep the proxy deadline
+    // outside that startup plus bounded provider work; API generation remains 20s.
+    method === "POST" && path === "/v1/games"
+      ? 45000
+      : path === "/v1/entities/search"
+        ? 35000
+        : 25000,
   );
   const abort = () => controller.abort();
   request.signal.addEventListener("abort", abort, { once: true });

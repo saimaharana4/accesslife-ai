@@ -25,7 +25,7 @@ def verify(directory: Path, review: dict, approval: dict, cost: dict) -> dict:
     for field in ("source_sha256", "plan_sha256", "image_source_sha", "phase"):
         if approval.get(field) != review.get(field):
             raise foundation.PlanBlocked("RELEASE_APPROVAL_HASH_OR_PHASE_MISMATCH")
-    if review.get("phase") not in {"migration", "services"}:
+    if review.get("phase") not in {"migration", "services", "refresh", "verification-budget"}:
         raise foundation.PlanBlocked("RELEASE_PHASE_INVALID")
     if source_hash(directory) != review["source_sha256"] or source_hash(foundation.ROOT / "infra/terraform") != review["source_sha256"]:
         raise foundation.PlanBlocked("SOURCE_CHANGED_AFTER_RELEASE_REVIEW")
@@ -58,7 +58,7 @@ def saved_input_matches(actual, expected) -> bool:
 def plan_inputs(plan: dict, review: dict, images: dict, tester: str) -> dict:
     actual = {key: item.get("value") for key, item in plan.get("variables", {}).items()}
     expected = {"tasteduel_release_migration_enabled": True,
-                "tasteduel_release_services_enabled": review["phase"] == "services",
+                "tasteduel_release_services_enabled": review["phase"] != "migration",
                 "tasteduel_release_api_image": images["api"], "tasteduel_release_web_image": images["web"],
                 "tasteduel_release_source_sha": images["source_sha"], "tasteduel_candidate_tester": tester}
     if images["source_sha"] != review["image_source_sha"] or any(not saved_input_matches(actual.get(key), value) for key, value in expected.items()):

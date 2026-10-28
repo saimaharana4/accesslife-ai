@@ -1,7 +1,8 @@
 # Taste Duel architecture
 
-**Current foundation status ? 27 October 2026:** the user approved a US$90 cumulative ceiling with seven backups preserved. The US$82.84 conservative planning review passed and the saved foundation plan applied. Repository: `saimaharana4/taste-duel`; keyless authentication and scoped secret metadata checks passed. Independent runtime/migration logins and live database privilege checks passed. No Taste Duel services/public traffic are deployed. Earlier US$80 blocked status is historical; see [current cost review](../infra/migration/cost-approval-2026-10-27.md).
+**Current candidate status - 28 October 2026:** IAM-restricted cloud solo generation, five rounds, save/share/OG, exact isolated replay, controlled-response recovery, full axe and scoped logical restore have verified evidence. No public promotion. A measured cold-start forwarding fix is awaiting CI and candidate refresh. Current cumulative forecast: US$83.77 under the approved US$90 ceiling, seven backups retained. Stage usage: eight Qloo/eight Vertex calls; no more genuine generation in this review. See [execution and remaining gates](../infra/migration/candidate-execution-2026-10-28.md).
 
+Dated checkpoints below are historical implementation evidence; superseded deployment/cost statements are not the current operational status. The current record above takes precedence.
 ### Cloud ownership and release boundary — 27 October 2026
 
 Read-only inventory and allowlisted state review found 61 saved ownership records
@@ -511,7 +512,7 @@ Use restricted GitHub OIDC/WIF with verified repository identity and intended br
 
 ## 9. Budget, operations and evidence
 
-The **US$80 envelope is cumulative**: incurred AccessLife cost plus remaining shared SQL/storage/backups, Taste Duel runtime/models/API traffic, temporary overlap, builds, restore checks, currency and tax. The historical US$78.48 forecast through 5 November is not spare funding and omits part of judging in IST. Reprice through at least **6 November 2026, 10:15 IST**, plus required follow-up. Stop extra provisioning if the total fails. Alerts notify; they do not cap spending. Reconcile old/new labels, unlabeled usage and request/token ledgers.
+The **user-approved US$90 envelope is cumulative**: incurred AccessLife cost plus remaining shared SQL/storage/backups, Taste Duel runtime/models/API traffic, temporary overlap, builds, restore checks, currency and tax. The historical US$78.48 forecast through 5 November is not spare funding and omits part of judging in IST. Reprice through at least **6 November 2026, 10:15 IST**, plus required follow-up. Stop extra provisioning if the total fails. Alerts notify; they do not cap spending. Reconcile old/new labels, unlabeled usage and request/token ledgers.
 
 Bound instances/concurrency, global provider/token admission, connection pools including migration/operations, image/cache/storage growth and log retention. Measure cold/warm timing separately. Logs contain safe correlation/game IDs, action/status/timing and rejection counts, never token/raw taste payload/hidden-answer dumps or chain-of-thought. Show truthful preparation stages.
 

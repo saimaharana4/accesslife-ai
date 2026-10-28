@@ -1,5 +1,7 @@
 # Taste Duel infrastructure review
 
+**Current execution ? 28 October 2026:** IAM-restricted Taste Duel candidate resources are deployed; full external acceptance is still incomplete. [Actual changes, reviewed plans and open gates](migration/candidate-execution-2026-10-28.md). The earlier preparation/inventory statements below are historical, not current deployment status.
+
 **Foundation execution passed:** reviewed saved plan applied; repository rename, keyless auth, database privileges and scoped secrets verified. Taste Duel services/public traffic remain undeployed. [Verified execution record](migration/foundation-execution-2026-10-27.md).
 
 **Current decision:** the user approved a US$90 ceiling preserving seven backups. The refreshed conservative cumulative forecast is US$82.84; the planning cost gate passes. Earlier US$80/BLOCKED findings below are historical. See [current cost approval](migration/cost-approval-2026-10-27.md). Foundation application and live verification are separate gates.

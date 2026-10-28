@@ -69,6 +69,7 @@ jobs:
           corepack pnpm test:web-contracts
           corepack pnpm test:fixture-state
           node --test runtime/qloo/typed-response.test.mjs
+          node --test tests/browser-contracts/cloud-response-audit.test.mjs
 
       - name: Start isolated Taste Duel PostgreSQL
         run: docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml up --detach --wait database
@@ -94,6 +95,7 @@ jobs:
           corepack pnpm typecheck
           corepack pnpm build
           corepack pnpm check:fixture-production
+          corepack pnpm exec tsc --noEmit --skipLibCheck --esModuleInterop --moduleResolution bundler --module esnext --target es2022 --typeRoots apps/web/node_modules/@types --types node tests/e2e/tasteduel-cloud.spec.ts tests/e2e/tasteduel-cloud-replay.spec.ts tests/e2e/tasteduel-cloud-postchecks.spec.ts playwright.cloud.config.ts
 
       - name: Build and smoke test immutable local containers
         run: |
@@ -121,6 +123,7 @@ jobs:
           # Browser journeys mock only the browser API. Run them against the
           # real production-mode web shell, not the separate fictional demo.
           TASTEDUEL_TEST_WEB_URL=http://127.0.0.1:13001 corepack pnpm test:audit
+          TASTEDUEL_TEST_WEB_URL=http://127.0.0.1:13001 corepack pnpm test:challenges
 
       - name: Scan tracked source for secrets
         shell: bash
@@ -150,6 +153,7 @@ jobs:
           path: |
             test-results/tasteduel-fixtures/
             test-results/tasteduel-prompt13/
+            test-results/tasteduel-prompt12/
             playwright-report/tasteduel-fixtures/
           if-no-files-found: ignore
           retention-days: 7

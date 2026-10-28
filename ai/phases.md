@@ -1,7 +1,8 @@
 # Taste Duel implementation phases
 
-**Current foundation status ? 27 October 2026:** the user approved a US$90 cumulative ceiling with seven backups preserved. The US$82.84 conservative planning review passed and the saved foundation plan applied. Repository: `saimaharana4/taste-duel`; keyless authentication and scoped secret metadata checks passed. Independent runtime/migration logins and live database privilege checks passed. No Taste Duel services/public traffic are deployed. Earlier US$80 blocked status is historical; see [current cost review](../infra/migration/cost-approval-2026-10-27.md).
+**Current candidate status - 28 October 2026:** IAM-restricted cloud solo generation, five rounds, save/share/OG, exact isolated replay, controlled-response recovery, full axe and scoped logical restore have verified evidence. No public promotion. A measured cold-start forwarding fix is awaiting CI and candidate refresh. Current cumulative forecast: US$83.77 under the approved US$90 ceiling, seven backups retained. Stage usage: eight Qloo/eight Vertex calls; no more genuine generation in this review. See [execution and remaining gates](../infra/migration/candidate-execution-2026-10-28.md).
 
+Dated checkpoints below are historical implementation evidence; superseded deployment/cost statements are not the current operational status. The current record above takes precedence.
 ### Infrastructure planning status — 27 October 2026
 
 Read-only resource/IAM/WIF/state inventory, current tariff review, preservation
@@ -112,7 +113,7 @@ A gate needs evidence. Fix failure or state its exact blocker, continuing indepe
 | 13     | Accessibility/security/performance          | 12                        | Full audits, screenshots and measurements; serious defects resolved    |
 | 14     | Containers/preflight/remote CI              | 13                        | Clean runtime and actual remote CI for current app SHA                 |
 | 15     | Round tuning/playtest evidence              | 14                        | Technical matrix and honest human validation status                    |
-| 16     | GCP migration/cost plan                     | 14, 15 status             | Non-destructive validated plan fits total US$80 gate                   |
+| 16     | GCP migration/cost plan                     | 14, 15 status             | Non-destructive validated plan fits the approved US$90 cumulative gate                   |
 | 17     | Repo/WIF/cloud foundation                   | Passing 16                | Restricted auth, scoped secrets/new logical DB; no product cutover     |
 | 18     | Candidate/recovery checks                   | 17/published images       | Actual external game/private connectivity/restore/cost evidence        |
 | 19     | Production cutover                          | Passing 18                | Canonical public Taste Duel, compatible rollback evidence              |
@@ -243,7 +244,7 @@ Canonical MCP ordering and broad named-seed coverage stay unverified.
 
 **Prompt 16 owners:** inventory/Terraform, cost, preservation/security review. Re-inventory without secret payloads. Map old → new/reused → retired resources. Plan public `tasteduel-web`, private `tasteduel-api`, migration job and new `tasteduel` logical database/restricted runtime user on existing dedicated SQL. Preserve old database/user Terraform ownership and rollback; no second SQL/extra environment projects by default.
 
-**Prompt 16 gate:** validated non-destructive plans, supported region/model, resource/secret/WIF/rollback map and refreshed total ≤US$80. Include incurred AccessLife, remaining shared/pivot/overlap/restore/build/currency/tax through at least 6 November 2026, 10:15 IST plus follow-up. Historic US$78.48 is not headroom. Alerts are not caps. No apply if cost fails.
+**Prompt 16 gate:** validated non-destructive plans, supported region/model, resource/secret/WIF/rollback map and refreshed total ≤US$90 (revised user approval). Include incurred AccessLife, remaining shared/pivot/overlap/restore/build/currency/tax through at least 6 November 2026, 10:15 IST plus follow-up. Historic US$78.48 is not headroom. Alerts are not caps. No apply if cost fails.
 
 **Prompt 17 owners:** repo/WIF, database/IAM/secrets, scope reviewer. Rename preserved repo to `saimaharana4/taste-duel` only if available; coordinate numeric-identity/main-branch WIF and scoped deployment. Apply reviewed foundation only; separate migration/runtime-DML roles, direct Secret Manager credentials, Vertex IAM and narrowly required grants. Retain existing Qloo secret/readers until safe migration; copying it is not key rotation.
 

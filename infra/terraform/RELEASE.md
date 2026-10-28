@@ -66,13 +66,21 @@ There is no `allUsers` or `allAuthenticatedUsers` grant and no public promotion.
 Both services scale to zero with one-instance maxima. API uses eight-request
 concurrency and a two-connection/no-overflow pool; web concurrency is twenty.
 CPU is request-billed with startup boost disabled. Initial test budgets are
-twelve Qloo upstream requests/day, twelve/minute, six Vertex requests/day and
+twelve Qloo upstream requests/day, twelve/minute, eight Vertex requests/day and
 500,000 total Vertex tokens/day. These are ceilings, not permission to make
 unrecorded probes: a shared actual-attempt ledger must count harness-internal
 lookups/retries and stop at the approved tiny live budget. The actual verified
 transport is `http_ranked` with typed HTTP search; the official pinned harness
 remains packaged. No claim of canonical MCP ordering is substituted for that
 documented transport decision.
+
+The initial six-model-call allowance was explicitly revised once by a reviewed
+API-only plan; existing usage/window/expiry were preserved, not reset. See the
+[dated cost review](../migration/candidate-cost-review-2026-10-28.md). Digest-only
+candidate updates use `--phase refresh`; any policy/IAM/data change blocks that
+mode. The one-time `verification-budget` scope permits only the reviewed6→8 API
+setting and is not a general quota-increase command. Stop genuine generation
+after the recorded eight-call ceiling; provider-free replay remains testable.
 
 The web origin uses Google's documented deterministic service/project-number
 format, avoiding a circular self-URI dependency. Verify its real service alias

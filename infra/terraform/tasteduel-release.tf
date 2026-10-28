@@ -214,7 +214,7 @@ resource "google_cloud_run_v2_service" "tasteduel_api" {
       }
       env {
         name  = "TASTEDUEL_VERTEX_REQUESTS_PER_DAY"
-        value = "6"
+        value = "8"
       }
       env {
         name  = "TASTEDUEL_VERTEX_TOKENS_PER_DAY"

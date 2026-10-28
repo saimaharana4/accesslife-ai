@@ -1,7 +1,8 @@
 # Taste Duel product requirements
 
-**Current foundation status ? 27 October 2026:** the user approved a US$90 cumulative ceiling with seven backups preserved. The US$82.84 conservative planning review passed and the saved foundation plan applied. Repository: `saimaharana4/taste-duel`; keyless authentication and scoped secret metadata checks passed. Independent runtime/migration logins and live database privilege checks passed. No Taste Duel services/public traffic are deployed. Earlier US$80 blocked status is historical; see [current cost review](../infra/migration/cost-approval-2026-10-27.md).
+**Current candidate status - 28 October 2026:** IAM-restricted cloud solo generation, five rounds, save/share/OG, exact isolated replay, controlled-response recovery, full axe and scoped logical restore have verified evidence. No public promotion. A measured cold-start forwarding fix is awaiting CI and candidate refresh. Current cumulative forecast: US$83.77 under the approved US$90 ceiling, seven backups retained. Stage usage: eight Qloo/eight Vertex calls; no more genuine generation in this review. See [execution and remaining gates](../infra/migration/candidate-execution-2026-10-28.md).
 
+Dated checkpoints below are historical implementation evidence; superseded deployment/cost statements are not the current operational status. The current record above takes precedence.
 ### Cloud migration review — 27 October 2026
 
 The [dedicated-resource migration review](../infra/README.md) preserves AccessLife
@@ -235,7 +236,7 @@ Plan public Next.js Cloud Run web, private FastAPI API, PostgreSQL 16 on the exi
 
 Project `project-bb13ecd8-9d67-408d-9a7`, default region `asia-south1`, is an input to re-inventory, not a new live check. New `tasteduel` logical data/identities stay separate from preserved AccessLife data. Retain Terraform ownership and rollback. Immutable physical names may remain documented legacy exceptions. Repository/WIF migration, provisioning, cutover and retirement occur only in their selected later prompts.
 
-The **US$80 total incremental envelope includes AccessLife cost already incurred**, remaining shared resources, pivot/overlap, models, builds, restore checks, currency and tax. The historical US$78.48 forecast is not new headroom. Reforecast through at least **6 November 2026, 10:15 IST**, plus required follow-up. Alerts are not caps; provisioning stops if the refreshed estimate fails.
+The **user-approved US$90 total incremental envelope includes AccessLife cost already incurred**, remaining shared resources, pivot/overlap, models, builds, restore checks, currency and tax. The historical US$78.48 forecast is not new headroom. Reforecast through at least **6 November 2026, 10:15 IST**, plus required follow-up. Alerts are not caps; provisioning stops if the refreshed estimate fails.
 
 ## 9. Later work and success evidence
 

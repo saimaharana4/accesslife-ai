@@ -69,7 +69,7 @@ def service(actor):
                   "TASTEDUEL_QLOO_TRANSPORT": "http_ranked", "TASTEDUEL_QLOO_HTTP_TYPED_SEARCH": "true",
                   "TASTEDUEL_QLOO_SECRET_VERSION": f"projects/{release.PROJECT}/secrets/accesslife-qloo-api-key/versions/1",
                   "TASTEDUEL_GENERATION_ENABLED": "true", "TASTEDUEL_VERTEX_PROJECT": release.PROJECT,
-                  "TASTEDUEL_VERTEX_REQUESTS_PER_DAY": "6", "TASTEDUEL_VERTEX_TOKENS_PER_DAY": "500000",
+                  "TASTEDUEL_VERTEX_REQUESTS_PER_DAY": "8", "TASTEDUEL_VERTEX_TOKENS_PER_DAY": "500000",
                   "TASTEDUEL_QLOO_REQUESTS_PER_DAY": "12", "TASTEDUEL_QLOO_REQUESTS_PER_MINUTE": "12"}
     return {"name": "tasteduel-" + actor, "project": release.PROJECT, "location": release.REGION,
             "deletion_protection": True, "ingress": "INGRESS_TRAFFIC_ALL",
@@ -127,6 +127,55 @@ def test_services_are_forbidden_in_migration_phase_and_supported_in_service_phas
     for actor in ("api", "web"):
         assert audit([change(actor, service(actor))])["status"] == "BLOCKED"
         assert audit([change(actor, service(actor))], "services")["status"] == "REVIEWABLE"
+
+
+@pytest.mark.parametrize("actor", ["migrate", "api", "web"])
+def test_private_candidate_refresh_allows_only_images_and_source_labels(actor):
+    from copy import deepcopy
+
+    after = job() if actor == "migrate" else service(actor)
+    after["labels"] = {"app": "tasteduel", "source_ref": IMAGES["source_sha"][:12]}
+    before = deepcopy(after)
+    before["labels"]["source_ref"] = "d" * 12
+    task = before["template"][0]
+    if actor == "migrate":
+        task = task["template"][0]
+    task["containers"][0]["image"] = publisher.immutable_reference(
+        "tasteduel-api" if actor == "migrate" else "tasteduel-" + actor, "sha256:" + "d" * 64,
+    )
+    update = change(actor, after, ["update"])
+    update["change"]["before"] = before
+    assert audit([update], "refresh")["status"] == "REVIEWABLE"
+    after["labels"]["environment"] = "unexpected"
+    assert audit([update], "refresh")["status"] == "BLOCKED"
+    del after["labels"]["environment"]
+    task = after["template"][0]
+    if actor == "migrate":
+        task = task["template"][0]
+    task["service_account"] = release.SA["deploy"]
+    assert audit([update], "refresh")["status"] == "BLOCKED"
+
+
+def test_refresh_never_creates_replaces_changes_iam_or_touches_sql():
+    for address, action in [("api", ["create"]), ("api", ["delete", "create"]),
+                            ("api_web", ["update"]), ("google_sql_database.app", ["update"])]:
+        assert audit([change(address, {}, action)], "refresh")["status"] == "BLOCKED"
+
+
+def test_explicit_verification_allowance_changes_only_six_to_eight_on_api():
+    from copy import deepcopy
+
+    after = service("api")
+    before = deepcopy(after)
+    for item in before["template"][0]["containers"][0]["env"]:
+        if item["name"] == "TASTEDUEL_VERTEX_REQUESTS_PER_DAY":
+            item["value"] = "6"
+    update = change("api", after, ["update"])
+    update["change"]["before"] = before
+    assert audit([update], "verification-budget")["status"] == "REVIEWABLE"
+    after["template"][0]["timeout"] = "90s"
+    assert audit([update], "verification-budget")["status"] == "BLOCKED"
+    assert audit([change("web", service("web"), ["update"])], "verification-budget")["status"] == "BLOCKED"
 
 
 def test_candidates_are_reported_as_real_100_percent_iam_restricted_not_zero_traffic():

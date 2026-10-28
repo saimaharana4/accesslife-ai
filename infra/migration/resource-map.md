@@ -1,5 +1,7 @@
 # Taste Duel resource migration review
 
+**Current execution ? 28 October 2026:** IAM-restricted Taste Duel candidate resources are deployed; full external acceptance is still incomplete. [Actual changes, reviewed plans and open gates](candidate-execution-2026-10-28.md). The earlier preparation/inventory statements below are historical, not current deployment status.
+
 **Current update, 27 October 14:09 UTC:** explicitly authorized legacy runtime retirement is complete; shared assets remain. Original read-only findings below are historical. See [execution and reconciliation](retirement-options.md). New foundation provisioning remains blocked.
 
 Reviewed **27 October 2026**, project `project-bb13ecd8-9d67-408d-9a7`, region
