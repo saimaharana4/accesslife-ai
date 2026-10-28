@@ -48,7 +48,7 @@ export default async function RootLayout({
               aria-label={
                 fixturesEnabled
                   ? "Development fixture mode"
-                  : "Development status"
+                  : "Ranking source information"
               }
               data-testid={
                 fixturesEnabled ? "fixture-mode-banner" : "development-status"
@@ -63,8 +63,8 @@ export default async function RootLayout({
                   </>
                 ) : (
                   <>
-                    <strong>Local preview</strong> — Qloo ranking and curator
-                    mode are identified in each game.
+                    <strong>Qloo ranks. You predict.</strong> Ranking and
+                    curator mode are identified in each game.
                   </>
                 )}
               </span>

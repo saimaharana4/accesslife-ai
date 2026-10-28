@@ -7,6 +7,7 @@ import {
   type Locator,
 } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { writeFile } from "node:fs/promises";
 import type { ApiSchemas } from "../../apps/web/src/lib/api/contracts";
 
 const enabled = process.env.TASTEDUEL_CLOUD_BROWSER_ENABLED === "true";
@@ -14,6 +15,16 @@ test.skip(
   !enabled,
   "Cloud gameplay requires a separately approved tiny live budget and protected candidate URL.",
 );
+
+async function persist(
+  info: TestInfo,
+  name: string,
+  value: { body: string; contentType: string },
+) {
+  const path = info.outputPath(name);
+  await writeFile(path, value.body, "utf8");
+  await info.attach(name, { path, contentType: value.contentType });
+}
 
 async function tabTo(page: Page, control: Locator) {
   for (let index = 0; index < 36; index++) {
@@ -26,6 +37,12 @@ async function tabTo(page: Page, control: Locator) {
 
 async function inspect(page: Page, info: TestInfo, name: string) {
   await page.evaluate(() => document.fonts.ready);
+  for (const artwork of await page.locator('img[src^="/art/"]').all()) {
+    await expect(artwork).toHaveJSProperty("complete", true);
+    expect(
+      await artwork.evaluate((image: HTMLImageElement) => image.naturalWidth),
+    ).toBeGreaterThan(0);
+  }
   expect(
     await page.evaluate(
       () => matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -44,7 +61,7 @@ async function inspect(page: Page, info: TestInfo, name: string) {
   const scan = await new AxeBuilder({ page }).analyze();
   // Screenshots are private ignored evidence. Keep only aggregate axe findings,
   // rather than serializing a live page's full proprietary entity metadata.
-  await info.attach(`${name}-axe-counts.json`, {
+  await persist(info, `${name}-axe-counts.json`, {
     body: JSON.stringify({
       violations: scan.violations.map(({ id, impact, nodes }) => ({
         id,
@@ -191,6 +208,16 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
     await tabTo(page, input);
     await input.fill(process.env.TASTEDUEL_CLOUD_SEED!);
     await expect(page.getByRole("option").first()).toBeVisible();
+    const activeCookie = (await creator.cookies(origin)).find(
+      (cookie) => cookie.name === "tasteduel_session",
+    );
+    const activeOwner = activeCookie?.value.split(".", 1)[0];
+    if (!activeOwner || !/^[0-9a-f-]{36}$/.test(activeOwner))
+      throw new Error("Private recovery session reference unavailable");
+    await persist(info, "private-creator-ref.json", {
+      body: JSON.stringify({ creator_session_id: activeOwner }),
+      contentType: "application/json",
+    });
     await page.keyboard.press("ArrowDown");
     await expect(input).toHaveAttribute("aria-activedescendant", /\S+/);
     await page.keyboard.press("Enter");
@@ -253,13 +280,26 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
       await route.abort("failed");
     });
 
-    async function recover() {
+    async function recover(kind: "answer" | "advance") {
+      const settled =
+        kind === "answer"
+          ? page.getByTestId("reveal-panel")
+          : page.getByRole("group", { name: "Round 2 of 5", exact: true });
       const button = page
         .getByRole("button", { name: /check saved game|retry|recover/i })
         .first();
-      await expect(button).toBeVisible();
-      await tabTo(page, button);
-      await page.keyboard.press("Enter");
+      // The client may restore accepted server state before an explicit retry
+      // is needed. Both paths must settle the actual accepted mutation.
+      await expect
+        .poll(
+          async () => (await settled.isVisible()) || (await button.isVisible()),
+        )
+        .toBe(true);
+      if (!(await settled.isVisible())) {
+        await tabTo(page, button);
+        await page.keyboard.press("Enter");
+      }
+      await expect(settled).toBeVisible();
     }
     for (let ordinal = 1; ordinal <= 5; ordinal++) {
       const state = await read<ApiSchemas["GamePublic"]>(
@@ -281,7 +321,7 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
       const answerStart = performance.now();
       await tabTo(page, page.getByTestId("choice-card").first());
       await page.keyboard.press("Enter");
-      if (ordinal === 1) await recover();
+      if (ordinal === 1) await recover("answer");
       await expect(page.getByTestId("reveal-panel")).toBeVisible();
       timings.push({
         operation: "answer_to_reveal",
@@ -310,7 +350,7 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
       }
       await tabTo(page, page.getByTestId("next-action"));
       await page.keyboard.press("Enter");
-      if (ordinal === 1) await recover();
+      if (ordinal === 1) await recover("advance");
       if (ordinal < 5)
         await expect(
           page.getByRole("group", {
@@ -454,7 +494,29 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
     expect(observed.generation).toBe(1);
     expect(observed.search).toBeLessThanOrEqual(2);
     expect(observed.replay).toBe(1);
-    await info.attach("external-summary.json", {
+    const creatorCookie = (await creator.cookies(origin)).find(
+      (cookie) => cookie.name === "tasteduel_session",
+    );
+    const friendCookie = (await friend.cookies(origin)).find(
+      (cookie) => cookie.name === "tasteduel_session",
+    );
+    const ownerId = (value: string | undefined) => {
+      const id = value?.split(".", 1)[0];
+      if (!id || !/^[0-9a-f-]{36}$/.test(id))
+        throw new Error("Private recovery reference unavailable");
+      return id;
+    };
+    // Ignored local operator evidence only: IDs enable the scoped logical
+    // restore. Never retain the cookie token, provider payload or answer key.
+    await persist(info, "private-recovery-refs.json", {
+      body: JSON.stringify({
+        creator_session_id: ownerId(creatorCookie?.value),
+        friend_session_id: ownerId(friendCookie?.value),
+        challenge_slug: sharePath.split("/").at(-1),
+      }),
+      contentType: "application/json",
+    });
+    await persist(info, "external-summary.json", {
       body: JSON.stringify(
         {
           observed,
@@ -474,6 +536,11 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
       contentType: "application/json",
     });
   } finally {
-    await Promise.all(contexts.map((session) => session.close()));
+    await Promise.all(
+      contexts.map(async (session) => {
+        await session.unrouteAll({ behavior: "ignoreErrors" }).catch(() => {});
+        await session.close().catch(() => {});
+      }),
+    );
   }
 });

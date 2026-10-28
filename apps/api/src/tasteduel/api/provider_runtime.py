@@ -85,6 +85,12 @@ async def build_qloo_runtime(settings: Settings, engine: Engine) -> QlooRuntime:
             inner = ranked_http
         guarded = GuardedQlooPort(inner, store, scope)
         await process.start()  # initialize/listTools/capabilities are offline; no upstream fetch.
+        if settings.database_mode == "cloud_sql":
+            from tasteduel.adapters.operational_usage import log_admission_snapshot
+            from tasteduel.adapters.vertex_curator import MODEL
+
+            await asyncio.to_thread(log_admission_snapshot, engine, qloo_scope=scope,
+                                    project=settings.vertex_project, model=MODEL)
         return QlooRuntime(guarded, process, ranked_http)
     except asyncio.CancelledError:
         if process:

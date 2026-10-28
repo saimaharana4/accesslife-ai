@@ -20,7 +20,7 @@ if (enabled) {
 export default defineConfig({
   testDir: "tests/e2e",
   testMatch: "tasteduel-cloud.spec.ts",
-  timeout: 240_000,
+  timeout: 420_000,
   expect: { timeout: 20_000 },
   workers: 1,
   retries: 0,

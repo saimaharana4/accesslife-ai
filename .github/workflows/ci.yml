@@ -101,6 +101,7 @@ jobs:
           docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml up --detach --wait api web
           curl --fail --silent --show-error http://127.0.0.1:18005/v1/health/live
           curl --fail --silent --show-error http://127.0.0.1:13001/ --output /dev/null
+          curl --fail --silent --show-error http://127.0.0.1:13001/art/afterlight.svg --output /dev/null
 
       - name: Run complete desktop, mobile and narrow-reflow Playwright plus full axe scans
         shell: bash
