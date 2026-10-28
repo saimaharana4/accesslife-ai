@@ -1,10 +1,10 @@
 # Taste Duel infrastructure review
 
-**Current execution ? 28 October 2026:** IAM-restricted Taste Duel candidate resources are deployed; full external acceptance is still incomplete. [Actual changes, reviewed plans and open gates](migration/candidate-execution-2026-10-28.md). The earlier preparation/inventory statements below are historical, not current deployment status.
+**Current execution ? 28 October 2026:** IAM-restricted candidate verification is recorded, including genuine play, exact replay and logical restore. The cold-start fix is deployed from successful CI; final connectivity/expiry and zero-change plan checks passed. Fresh final-image gameplay was not repeated after evidence expiry; public promotion remains a separate gate. [Actual changes, reviewed plans and open gates](migration/candidate-execution-2026-10-28.md). The earlier preparation/inventory statements below are historical, not current deployment status.
 
-**Foundation execution passed:** reviewed saved plan applied; repository rename, keyless auth, database privileges and scoped secrets verified. Taste Duel services/public traffic remain undeployed. [Verified execution record](migration/foundation-execution-2026-10-27.md).
+**Historical foundation checkpoint:** reviewed saved plan applied; repository rename, keyless auth, database privileges and scoped secrets verified. At that checkpoint, Taste Duel services/public traffic were undeployed. [Verified execution record](migration/foundation-execution-2026-10-27.md).
 
-**Current decision:** the user approved a US$90 ceiling preserving seven backups. The refreshed conservative cumulative forecast is US$82.84; the planning cost gate passes. Earlier US$80/BLOCKED findings below are historical. See [current cost approval](migration/cost-approval-2026-10-27.md). Foundation application and live verification are separate gates.
+**Current decision:** the user approved a US$90 ceiling preserving seven backups. The refreshed conservative cumulative forecast is US$83.77 through 7 November 10:15 IST; the candidate cost gate passes. Earlier US$80/BLOCKED findings below are historical. See [current cost review](migration/candidate-cost-review-2026-10-28.md). Foundation application and live verification are separate gates.
 
 The obsolete AccessLife runtime was retired with explicit authorization. Shared
 SQL/data, registry, state, secrets and rollback assets remain. Current foundation

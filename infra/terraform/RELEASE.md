@@ -109,3 +109,14 @@ is a passed external-gameplay, human-impact, restore or public-release gate.
 Record actual images, schema, secret versions, timings and plan hashes after
 execution. Reprice if cutover extends the seven-day rollback window. Public
 promotion belongs to the next separately reviewed release stage.
+
+## Recorded restricted execution
+
+The final image-only refresh and zero-change plan are recorded in the
+[dated execution evidence](../migration/candidate-execution-2026-10-28.md).
+Application `83ede44` passed remote CI; state 27 preserves both databases and pinned
+secret versions. The migration job was not rerun for a forwarding-only change.
+Genuine generation is closed at eight actual Qloo/eight Vertex calls; earlier
+frozen evidence has expired, so a fresh final-image replay was not fabricated.
+Candidate IAM remains restricted. Public promotion/quota/physical-retention review
+belongs to a separately authorized release action.

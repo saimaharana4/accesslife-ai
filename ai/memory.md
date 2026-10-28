@@ -114,3 +114,6 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 
 - **2026-10-28 - Cloud verification:** Genuine five-round/save/share/OG/exact replay completed; repaired strict controlled-loss replay audits and full axe passed without providers. Logical restore matched40 scoped table counts/two results/one challenge, replayed five and removed only the disposable target; managed restore is unproven.
 - **2026-10-28 - Measured release limits:** Eight Qloo/eight Vertex calls total, no reset; fresh forecast83.77USD of90 through7November10:15IST. API startup15.8s exposed the old12s proxy deadline; a bounded cold-forwarding fix is awaiting final CI/images, with no public promotion.
+
+- **2026-10-28 - Restricted release refresh:** Full CI 40655258903 passed on 83ede44; exact three digest/source-label updates applied, migration not rerun. Final private connectivity/expiry/axe/log and write-only-state checks passed; state 27 and refreshed full-root plan zero changes, no public promotion.
+- **2026-10-28 - Evidence boundary:** Fresh final-image replay was not rerun after source evidence expired; earlier genuine/controlled replay and logical restore remain recorded, live generation closed at eight Qloo/eight Vertex calls. Forecast US$83.77 of US$90; managed restore, physical retention and human validation remain open.

@@ -1,6 +1,6 @@
 # Taste Duel release review plan
 
-**Current execution ? 28 October 2026:** IAM-restricted Taste Duel candidate resources are deployed; full external acceptance is still incomplete. [Actual changes, reviewed plans and open gates](candidate-execution-2026-10-28.md). The earlier preparation/inventory statements below are historical, not current deployment status.
+**Current execution ? 28 October 2026:** IAM-restricted candidate verification is recorded, including genuine play, exact replay and logical restore. The cold-start fix is deployed from successful CI; final connectivity/expiry and zero-change plan checks passed. Fresh final-image gameplay was not repeated after evidence expiry; public promotion remains a separate gate. [Actual changes, reviewed plans and open gates](candidate-execution-2026-10-28.md). The earlier preparation/inventory statements below are historical, not current deployment status.
 
 27 October 2026. **Preparation only; no images published, services provisioned,
 migrations executed, traffic changed or apply-ready plan produced.** This follows

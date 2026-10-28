@@ -1,13 +1,13 @@
 # Taste Duel
 
-**Restricted cloud candidate - 28 October 2026.** Genuine Qloo/Vertex solo play, five rounds, explicit discovery save, sharing/social image, exact friend replay and scoped logical recovery have verified cloud evidence. The candidate remains IAM restricted, with no public promotion. A measured cold-start forwarding correction is awaiting its final CI/image refresh. [Execution, immutable images, tests and limitations](infra/migration/candidate-execution-2026-10-28.md).
+**Restricted cloud candidate - 28 October 2026.** Genuine Qloo/Vertex solo play, five rounds, explicit discovery save, sharing/social image, exact friend replay and scoped logical recovery have verified cloud evidence. The candidate remains IAM restricted, with no public promotion. The measured cold-start forwarding correction is deployed; private connectivity, actual expiry and final zero-change Terraform checks passed. Fresh final-image gameplay was not repeated because the earlier evidence expired and the finite live-call budget is closed. [Execution, immutable images, tests and limitations](infra/migration/candidate-execution-2026-10-28.md).
 
 Taste Duel is a five-round cultural prediction game. A player chooses a familiar artist or film, then predicts which of two Qloo-ranked entities appears higher for that specific seed and query. Qloo supplies the cultural ranking; deterministic code controls eligibility, winners, scoring, and replay. A correct guess measures game performance only. It is never recorded as a preference.
 
 Cloud foundation is verified: the saved plan applied, restricted keyless access
 and new database privileges passed, and shared rollback assets remain preserved.
 The refreshed conservative forecast is US$83.77 under the approved US$90 ceiling.
-[Candidate acceptance remains in progress](infra/migration/candidate-execution-2026-10-28.md).
+[Candidate evidence and remaining release gates](infra/migration/candidate-execution-2026-10-28.md).
 
 ## Product experience
 
@@ -58,11 +58,11 @@ A bounded live quality audit checked Radiohead and Beyoncé → films, and Incep
 
 Private server-side [event accounting](ai/product-event-accounting.md) records committed gameplay, explicit saves and fixed challenge activity without search text, ranking payloads or tracking fingerprints. Tests/fixtures are excluded by default, and operational activity is never presented as verified human participation. There are **zero observed human participants**; the [willing-user protocol](ai/playtest-protocol.md) is ready and human discovery value remains unproven.
 
-Current local verification passed 681 backend tests (one Compose-only restart check skipped), the production build, strict typecheck, unchanged OpenAPI contracts, fixture exclusion and a reviewed-source secret scan. Six affected full keyboard solo/replay journeys passed across desktop, 390px and 320px with 33 full axe scans and 33 captures. The earlier CI baseline separately recorded 61 Node checks, 36 complete audit cases, 21 fixture-browser cases and restart-safe synthetic game/challenge persistence; those unchanged checks were not all rerun for this update.
+The deployed application commit `83ede4499ef53ebfcafc9895835b047fbed4b5c6` passed [full remote CI](https://github.com/saimaharana4/taste-duel/actions/runs/40655258903): 827 backend tests (one separate Compose restart check skipped), 87 Node checks, strict typecheck, production build, OpenAPI drift, container smoke, secret scan, Terraform validation and 75 browser executions (21 fixture, 36 audit, 18 challenge) with full axe coverage. The final restricted candidate separately passed actual expired-challenge/reflow/axe checks without providers. Earlier genuine cloud gameplay and strict two-guest controlled-loss replay evidence apply to unchanged backend/schema/scoring/artwork; the final source change only extends bounded web forwarding deadlines.
 
 The recorded CI baseline additionally checked a clean database migration, generated-contract drift, production container build/smoke, tracked-source secret scanning, and backend-free Terraform validation. No cloud resource was provisioned or deployed by that run.
 
-Before a public GCP launch, complete the reviewed cloud cost/IAM/Secret Manager setup, deploy and exercise the genuine provider path in the target environment, and finish willing-user playtesting plus manual screen-reader and native browser-zoom review. CI success is evidence of repeatable checks; it is not a production deployment or proof of real-user impact.
+Before public promotion, separately review the exhausted candidate model allowance and public traffic envelope, verify physical retention cleanup and request-log metadata policy, refresh billing and finish manual screen-reader/native zoom review. Willing-user discovery value remains unmeasured. The cloud rehearsal proved a scoped in-memory logical restore, not managed Cloud SQL backup restore or a durable full export. CI and automated cloud play do not establish real-user impact.
 
 ## Project documentation
 
