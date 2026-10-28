@@ -34,7 +34,7 @@ resource "google_service_account_iam_member" "deploy_actas" {
 
 resource "google_monitoring_uptime_check_config" "web" {
   display_name     = var.tasteduel_observability_enabled ? "Taste Duel public readiness" : "AccessLife public web"
-  timeout          = "10s"
+  timeout          = var.tasteduel_observability_enabled ? "30s" : "10s"
   period           = var.tasteduel_observability_enabled ? "900s" : "300s"
   selected_regions = var.tasteduel_observability_enabled ? ["EUROPE", "SOUTH_AMERICA", "ASIA_PACIFIC"] : null
   http_check {

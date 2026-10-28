@@ -53,7 +53,7 @@ def safe_uptime(value: dict) -> bool:
     if len(check) != 1 or len(resource) != 1:
         return False
     check = check[0]
-    return (value.get("project") == PROJECT and value.get("display_name") == "Taste Duel public readiness" and value.get("timeout") == "10s"
+    return (value.get("project") == PROJECT and value.get("display_name") == "Taste Duel public readiness" and value.get("timeout") == "30s"
         and value.get("period") == "900s"
         and set(value.get("selected_regions", [])) == {"EUROPE", "SOUTH_AMERICA", "ASIA_PACIFIC"}
         and len(value["selected_regions"]) == 3

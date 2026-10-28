@@ -15,7 +15,7 @@ def plan():
     project = review.PROJECT
     records = {
         review.UPTIME: {"project": project, "uptime_check_id": "reviewed-check-123", "display_name": "Taste Duel public readiness",
-            "timeout": "10s", "period": "900s", "selected_regions": ["EUROPE", "SOUTH_AMERICA", "ASIA_PACIFIC"],
+            "timeout": "30s", "period": "900s", "selected_regions": ["EUROPE", "SOUTH_AMERICA", "ASIA_PACIFIC"],
             "http_check": [{"path": "/api/v1/health/ready", "port": 443, "use_ssl": True, "validate_ssl": True,
                 "request_method": "GET", "headers": {}, "auth_info": [], "body": ""}],
             "content_matchers": [{"content": '"generation_available":true', "matcher": "CONTAINS_STRING", "json_path_matcher": []}],
