@@ -1,5 +1,9 @@
 # Controlled Taste Duel candidate release
 
+Production promotion is currently blocked by the
+[dated candidate-gate and release/rollback preflight](../migration/production-release-preflight-2026-10-28.md).
+This document's candidate tooling does not implement public promotion.
+
 This configuration prepares two explicit full-root releases after the applied
 foundation. It does not enable public access. Each actual plan needs independent
 review, refreshed cumulative-cost approval and a separately authorized apply.
@@ -120,3 +124,7 @@ Genuine generation is closed at eight actual Qloo/eight Vertex calls; earlier
 frozen evidence has expired, so a fresh final-image replay was not fabricated.
 Candidate IAM remains restricted. Public promotion/quota/physical-retention review
 belongs to a separately authorized release action.
+
+## Current controlled release
+
+The approved candidate closure passed at ten actual Qloo HTTP/ten Vertex calls; that ledger is closed. See [current execution](../migration/production-release-execution-2026-10-28.md) and [US$88.15 forecast](../migration/production-cost-review-2026-10-28.md). The production source adds td0011 and requires a new compatible rollback pair; API83ede44 requires td0010 and must not be labelled a healthy rollback. Public release remains pending actual CI, exact saved plans, sealed-config and public-browser checks.

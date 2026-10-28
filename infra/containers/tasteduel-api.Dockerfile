@@ -26,6 +26,7 @@ COPY apps/api/src/tasteduel apps/api/src/tasteduel
 COPY apps/api/tasteduel_migrations apps/api/tasteduel_migrations
 COPY apps/api/tasteduel-alembic.ini apps/api/tasteduel-alembic.ini
 COPY scripts/tasteduel_qloo_offline.py scripts/tasteduel_qloo_offline.py
+# Fixed one-shot maintenance/migration entry point is packaged in tasteduel.operations.
 ENV PATH="/app/runtime/python/.venv/bin:$PATH" \
     PYTHONPATH=/app/apps/api/src PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 \
     TASTEDUEL_QLOO_ENABLED=false TASTEDUEL_QLOO_RUNNER_PATH=/app/runtime/qloo/runner.mjs

@@ -97,8 +97,9 @@ that volume.
 
 The test action connects the isolated integration suite to the Compose DB at
 loopback port 55436; it does not call the older helper that owns port 55435.
-The current migration head is `td0010`, which adds private first-party activity
-accounting. Rebuild the migration/API image and run the explicit migration action
+The current source migration head is `td0011`, which adds restricted expiry
+maintenance and hash-only expired-link tombstones after private activity
+accounting in `td0010`. Rebuild the migration/API image and run the explicit migration action
 when upgrading an existing local volume; never remove the volume to update it.
 Accounting defaults to excluded test activity. See the
 [event definitions, retention and local report/purge commands](../../ai/product-event-accounting.md)

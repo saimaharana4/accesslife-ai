@@ -12,6 +12,7 @@ import hashlib
 import hmac
 import re
 import secrets
+import time
 from typing import Annotated
 from uuid import UUID, uuid4
 
@@ -41,6 +42,7 @@ from tasteduel.domain.types import EntityType
 from tasteduel.persistence import models as m
 from tasteduel.persistence.db import database_engine, scoped_session
 from tasteduel.ports.qloo import ResolveSeedRequest
+from tasteduel.operations import admission_available, safe_event
 
 Key = Annotated[
     str, Header(alias="Idempotency-Key", min_length=16, max_length=128, pattern=r"^[A-Za-z0-9_-]+$")
@@ -108,10 +110,10 @@ def create_app(
     app = FastAPI(
         title="Taste Duel API",
         version="0.2.0-gameplay",
-        description="Authoritative sessions/gameplay with awaited fenced generation. Provider use is explicitly configured; browser integration is later work.",
+        description="Server-authoritative Taste Duel sessions, five-round gameplay and fixed challenges. Awaited generation is fenced and provider use is explicitly configured.",
         servers=[
             {"url": "/", "description": "Private API, including the local documentation server"},
-            {"url": "/api", "description": "Planned same-origin browser prefix; route paths are /v1"},
+            {"url": "/api", "description": "Same-origin browser forwarding prefix; route paths are /v1"},
         ],
         responses=ERRORS,
         lifespan=lifespan,
@@ -150,6 +152,7 @@ def create_app(
 
     @app.middleware("http")
     async def request_boundary(request: Request, call_next):
+        started = time.monotonic()
         request.state.request_id = uuid4()
         if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
             if request.headers.get("origin") not in settings.allowed_origins:
@@ -195,6 +198,8 @@ def create_app(
             )
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Request-ID"] = str(request.state.request_id)
+        if response.status_code >= 400:
+            safe_event("request_error", status=response.status_code, elapsed_ms=(time.monotonic()-started)*1000)
         return response
 
     @app.exception_handler(AppError)
@@ -498,6 +503,7 @@ def create_app(
                 headers={"Retry-After": str(seconds), "Cache-Control": "no-store"},
             )
         try:
+            generation_started = time.monotonic()
             curator = app.state.generator
             if curator is None:
                 raise AppError(
@@ -522,10 +528,13 @@ def create_app(
                     503, "GENERATION_UNAVAILABLE", "Synthetic evidence is not enabled in this runtime."
                 )
             await asyncio.to_thread(service.publish, claim, outcome)
+            safe_event("generation", status=201, elapsed_ms=(time.monotonic()-generation_started)*1000,
+                       mode=outcome.receipt.curator_mode)
         except asyncio.CancelledError:
             # An interrupted request leaves an expiring claim; no detached work.
             raise
         except Exception as failure:
+            safe_event("generation", status=503, elapsed_ms=(time.monotonic()-generation_started)*1000)
             try:
                 await asyncio.to_thread(service.fail, claim)
             except (AppError, SQLAlchemyError):
@@ -801,9 +810,15 @@ def create_app(
             revision = connection.execute(
                 text("SELECT version_num FROM tasteduel.tasteduel_alembic_version LIMIT 1")
             ).scalar_one()
-            if revision != "td0010":
-                raise AppError(503, "SCHEMA_NOT_READY", "The local schema is not ready.", retryable=True)
-        return s.HealthPublic(status="ok", generation_available=app.state.generator is not None)
+            if revision != "td0011":
+                raise AppError(503, "SCHEMA_NOT_READY", "The schema is not ready.", retryable=True)
+        available = app.state.generator is not None
+        if available and settings.qloo_enabled:
+            available = admission_available(database(), qloo_scope=getattr(app.state.qloo, "scope", None),
+                project=settings.vertex_project, model="gemini-3.1-flash-lite",
+                qloo_limit=settings.qloo_requests_per_day, model_limit=settings.vertex_requests_per_day,
+                token_limit=settings.vertex_tokens_per_day)
+        return s.HealthPublic(status="ok", generation_available=available)
 
     return app
 

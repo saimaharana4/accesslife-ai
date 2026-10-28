@@ -69,7 +69,7 @@ def service(actor):
                   "TASTEDUEL_QLOO_TRANSPORT": "http_ranked", "TASTEDUEL_QLOO_HTTP_TYPED_SEARCH": "true",
                   "TASTEDUEL_QLOO_SECRET_VERSION": f"projects/{release.PROJECT}/secrets/accesslife-qloo-api-key/versions/1",
                   "TASTEDUEL_GENERATION_ENABLED": "true", "TASTEDUEL_VERTEX_PROJECT": release.PROJECT,
-                  "TASTEDUEL_VERTEX_REQUESTS_PER_DAY": "8", "TASTEDUEL_VERTEX_TOKENS_PER_DAY": "500000",
+                  "TASTEDUEL_VERTEX_REQUESTS_PER_DAY": "10", "TASTEDUEL_VERTEX_TOKENS_PER_DAY": "500000",
                   "TASTEDUEL_QLOO_REQUESTS_PER_DAY": "12", "TASTEDUEL_QLOO_REQUESTS_PER_MINUTE": "12"}
     return {"name": "tasteduel-" + actor, "project": release.PROJECT, "location": release.REGION,
             "deletion_protection": True, "ingress": "INGRESS_TRAFFIC_ALL",
@@ -166,6 +166,9 @@ def test_explicit_verification_allowance_changes_only_six_to_eight_on_api():
     from copy import deepcopy
 
     after = service("api")
+    for item in after["template"][0]["containers"][0]["env"]:
+        if item["name"] == "TASTEDUEL_VERTEX_REQUESTS_PER_DAY":
+            item["value"] = "8"
     before = deepcopy(after)
     for item in before["template"][0]["containers"][0]["env"]:
         if item["name"] == "TASTEDUEL_VERTEX_REQUESTS_PER_DAY":
@@ -176,6 +179,96 @@ def test_explicit_verification_allowance_changes_only_six_to_eight_on_api():
     after["template"][0]["timeout"] = "90s"
     assert audit([update], "verification-budget")["status"] == "BLOCKED"
     assert audit([change("web", service("web"), ["update"])], "verification-budget")["status"] == "BLOCKED"
+
+
+def closure_allowance_update():
+    from copy import deepcopy
+
+    after = service("api")
+    before = deepcopy(after)
+    for item in before["template"][0]["containers"][0]["env"]:
+        if item["name"] == "TASTEDUEL_VERTEX_REQUESTS_PER_DAY":
+            item["value"] = "8"
+    update = change("api", after, ["update"])
+    update["change"]["before"] = before
+    return update
+
+
+def test_candidate_closure_allowance_is_a_distinct_private_eight_to_ten_update():
+    update = closure_allowance_update()
+    result = audit([update], "candidate-closure-budget")
+    assert result["status"] == "REVIEWABLE"
+    assert result["public_access"] is False
+    assert result["requires_independent_review"] is True
+    assert audit([update], "verification-budget")["status"] == "BLOCKED"
+    assert audit([update], "refresh")["status"] == "BLOCKED"
+
+
+@pytest.mark.parametrize("side,limit", [("before", "6"), ("before", "9"), ("before", "10"),
+                                       ("after", "8"), ("after", "11"), ("after", "50")])
+def test_closure_allowance_rejects_wrong_baseline_or_unapproved_limit(side, limit):
+    update = closure_allowance_update()
+    for item in update["change"][side]["template"][0]["containers"][0]["env"]:
+        if item["name"] == "TASTEDUEL_VERTEX_REQUESTS_PER_DAY":
+            item["value"] = limit
+    assert audit([update], "candidate-closure-budget")["status"] == "BLOCKED"
+
+
+@pytest.mark.parametrize("name,value", [("TASTEDUEL_QLOO_REQUESTS_PER_DAY", "16"),
+    ("TASTEDUEL_VERTEX_TOKENS_PER_DAY", "600000"), ("TASTEDUEL_COOKIE_SECURE", "false"),
+    ("TASTEDUEL_QLOO_SECRET_VERSION", "versions/latest"), ("TASTEDUEL_RESET_USAGE", "true"),
+    ("TASTEDUEL_USAGE_WINDOW", "new-window"), ("TASTEDUEL_USAGE_EXPIRES_AT", "2099-01-01")])
+def test_closure_allowance_never_resets_usage_or_changes_other_environment(name, value):
+    update = closure_allowance_update()
+    environment = update["change"]["after"]["template"][0]["containers"][0]["env"]
+    for item in environment:
+        if item["name"] == name:
+            item["value"] = value
+            break
+    else:
+        environment.append({"name": name, "value": value})
+    assert audit([update], "candidate-closure-budget")["status"] == "BLOCKED"
+
+
+@pytest.mark.parametrize("field", ["image", "identity", "timeout", "traffic", "labels", "scaling", "usage"])
+def test_closure_allowance_cannot_bundle_configuration_or_private_counter_changes(field):
+    update = closure_allowance_update()
+    after = update["change"]["after"]
+    template = after["template"][0]
+    if field == "image":
+        template["containers"][0]["image"] = publisher.immutable_reference("tasteduel-api", "sha256:" + "d" * 64)
+    elif field == "identity":
+        template["service_account"] = release.SA["deploy"]
+    elif field == "timeout":
+        template["timeout"] = "90s"
+    elif field == "traffic":
+        after["traffic"][0]["percent"] = 50
+    elif field == "labels":
+        after["labels"] = {"source_ref": "d" * 12}
+    elif field == "scaling":
+        template["scaling"][0]["max_instance_count"] = 2
+    else:
+        after["usage_counter"] = {"used": 0, "window": "replacement", "expiry": "extended"}
+    assert audit([update], "candidate-closure-budget")["status"] == "BLOCKED"
+
+
+@pytest.mark.parametrize("address", ["web", "api_web", "google_sql_database.app",
+    "postgresql_query.reset_usage", "google_secret_manager_secret_version.database"])
+def test_closure_allowance_cannot_mutate_any_other_resource_or_reset_database_usage(address):
+    reset = change(release.ADDRESSES.get(address, address),
+                   {"used": 0, "window": "replacement", "expiry": "extended"}, ["update"])
+    assert audit([closure_allowance_update(), reset], "candidate-closure-budget")["status"] == "BLOCKED"
+
+
+@pytest.mark.parametrize("actions", [["create"], ["delete"], ["delete", "create"]])
+def test_closure_allowance_cannot_replace_or_recreate_the_service(actions):
+    update = closure_allowance_update()
+    update["change"]["actions"] = actions
+    assert audit([update], "candidate-closure-budget")["status"] == "BLOCKED"
+
+
+def test_unknown_release_phase_is_never_reviewable_even_without_changes():
+    assert audit([], "unapproved-budget")["status"] == "BLOCKED"
 
 
 def test_candidates_are_reported_as_real_100_percent_iam_restricted_not_zero_traffic():
@@ -283,6 +376,15 @@ def test_exact_saved_hashes_and_independent_approval_are_required(saved_release)
     (current / "main.tf").write_text('terraform {}\n# changed-after-review\n', encoding="utf-8")
     with pytest.raises(release.PlanBlocked):
         applier.verify(directory, review, approval, cost)
+
+
+def test_closure_saved_plan_requires_matching_independent_phase_approval(saved_release):
+    directory, _, review, approval, cost = saved_release
+    review = {**review, "phase": "candidate-closure-budget"}
+    approval = {**approval, "phase": "candidate-closure-budget"}
+    assert applier.verify(directory, review, approval, cost)["budget_usd"] == 90
+    with pytest.raises(release.PlanBlocked, match="PHASE_MISMATCH"):
+        applier.verify(directory, review, {**approval, "phase": "verification-budget"}, cost)
 
 
 def test_saved_plan_tamper_or_prior_attempt_blocks_automatic_retry(saved_release):

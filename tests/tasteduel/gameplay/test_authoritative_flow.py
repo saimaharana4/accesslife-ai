@@ -238,7 +238,7 @@ def test_expired_claim_reclaimed_after_restart_fences_old_publisher(gameplay, ow
     assert counts(db_engine, owner, identifier)["curation_receipts"] == 1
 
 
-def test_session_clear_during_generation_prevents_publication(gameplay, owned_seed, db_owner_engine):
+def test_session_clear_during_generation_prevents_publication(gameplay, owned_seed, db_owner_engine, db_engine):
     curator = SyntheticCurator(block_first=True)
     client, owner, _ = gameplay(generator=curator)
     body = owned_seed(owner)
@@ -264,10 +264,14 @@ def test_session_clear_during_generation_prevents_publication(gameplay, owned_se
         reservation = db.scalar(
             select(m.GenerationReservation).where(m.GenerationReservation.session_id == owner)
         )
-        # FORCE RLS also applies to the migration owner: revoking this session
-        # intentionally hides every owned row, including the cancelled claim.
-        assert reservation is None
+        # Maintenance identity can inspect durable cancellation; it must not
+        # publish a pool/receipt after the owner's access was revoked.
+        assert reservation is not None and reservation.status == "cancelled"
         assert db.get(m.Session, owner).revoked_at is not None
+    with scoped_session(db_engine, owner) as db:
+        # Browser runtime retains the revoked-session FORCE RLS boundary.
+        assert db.scalar(select(m.GenerationReservation).where(m.GenerationReservation.session_id == owner)) is None
+        assert db.scalar(select(m.CurationReceipt).where(m.CurationReceipt.session_id == owner)) is None
 
 
 def test_concurrent_identical_answers_accept_once_and_return_saved_reveal(gameplay, owned_seed, db_engine):

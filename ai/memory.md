@@ -117,3 +117,8 @@ Keep each dated entry to one or two lines. Record completed work and verified ou
 
 - **2026-10-28 - Restricted release refresh:** Full CI 40655258903 passed on 83ede44; exact three digest/source-label updates applied, migration not rerun. Final private connectivity/expiry/axe/log and write-only-state checks passed; state 27 and refreshed full-root plan zero changes, no public promotion.
 - **2026-10-28 - Evidence boundary:** Fresh final-image replay was not rerun after source evidence expired; earlier genuine/controlled replay and logical restore remain recorded, live generation closed at eight Qloo/eight Vertex calls. Forecast US$83.77 of US$90; managed restore, physical retention and human validation remain open.
+
+- **2026-10-28 - Production preflight blocked:** Three independent reviews confirmed incomplete candidate gameplay/cold timing, exhausted Vertex allowance and unimplemented public release/rollback/retention controls; unauthenticated web/API still return 403. Recorded exact baseline and bounded closure proposal; no cloud/provider/public identity mutation.
+
+- **2026-10-28 — Candidate gate closed:** User-approved one-attempt verification passed genuine five-round/save/exact replay and eleven axe scans; actual usage ten Qloo HTTP/ten Vertex, counters/windows preserved. Cold web request correlated at 3,361.83ms; public access remains restricted.
+- **2026-10-28 — Production preparation:** Added restricted td0011 expiry operations and compatible release/rollback safeguards; fresh gross-bound forecast US$88.15/US$90. Source validation/release are in progress, not a completed public deployment.

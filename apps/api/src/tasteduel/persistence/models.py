@@ -433,7 +433,7 @@ class ChallengePlay(Owned, Created, Base):
     __table_args__ = owner_args(
         # Intentional cross-owner share reference: it grants no SELECT on creator rows.
         owned_fk(["challenge_id"], "challenges", ["id"]),
-        owned_fk(["game_id", "session_id"], "games", ["id", "session_id"]),
+        owned_fk(["game_id", "session_id"], "games", ["id", "session_id"], ondelete="CASCADE"),
         UniqueConstraint("game_id"),
     )
     challenge_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
@@ -543,6 +543,15 @@ class ProviderControl(Base):
     failures: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
     open_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     auth_blocked: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
+
+
+class ChallengeTombstone(Created, Base):
+    """Short-lived hash/reason only; no owner, title, score or ranking evidence."""
+
+    __tablename__ = "challenge_tombstones"
+    slug_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    reason: Mapped[str] = mapped_column(String(16), nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
 # Descriptive aliases used by repository callers; no second set of mapped tables.

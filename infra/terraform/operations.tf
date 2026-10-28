@@ -33,18 +33,26 @@ resource "google_service_account_iam_member" "deploy_actas" {
 }
 
 resource "google_monitoring_uptime_check_config" "web" {
-  display_name = "AccessLife public web"
-  timeout      = "10s"
-  period       = "300s"
+  display_name     = var.tasteduel_observability_enabled ? "Taste Duel public readiness" : "AccessLife public web"
+  timeout          = "10s"
+  period           = var.tasteduel_observability_enabled ? "900s" : "300s"
+  selected_regions = var.tasteduel_observability_enabled ? ["EUROPE", "SOUTH_AMERICA", "ASIA_PACIFIC"] : null
   http_check {
-    path         = "/"
+    path         = var.tasteduel_observability_enabled ? "/api/v1/health/ready" : "/"
     port         = 443
     use_ssl      = true
     validate_ssl = true
   }
+  dynamic "content_matchers" {
+    for_each = var.tasteduel_observability_enabled ? [true] : []
+    content {
+      content = "\"generation_available\":true"
+      matcher = "CONTAINS_STRING"
+    }
+  }
   monitored_resource {
     type = "uptime_url"
-    labels = { project_id = var.project_id, host = replace(var.public_url, "https://", "")
+    labels = { project_id = var.project_id, host = replace(var.tasteduel_observability_enabled ? local.tasteduel_web_origin : var.public_url, "https://", "")
     }
 
   }

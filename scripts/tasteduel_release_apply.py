@@ -16,7 +16,7 @@ import subprocess
 
 import tasteduel_foundation_plan as foundation
 from tasteduel_foundation_apply import source_hash
-from tasteduel_release_plan import audit_release, credential_environment, images_input
+from tasteduel_release_plan import PHASES, PRODUCTION_PHASES, audit_release, credential_environment, images_input
 
 
 def verify(directory: Path, review: dict, approval: dict, cost: dict) -> dict:
@@ -25,7 +25,9 @@ def verify(directory: Path, review: dict, approval: dict, cost: dict) -> dict:
     for field in ("source_sha256", "plan_sha256", "image_source_sha", "phase"):
         if approval.get(field) != review.get(field):
             raise foundation.PlanBlocked("RELEASE_APPROVAL_HASH_OR_PHASE_MISMATCH")
-    if review.get("phase") not in {"migration", "services", "refresh", "verification-budget"}:
+    if review.get("phase") in PRODUCTION_PHASES and approval.get("manifest_sha256") != review.get("manifest_sha256"):
+        raise foundation.PlanBlocked("PRODUCTION_MANIFEST_APPROVAL_MISMATCH")
+    if review.get("phase") not in (*PHASES, *PRODUCTION_PHASES):
         raise foundation.PlanBlocked("RELEASE_PHASE_INVALID")
     if source_hash(directory) != review["source_sha256"] or source_hash(foundation.ROOT / "infra/terraform") != review["source_sha256"]:
         raise foundation.PlanBlocked("SOURCE_CHANGED_AFTER_RELEASE_REVIEW")
@@ -92,13 +94,37 @@ def main() -> int:
         cost = json.loads(args.cost.read_text(encoding="utf-8"))
         variables = verify(directory, review, approval, cost)
         images = images_input(json.loads(args.images.read_text(encoding="utf-8")))
+        manifest = None
+        if review["phase"] in PRODUCTION_PHASES:
+            from tasteduel_production_release import audit_production, check_evidence, digest, phase_images, phase_variables, validate_manifest
+
+            manifest = validate_manifest(json.loads((directory / "production-manifest.json").read_text(encoding="utf-8")))
+            if images_input(manifest["images"]) != images:
+                raise foundation.PlanBlocked("PRODUCTION_PUBLISHED_IMAGE_RECORD_MISMATCH")
+            if digest(manifest) != review.get("manifest_sha256") or digest(cost) != manifest["cost_sha256"]:
+                raise foundation.PlanBlocked("PRODUCTION_MANIFEST_OR_COST_CHANGED_AFTER_REVIEW")
+            if review["phase"] == "production-promote":
+                check_evidence(json.loads((directory / "smoke-evidence.json").read_text(encoding="utf-8")), manifest, kind="sealed-smoke")
+            images = phase_images(manifest, review["phase"])
         adc = foundation.adc_path()
         plan = json.loads(foundation.terraform(directory, adc, {}, "show", "-json", "release.tfplan"))
         saved_variables = {key: item.get("value") for key, item in plan.get("variables", {}).items()}
         if any(not saved_input_matches(saved_variables.get(key), value) for key, value in variables.items()):
             raise foundation.PlanBlocked("COST_OR_FOUNDATION_INPUTS_CHANGED_AFTER_PLAN")
         variables.update(plan_inputs(plan, review, images, args.tester))
-        audited = audit_release(plan, phase=review["phase"], images=images, tester=args.tester, project_number=args.project_number)
+        if manifest:
+            declared = phase_variables(manifest, review["phase"])
+            if any(not saved_input_matches(saved_variables.get(key), value) for key, value in declared.items()):
+                raise foundation.PlanBlocked("PRODUCTION_SAVED_INPUTS_MISMATCH")
+            variables.update(declared)
+            if review["phase"] == "production-observability":
+                from tasteduel_observability_plan import audit_observability
+
+                audited = audit_observability(plan, manifest)
+            else:
+                audited = audit_production(plan, manifest, review["phase"])
+        else:
+            audited = audit_release(plan, phase=review["phase"], images=images, tester=args.tester, project_number=args.project_number)
         if audited["status"] != "REVIEWABLE":
             raise foundation.PlanBlocked("RELEASE_SAVED_PLAN_SCOPE_FAILED")
         # Preserve actual established SQL passwords from pinned SM URLs. Never
@@ -107,7 +133,7 @@ def main() -> int:
         journal = {"started_at_utc": datetime.now(timezone.utc).isoformat(), "status": "STARTED",
                    "phase": review["phase"], "plan_sha256": review["plan_sha256"],
                    "source_sha256": review["source_sha256"], "image_source_sha": review["image_source_sha"],
-                   "credential_payload_files": False, "public_product_access": False}
+                   "credential_payload_files": False, "public_product_access": bool(manifest and variables["tasteduel_public_enabled"])}
         # Exclusive creation also prevents two local invocations of this plan.
         with (directory / "apply-journal.json").open("x", encoding="utf-8") as handle:
             json.dump(journal, handle, indent=2)

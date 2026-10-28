@@ -283,6 +283,10 @@ test("synthetic result opens answered choices before an explicit keyboard save",
   await expect(
     page.getByRole("button", { name: /^Remove discovery:/ }),
   ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: /^Remove discovery:/ }),
+  ).toBeVisible();
   await inspect(page, info, "explicit-save-from-answered-choices");
   h.check();
 });

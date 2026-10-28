@@ -69,7 +69,7 @@ jobs:
           corepack pnpm test:web-contracts
           corepack pnpm test:fixture-state
           node --test runtime/qloo/typed-response.test.mjs
-          node --test tests/browser-contracts/cloud-response-audit.test.mjs
+          node --test tests/browser-contracts/*.test.mjs
 
       - name: Start isolated Taste Duel PostgreSQL
         run: docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml up --detach --wait database

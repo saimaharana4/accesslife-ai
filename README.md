@@ -1,12 +1,12 @@
 # Taste Duel
 
-**Restricted cloud candidate - 28 October 2026.** Genuine Qloo/Vertex solo play, five rounds, explicit discovery save, sharing/social image, exact friend replay and scoped logical recovery have verified cloud evidence. The candidate remains IAM restricted, with no public promotion. The measured cold-start forwarding correction is deployed; private connectivity, actual expiry and final zero-change Terraform checks passed. Fresh final-image gameplay was not repeated because the earlier evidence expired and the finite live-call budget is closed. [Execution, immutable images, tests and limitations](infra/migration/candidate-execution-2026-10-28.md).
+**Production release in progress — 28 October 2026.** The restricted candidate passed a fresh genuine Qloo/Vertex five-round game, discovery save, exact isolated friend replay, response-loss recovery and eleven full axe scans. One cold web navigation is measured. The candidate allowance is closed at ten Qloo HTTP requests and ten Vertex calls. Public access remains restricted while the new release safeguards are verified. [Current release evidence and limitations](infra/migration/production-release-execution-2026-10-28.md).
 
 Taste Duel is a five-round cultural prediction game. A player chooses a familiar artist or film, then predicts which of two Qloo-ranked entities appears higher for that specific seed and query. Qloo supplies the cultural ranking; deterministic code controls eligibility, winners, scoring, and replay. A correct guess measures game performance only. It is never recorded as a preference.
 
 Cloud foundation is verified: the saved plan applied, restricted keyless access
 and new database privileges passed, and shared rollback assets remain preserved.
-The refreshed conservative forecast is US$83.77 under the approved US$90 ceiling.
+The refreshed conservative production forecast is US$88.15 under the approved US$90 ceiling.
 [Candidate evidence and remaining release gates](infra/migration/candidate-execution-2026-10-28.md).
 
 ## Product experience
@@ -47,12 +47,12 @@ The local Compose runtime uses separate web, API, migration, and database roles,
 
 ## Verification and release status
 
-The [current candidate cost review](infra/migration/candidate-cost-review-2026-10-28.md) passes at
-**US$83.77 under the user-approved US$90 ceiling**, preserving seven backups.
+The [current production cost review](infra/migration/production-cost-review-2026-10-28.md) passes at
+**US$88.15 under the user-approved US$90 ceiling**, preserving seven backups.
 It conservatively includes all unallocated gross usage and assumes no future
 credits. The independently reviewed saved foundation plan applied successfully;
 keyless [authentication passed](https://github.com/saimaharana4/taste-duel/actions/runs/40559171936).
-The repository is now `saimaharana4/taste-duel`. Live database privilege checks passed; Taste Duel services are IAM restricted; no public product traffic is authorized.
+The repository is `saimaharana4/taste-duel`. Live database privilege checks passed. The requested public release is conditional on the reviewed application gates; services remain IAM restricted until those pass.
 
 A bounded live quality audit checked Radiohead and Beyoncé → films, and Inception and Spirited Away → artists. All four produced valid five-round paths with ten distinct contestants, using exactly eight Qloo requests and no model calls. Original title cards remain the approved artwork; image metadata alone does not grant reuse rights. Difficulty remains a versioned engineering heuristic, not human calibration. See the [round-quality results](ai/round-quality-validation.md).
 
@@ -62,7 +62,7 @@ The deployed application commit `83ede4499ef53ebfcafc9895835b047fbed4b5c6` passe
 
 The recorded CI baseline additionally checked a clean database migration, generated-contract drift, production container build/smoke, tracked-source secret scanning, and backend-free Terraform validation. No cloud resource was provisioned or deployed by that run.
 
-Before public promotion, separately review the exhausted candidate model allowance and public traffic envelope, verify physical retention cleanup and request-log metadata policy, refresh billing and finish manual screen-reader/native zoom review. Willing-user discovery value remains unmeasured. The cloud rehearsal proved a scoped in-memory logical restore, not managed Cloud SQL backup restore or a durable full export. CI and automated cloud play do not establish real-user impact.
+The fresh restricted acceptance and finite allowance are documented in the [current release record](infra/migration/production-release-execution-2026-10-28.md). The new compatible release, retention operation, monitoring, public-browser verification and rollback rehearsal remain pending until explicitly recorded there. Willing-user discovery value, native screen-reader and native zoom testing remain unmeasured. The recovery rehearsal proved a scoped in-memory logical restore, not a managed Cloud SQL backup restore or a durable full export. CI and automated cloud play do not establish real-user impact.
 
 ## Project documentation
 

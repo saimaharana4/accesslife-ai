@@ -1,29 +1,25 @@
 import { defineConfig } from "@playwright/test";
+import { cloudBrowserAccess } from "./tests/browser-contracts/cloud-browser-access.mjs";
 
 const enabled = process.env.TASTEDUEL_CLOUD_BROWSER_ENABLED === "true";
 const baseURL =
   process.env.TASTEDUEL_CANDIDATE_ORIGIN || "https://candidate.invalid";
 if (enabled) {
-  const origin = new URL(baseURL);
-  if (
-    origin.protocol !== "https:" ||
-    origin.origin !== baseURL ||
-    !origin.hostname.endsWith(".run.app") ||
-    !process.env.TASTEDUEL_CANDIDATE_ID_TOKEN ||
-    !process.env.TASTEDUEL_CLOUD_SEED
-  )
-    throw new Error(
-      "Cloud browser checks require an approved exact HTTPS Cloud Run origin, in-memory identity token and bounded seed.",
-    );
+  cloudBrowserAccess(process.env);
+  if (!process.env.TASTEDUEL_CLOUD_SEED)
+    throw new Error("Cloud browser checks require the approved bounded seed");
 }
 
 export default defineConfig({
   testDir: "tests/e2e",
-  testMatch: [
-    "tasteduel-cloud.spec.ts",
-    "tasteduel-cloud-replay.spec.ts",
-    "tasteduel-cloud-postchecks.spec.ts",
-  ],
+  testMatch:
+    process.env.TASTEDUEL_CLOUD_ACCESS_MODE === "public"
+      ? ["tasteduel-cloud.spec.ts"]
+      : [
+          "tasteduel-cloud.spec.ts",
+          "tasteduel-cloud-replay.spec.ts",
+          "tasteduel-cloud-postchecks.spec.ts",
+        ],
   timeout: 420_000,
   expect: { timeout: 20_000 },
   workers: 1,

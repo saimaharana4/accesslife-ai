@@ -60,10 +60,10 @@ function Assert-DatabaseAndMigrations {
     $compose = Get-ComposeArguments
     Invoke-Docker -Arguments ($compose + @('exec', '-T', 'database', 'pg_isready', '-U', 'tasteduel_admin', '-d', 'tasteduel_prompt5')) -Quiet
     $revision = & docker @($compose + @('run', '--rm', 'migrate', 'alembic', '-c', 'apps/api/tasteduel-alembic.ini', 'current'))
-    if ($LASTEXITCODE -ne 0 -or ($revision -join "`n") -notmatch '\btd0010\b') {
-        throw 'Taste Duel database is not at the expected td0010 migration head. Run the explicit migrate action; no volume was changed.'
+    if ($LASTEXITCODE -ne 0 -or ($revision -join "`n") -notmatch '\btd0011\b') {
+        throw 'Taste Duel database is not at the expected td0011 migration head. Run the explicit migrate action; no volume was changed.'
     }
-    Write-Host 'Taste Duel database is ready at migration td0010.'
+    Write-Host 'Taste Duel database is ready at migration td0011.'
 }
 
 if ($Action -in @('preflight', 'up', 'fixture', 'migrate', 'health', 'test', 'persistence')) {

@@ -1,14 +1,107 @@
-name: Retired AccessLife release
+name: Taste Duel controlled release
+run-name: Taste Duel reviewed ${{ inputs.stage }} handoff
 
-# Historical AccessLife release automation is deliberately retired. Taste Duel
-# Prompt 14 does not provision or deploy cloud resources.
 on:
   workflow_dispatch:
+    inputs:
+      stage:
+        description: Reviewed stage; public routing/IAM requires a separate root-ADC saved-plan handoff
+        type: choice
+        required: true
+        options: [verify, publish, migrate]
+      source_sha:
+        description: Exact successful main-push application CI SHA
+        type: string
+        required: true
+      ci_run_id:
+        description: Successful application CI run for that exact SHA
+        type: string
+        required: true
+      manifest_path:
+        description: Reviewed nonsecret manifest under infra/releases/; not needed for publish before digests exist
+        type: string
+        required: false
+      cost_path:
+        description: Reviewed nonsecret cost evidence committed under infra/releases/
+        type: string
+        required: true
+
 permissions:
   contents: read
+
+concurrency:
+  group: tasteduel-controlled-release
+  cancel-in-progress: false
+
 jobs:
-  retired:
+  release:
+    if: >-
+      github.repository_id == '1431472864' &&
+      github.repository_owner_id == '60200140' &&
+      github.ref == 'refs/heads/main' &&
+      vars.TASTEDUEL_RELEASE_ENABLED == 'true'
+    environment: foundation-review
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      REVIEWED_STAGE: ${{ inputs.stage }}
+      REVIEWED_SHA: ${{ inputs.source_sha }}
+      REVIEWED_CI: ${{ inputs.ci_run_id }}
+      REVIEWED_MANIFEST: ${{ inputs.manifest_path }}
+      REVIEWED_COST: ${{ inputs.cost_path }}
+      REVIEWED_PROVIDER: ${{ vars.TASTEDUEL_WIF_PROVIDER }}
+      REVIEWED_ACCOUNT: ${{ vars.TASTEDUEL_DEPLOY_SERVICE_ACCOUNT }}
+      CLOUDSDK_CORE_DISABLE_PROMPTS: "1"
     steps:
-      - name: Explain retirement
-        run: echo "AccessLife deployment is retired. Taste Duel deployment requires a separately reviewed release workflow."
+      - name: Validate restricted inputs before authentication
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$REVIEWED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$REVIEWED_CI" =~ ^[0-9]+$ ]]
+          if [[ "$REVIEWED_STAGE" != publish ]]; then [[ "$REVIEWED_MANIFEST" =~ ^infra/releases/[a-zA-Z0-9_-]+\.json$ ]]; fi
+          [[ "$REVIEWED_COST" =~ ^infra/releases/[a-zA-Z0-9_-]+\.json$ ]]
+          [[ "$REVIEWED_PROVIDER" == 'projects/902056825143/locations/global/workloadIdentityPools/accesslife-github/providers/github' ]]
+          [[ "$REVIEWED_ACCOUNT" == 'tasteduel-deploy@project-bb13ecd8-9d67-408d-9a7.iam.gserviceaccount.com' ]]
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          ref: ${{ inputs.stage == 'publish' && inputs.source_sha || github.sha }}
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff # verified v6
+        with:
+          version: "0.11.32"
+      - name: Install locked release tooling
+        run: uv sync --project runtime/python --frozen --python 3.12
+      - name: Verify manifest, cost and exact successful source CI
+        if: inputs.stage != 'publish'
+        run: uv run --project runtime/python --frozen python scripts/tasteduel_production_release.py --manifest "$REVIEWED_MANIFEST" --cost "$REVIEWED_COST" --source-sha "$REVIEWED_SHA" --ci-run-id "$REVIEWED_CI" --stage verify
+      - uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2
+        if: inputs.stage != 'verify'
+        with:
+          project_id: project-bb13ecd8-9d67-408d-9a7
+          workload_identity_provider: ${{ vars.TASTEDUEL_WIF_PROVIDER }}
+          service_account: ${{ vars.TASTEDUEL_DEPLOY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+      - uses: google-github-actions/setup-gcloud@e427ad8a34f8676edf47cf7d7925499adf3eb74f # v2
+        if: inputs.stage != 'verify'
+      - name: Publish immutable images only
+        if: inputs.stage == 'publish'
+        run: uv run --project runtime/python --frozen python scripts/tasteduel_release_images.py --review "$REVIEWED_COST" --source-sha "$REVIEWED_SHA" --ci-run-id "$REVIEWED_CI" --execute
+      - name: Execute only the reviewed Taste Duel migration image
+        if: inputs.stage == 'migrate'
+        run: uv run --project runtime/python --frozen python scripts/tasteduel_production_release.py --manifest "$REVIEWED_MANIFEST" --cost "$REVIEWED_COST" --stage migrate --execute
+      - name: Retain only immutable nonsecret image provenance for root review
+        if: inputs.stage == 'publish'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # verified v4
+        with:
+          name: tasteduel-reviewed-image-provenance
+          path: .data/tasteduel-cloud-review/release-images-*/images.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+      - name: Explain the explicit approval boundary
+        run: echo 'Images/migration never promote. Reviewed full-root pin, candidate, sealed-smoke, public promotion, rollback and postcheck handoffs remain required. Deploy identity receives no provider/database secrets or public IAM administration.'

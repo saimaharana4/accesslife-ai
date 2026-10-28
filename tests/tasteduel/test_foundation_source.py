@@ -62,8 +62,22 @@ def test_identity_probe_is_manual_exact_repository_and_non_deploying():
     assert "print-access-token" not in text
 
 
-def test_retired_workflow_cannot_invoke_legacy_ingestion_or_deployment():
+def test_controlled_workflow_cannot_invoke_legacy_ingestion_or_implicit_promotion():
     text = source(ROOT / ".github/workflows/cloud-release.yml")
     assert "workflow_dispatch:" in text
-    assert "id-token: write" not in text
-    assert not re.search(r"gcloud\s|terraform\s+(?:apply|destroy)|docker\s+push|accesslife\.worker|accesslife\.adapters", text)
+    # Release is now authorized, but only the exact numeric repository/main/
+    # protected environment may request keyless publish/migration credentials.
+    for condition in ("github.repository_id == '1431472864'",
+                      "github.repository_owner_id == '60200140'",
+                      "github.ref == 'refs/heads/main'",
+                      "vars.TASTEDUEL_RELEASE_ENABLED == 'true'",
+                      "environment: foundation-review"):
+        assert condition in text
+    assert "id-token: write" in text
+    assert "options: [verify, publish, migrate]" in text
+    assert 'tasteduel_release_images.py --review "$REVIEWED_COST"' in text
+    assert '--stage migrate --execute' in text
+    assert not re.search(r"terraform\s+(?:apply|destroy)|gcloud\s+run\s+(?:deploy|services)|accesslife\.(?:worker|adapters)", text)
+    for forbidden in ("accesslife-ingest", "accesslife-reconcile", "accesslife-migrate",
+                      "print-access-token", "secrets versions access", "roles/run.admin"):
+        assert forbidden not in text

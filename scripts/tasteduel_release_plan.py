@@ -34,6 +34,13 @@ ADDRESSES = {
     "deploy_api": 'google_cloud_run_v2_service_iam_member.tasteduel_deploy["api"]',
     "deploy_web": 'google_cloud_run_v2_service_iam_member.tasteduel_deploy["web"]',
 }
+VERIFICATION_ALLOWANCES = {
+    "verification-budget": ("6", "8"),  # Historical reviewed allowance only.
+    "candidate-closure-budget": ("8", "10"),
+}
+PHASES = ("migration", "services", "refresh", *VERIFICATION_ALLOWANCES)
+PRODUCTION_PHASES = ("production-pin", "production-prepare", "production-candidate", "production-rollback-ready", "production-seal",
+                     "production-promote", "production-rollback", "production-observability")
 
 
 def images_input(record: dict) -> dict:
@@ -75,7 +82,7 @@ def socket_mount(container: dict, task: dict) -> bool:
             and mounts[0].get("mount_path") == "/cloudsql")
 
 
-def safe_job(after: dict, images: dict) -> bool:
+def safe_job(after: dict, images: dict, *, ops_cost_hash: str | None = None, ops_through: str | None = None) -> bool:
     try:
         task = after["template"][0]["template"][0]
         container = task["containers"][0]
@@ -83,20 +90,23 @@ def safe_job(after: dict, images: dict) -> bool:
                 and after["deletion_protection"] is True and after["template"][0]["task_count"] == 1
                 and after["template"][0]["parallelism"] == 1 and task["service_account"] == SA["migrate"]
                 and task["timeout"] == "300s" and task["max_retries"] == 0 and len(task["containers"]) == 1
-                and container["image"] == images["api"] and container["command"] == ["alembic"]
-                and container["args"] == ["-c", "apps/api/tasteduel-alembic.ini", "upgrade", "head"]
+                and container["image"] == images["api"]
+                and container["command"] == (["alembic"] if ops_cost_hash is None else ["python", "-m", "tasteduel.operations"])
+                and container["args"] == (["-c", "apps/api/tasteduel-alembic.ini", "upgrade", "head"] if ops_cost_hash is None else ["migrate"])
                 and socket_mount(container, task)
                 and container["resources"][0]["limits"] == {"cpu": "1", "memory": "512Mi"}
                 and env_values(container) == {"TASTEDUEL_DATABASE_MODE": "cloud_sql",
                     "TASTEDUEL_CLOUD_SQL_CONNECTION_NAME": CONNECTION,
                     "TASTEDUEL_MIGRATION_DATABASE_SECRET_VERSION": secret_reference("migrate"),
-                    "TASTEDUEL_QLOO_ENABLED": "false", "TASTEDUEL_GENERATION_ENABLED": "false"})
+                    "TASTEDUEL_QLOO_ENABLED": "false", "TASTEDUEL_GENERATION_ENABLED": "false",
+                    **({"TASTEDUEL_OPS_COST_REVIEW_HASH": ops_cost_hash,
+                        "TASTEDUEL_OPS_REVIEWED_THROUGH_UTC": ops_through} if ops_cost_hash else {})})
     except (KeyError, IndexError, TypeError):
         return False
 
 
 def safe_service(after: dict, actor: str, images: dict, origin: str, *, api_uri: str | None = None,
-                 unknown: dict | None = None) -> bool:
+                 unknown: dict | None = None, vertex_limit: str = "10", qloo_limit: str = "12") -> bool:
     try:
         template = after["template"][0]
         container = template["containers"][0]
@@ -127,8 +137,8 @@ def safe_service(after: dict, actor: str, images: dict, origin: str, *, api_uri:
                 "TASTEDUEL_QLOO_HTTP_TYPED_SEARCH": "true",
                 "TASTEDUEL_QLOO_SECRET_VERSION": f"projects/{PROJECT}/secrets/accesslife-qloo-api-key/versions/1",
                 "TASTEDUEL_GENERATION_ENABLED": "true", "TASTEDUEL_VERTEX_PROJECT": PROJECT,
-                "TASTEDUEL_VERTEX_REQUESTS_PER_DAY": "8", "TASTEDUEL_VERTEX_TOKENS_PER_DAY": "500000",
-                "TASTEDUEL_QLOO_REQUESTS_PER_DAY": "12", "TASTEDUEL_QLOO_REQUESTS_PER_MINUTE": "12",
+                "TASTEDUEL_VERTEX_REQUESTS_PER_DAY": vertex_limit, "TASTEDUEL_VERTEX_TOKENS_PER_DAY": "500000",
+                "TASTEDUEL_QLOO_REQUESTS_PER_DAY": qloo_limit, "TASTEDUEL_QLOO_REQUESTS_PER_MINUTE": "12",
             }
         expected_keys = {"TASTEDUEL_API_URL", "TASTEDUEL_API_AUDIENCE", "TASTEDUEL_API_IAM", "TASTEDUEL_WEB_ORIGINS",
                          "TASTEDUEL_CANONICAL_ORIGIN", "TASTEDUEL_ALLOW_LOCAL_HTTP"}
@@ -170,6 +180,9 @@ def image_only_update(before: dict, after: dict, *, actor: str) -> bool:
                 template = template["template"][0]
             else:
                 template.pop("revision", None)  # generated revision identifier
+            for container in template.get("containers", []):
+                if env_values(container) is not None:
+                    container["env"] = sorted(container.get("env", []), key=lambda item: item["name"])
             image = template["containers"][0].pop("image")
             if not re.fullmatch(
                 rf"{REGION}-docker\.pkg\.dev/{PROJECT}/accesslife/tasteduel-{'api' if actor == 'migrate' else actor}@sha256:[0-9a-f]{{64}}",
@@ -185,9 +198,9 @@ def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_
     origin = f"https://tasteduel-web-{project_number}.{REGION}.run.app"
     keys = (("gate", "migrate", "job_deploy") if phase == "migration" else
             ("migrate", "api", "web") if phase == "refresh" else
-            ("api",) if phase == "verification-budget" else ADDRESSES)
+            ("api",) if phase in VERIFICATION_ALLOWANCES else ADDRESSES)
     allowed = {ADDRESSES[key] for key in keys}
-    actions, blocked = [], False
+    actions, blocked = [], phase not in PHASES
     api_uri = next(((resource.get("change", {}).get("after") or {}).get("uri") for resource in plan.get("resource_changes", [])
                     if resource.get("address") == ADDRESSES["api"]), None)
     for resource in plan.get("resource_changes", []):
@@ -196,12 +209,13 @@ def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_
         if operation in (["no-op"], ["read"]):
             continue
         after = change.get("after") or {}
-        safe = address in allowed and operation == (["update"] if phase in {"refresh", "verification-budget"} else ["create"])
+        safe = address in allowed and operation == (["update"] if phase == "refresh" or phase in VERIFICATION_ALLOWANCES else ["create"])
         if safe and address == ADDRESSES["migrate"]:
             safe = safe_job(after, images)
         elif safe and address in (ADDRESSES["api"], ADDRESSES["web"]):
             safe = safe_service(after, "api" if address == ADDRESSES["api"] else "web", images, origin,
-                                api_uri=api_uri, unknown=change.get("after_unknown"))
+                                api_uri=api_uri, unknown=change.get("after_unknown"),
+                                vertex_limit=VERIFICATION_ALLOWANCES.get(phase, (None, "10"))[1])
         elif safe and "_iam_member." in address:
             expected = {
                 ADDRESSES["job_deploy"]: ("tasteduel-migrate", "roles/run.developer", "serviceAccount:" + SA["deploy"]),
@@ -216,18 +230,19 @@ def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_
             actor = "migrate" if address == ADDRESSES["migrate"] else "api" if address == ADDRESSES["api"] else "web"
             safe = (after.get("labels", {}).get("source_ref") == images["source_sha"][:12]
                     and image_only_update(change.get("before") or {}, after, actor=actor))
-        if safe and phase == "verification-budget":
+        if safe and phase in VERIFICATION_ALLOWANCES:
             before = deepcopy(change.get("before") or {})
             try:
+                old_limit, new_limit = VERIFICATION_ALLOWANCES[phase]
                 old_container = before["template"][0]["containers"][0]
                 new_container = after["template"][0]["containers"][0]
                 old_env = env_values(old_container)
-                safe = (old_env.get("TASTEDUEL_VERTEX_REQUESTS_PER_DAY") == "6"
+                safe = (old_env.get("TASTEDUEL_VERTEX_REQUESTS_PER_DAY") == old_limit
                         and old_container["image"] == new_container["image"]
                         and all(before.get(key) == after.get(key) for key in ("labels", "terraform_labels", "effective_labels")))
                 for item in old_container["env"]:
                     if item["name"] == "TASTEDUEL_VERTEX_REQUESTS_PER_DAY":
-                        item["value"] = "8"
+                        item["value"] = new_limit
                 safe = safe and image_only_update(before, after, actor="api")
             except (KeyError, IndexError, TypeError, AttributeError):
                 safe = False
@@ -263,7 +278,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--review", type=Path, required=True)
     parser.add_argument("--images", type=Path, required=True)
-    parser.add_argument("--phase", choices=("migration", "services", "refresh", "verification-budget"), required=True)
+    parser.add_argument("--phase", choices=(*PHASES, *PRODUCTION_PHASES), required=True)
+    parser.add_argument("--production-manifest", type=Path)
+    parser.add_argument("--smoke-evidence", type=Path)
     parser.add_argument("--tester", required=True, help="One reviewed user:email IAM principal; no public/group grants")
     parser.add_argument("--project-number", required=True)
     args = parser.parse_args()
@@ -276,6 +293,25 @@ def main() -> int:
         variables.update({"tasteduel_release_migration_enabled": True, "tasteduel_release_services_enabled": args.phase != "migration",
                           "tasteduel_release_api_image": images["api"], "tasteduel_release_web_image": images["web"],
                           "tasteduel_release_source_sha": images["source_sha"], "tasteduel_candidate_tester": args.tester})
+        manifest = None
+        if args.phase in PRODUCTION_PHASES:
+            from tasteduel_production_release import check_evidence, digest, phase_images, phase_variables, validate_manifest
+
+            if args.production_manifest is None:
+                raise PlanBlocked("PRODUCTION_MANIFEST_REQUIRED")
+            manifest = validate_manifest(json.loads(args.production_manifest.read_text(encoding="utf-8")))
+            if images_input(manifest["images"]) != images:
+                raise PlanBlocked("PRODUCTION_PUBLISHED_IMAGE_RECORD_MISMATCH")
+            if digest(review) != manifest["cost_sha256"]:
+                raise PlanBlocked("PRODUCTION_COST_REVIEW_CHANGED")
+            if review["reviewed_through_utc"] != manifest["reviewed_through_utc"]:
+                raise PlanBlocked("PRODUCTION_OPERATIONS_HORIZON_MISMATCH")
+            if args.phase == "production-promote":
+                if args.smoke_evidence is None:
+                    raise PlanBlocked("SEALED_SMOKE_REQUIRED_BEFORE_PUBLIC_GRANT")
+                check_evidence(json.loads(args.smoke_evidence.read_text(encoding="utf-8")), manifest, kind="sealed-smoke")
+            variables.update(phase_variables(manifest, args.phase))
+            images = phase_images(manifest, args.phase)
         directory = ROOT / ".data/tasteduel-cloud-review" / ("release-" + args.phase + "-plan-" + secrets.token_hex(8))
         source_hash = source_snapshot(directory)
         adc, environment = adc_path(), credential_environment(variables)
@@ -283,7 +319,20 @@ def main() -> int:
                   "-backend-config=bucket=" + BACKEND_BUCKET, "-backend-config=prefix=" + BACKEND_PREFIX)
         terraform(directory, adc, environment, "plan", "-input=false", "-no-color", "-lock-timeout=60s", "-out=release.tfplan")
         plan = json.loads(terraform(directory, adc, environment, "show", "-json", "release.tfplan"))
-        result = audit_release(plan, phase=args.phase, images=images, tester=args.tester, project_number=args.project_number)
+        if manifest:
+            from tasteduel_production_release import audit_production
+
+            if args.phase == "production-observability":
+                from tasteduel_observability_plan import audit_observability
+
+                result = audit_observability(plan, manifest)
+            else:
+                result = audit_production(plan, manifest, args.phase)
+            (directory / "production-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+            if args.smoke_evidence:
+                (directory / "smoke-evidence.json").write_text(args.smoke_evidence.read_text(encoding="utf-8"), encoding="utf-8")
+        else:
+            result = audit_release(plan, phase=args.phase, images=images, tester=args.tester, project_number=args.project_number)
         result.update({"source_sha256": source_hash, "plan_sha256": hashlib.sha256((directory / "release.tfplan").read_bytes()).hexdigest(),
                        "image_source_sha": images["source_sha"], "reviewed_total_usd": review["reviewed_total_usd"],
                        "created_at_utc": datetime.now(timezone.utc).isoformat(), "applied": False})

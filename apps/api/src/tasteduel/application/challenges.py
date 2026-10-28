@@ -58,6 +58,14 @@ class ChallengeService:
         digest = sha256(slug.encode()).hexdigest()
         capability(db, digest)
         challenge = db.scalar(select(m.Challenge).where(m.Challenge.slug_hash == digest))
+        if challenge is None:
+            tombstone = db.scalar(select(m.ChallengeTombstone).where(
+                m.ChallengeTombstone.slug_hash == digest,
+                m.ChallengeTombstone.expires_at > text("clock_timestamp()"),
+            ))
+            if tombstone is not None:
+                raise AppError(410, "CHALLENGE_REVOKED" if tombstone.reason == "revoked" else "CHALLENGE_EXPIRED",
+                               "This challenge is no longer available.")
         active(challenge, db.scalar(select(text("clock_timestamp()"))))
         return challenge
 

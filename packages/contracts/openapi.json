@@ -1254,7 +1254,7 @@
     }
   },
   "info": {
-    "description": "Authoritative sessions/gameplay with awaited fenced generation. Provider use is explicitly configured; browser integration is later work.",
+    "description": "Server-authoritative Taste Duel sessions, five-round gameplay and fixed challenges. Awaited generation is fenced and provider use is explicitly configured.",
     "title": "Taste Duel API",
     "version": "0.2.0-gameplay"
   },
@@ -4167,7 +4167,7 @@
       "url": "/"
     },
     {
-      "description": "Planned same-origin browser prefix; route paths are /v1",
+      "description": "Same-origin browser forwarding prefix; route paths are /v1",
       "url": "/api"
     }
   ]

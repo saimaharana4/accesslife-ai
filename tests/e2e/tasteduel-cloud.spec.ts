@@ -11,6 +11,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { writeFile } from "node:fs/promises";
 import type { ApiSchemas } from "../../apps/web/src/lib/api/contracts";
 import { createResponseAudit } from "../browser-contracts/cloud-response-audit.mjs";
+import { cloudBrowserAccess } from "../browser-contracts/cloud-browser-access.mjs";
 
 const enabled = process.env.TASTEDUEL_CLOUD_BROWSER_ENABLED === "true";
 test.skip(
@@ -94,13 +95,30 @@ async function inspect(page: Page, info: TestInfo, name: string) {
   });
 }
 
-test("protected cloud: one real curated solo, accepted-response recovery and identical friend five", async ({
+test("cloud: one real curated solo, accepted-response recovery and identical friend five", async ({
   browser,
   baseURL,
+  request,
 }, info) => {
   if (!baseURL) throw new Error("Explicit candidate origin required");
-  const token = process.env.TASTEDUEL_CANDIDATE_ID_TOKEN;
-  if (!token) throw new Error("Candidate identity unavailable");
+  const access = cloudBrowserAccess(process.env);
+  const token = access.identityToken ?? "";
+  if (access.mode === "public") {
+    const rejected = await request.get(
+      `${access.privateApiOrigin}/v1/health/ready`,
+      {
+        maxRedirects: 0,
+      },
+    );
+    expect(rejected.status()).toBe(403);
+  }
+  if (
+    process.env.TASTEDUEL_CLOUD_SEED !== "Radiohead" ||
+    (process.env.TASTEDUEL_CLOUD_SEED_TYPE ?? "artist") !== "artist"
+  )
+    throw new Error(
+      "This bounded attempt approves only the Radiohead artist seed",
+    );
   const origin = new URL(baseURL).origin;
   const audit = createResponseAudit(token);
   const responseFindings = audit.findings;
@@ -119,6 +137,7 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
   };
   const checks: Promise<void>[] = [];
   const contexts: BrowserContext[] = [];
+  let generationDispatches = 0;
 
   async function context(viewport: { width: number; height: number }) {
     const session = await browser.newContext({
@@ -129,8 +148,25 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
     // Scope authentication to this exact reviewed origin. Do not configure
     // global extraHTTPHeaders, which could attach credentials to third parties.
     await session.route("**/*", async (route) => {
-      if (new URL(route.request().url()).origin !== origin)
+      const url = new URL(route.request().url());
+      if (url.origin !== origin) return route.continue();
+      if (
+        route.request().method() === "POST" &&
+        url.pathname === "/api/v1/games"
+      ) {
+        generationDispatches++;
+        if (generationDispatches > 1) {
+          responseFindings.push("generation dispatch budget exceeded");
+          return route.abort("blockedbyclient");
+        }
+      }
+      if (!token) {
+        expect(
+          route.request().headers()["x-serverless-authorization"],
+        ).toBeUndefined();
+        expect(route.request().headers().authorization).toBeUndefined();
         return route.continue();
+      }
       await route.continue({
         headers: {
           ...route.request().headers(),
@@ -202,7 +238,14 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
       await page.getByRole("radio", { name: "Film", exact: true }).check();
     await tabTo(page, input);
     await input.fill(process.env.TASTEDUEL_CLOUD_SEED!);
-    await expect(page.getByRole("option").first()).toBeVisible();
+    const seedOption = page.getByRole("option").first();
+    await expect(seedOption).toBeVisible();
+    await expect(seedOption.locator(".seed-option-name")).toHaveText(
+      "Radiohead",
+    );
+    await expect(seedOption.locator(".seed-option-type")).toHaveText(
+      /^Music artist(?: · .+)?$/,
+    );
     const activeCookie = (await creator.cookies(origin)).find(
       (cookie) => cookie.name === "tasteduel_session",
     );
@@ -214,8 +257,12 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
       contentType: "application/json",
     });
     await page.keyboard.press("ArrowDown");
-    await expect(input).toHaveAttribute("aria-activedescendant", /\S+/);
+    await expect(input).toHaveAttribute(
+      "aria-activedescendant",
+      (await seedOption.getAttribute("id"))!,
+    );
     await page.keyboard.press("Enter");
+    await expect(input).toHaveValue("Radiohead");
     await tabTo(page, page.getByTestId("start-duel"));
     const generationStart = performance.now();
     await page.keyboard.press("Enter");
@@ -238,10 +285,14 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
       const key = route.request().headers()["idempotency-key"];
       const work = route
         .fetch({
-          headers: {
-            ...route.request().headers(),
-            "X-Serverless-Authorization": `Bearer ${token}`,
-          },
+          ...(token
+            ? {
+                headers: {
+                  ...route.request().headers(),
+                  "X-Serverless-Authorization": `Bearer ${token}`,
+                },
+              }
+            : {}),
         })
         .catch(() => {
           throw new Error(
@@ -375,10 +426,23 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
     );
     await page.keyboard.press("Enter");
     const save = page.getByRole("button", { name: /^Save discovery:/ }).first();
+    const savedLabel = (await save.getAttribute("aria-label"))!.replace(
+      /^Save/,
+      "Remove",
+    );
     await tabTo(page, save);
-    await page.keyboard.press("Enter");
+    await Promise.all([
+      page.waitForResponse(
+        (response) =>
+          response.request().method() === "POST" &&
+          new URL(response.url()).pathname === "/api/v1/discoveries" &&
+          response.ok(),
+      ),
+      page.keyboard.press("Enter"),
+    ]);
+    await page.reload({ waitUntil: "domcontentloaded", timeout: 25_000 });
     await expect(
-      page.getByRole("button", { name: /^Remove discovery:/ }).first(),
+      page.getByRole("button", { name: savedLabel, exact: true }),
     ).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 1000 });
     await inspect(page, info, "desktop-result");
@@ -414,7 +478,7 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
         invitationHtml,
       ),
     ).toBe(false);
-    expect(invitationHtml.includes(token)).toBe(false);
+    if (token) expect(invitationHtml.includes(token)).toBe(false);
     for (const title of frozen.flatMap((round) =>
       round.choices.map((choice) => choice.entity.name),
     ))
@@ -513,6 +577,7 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
     await Promise.all(checks);
     expect(audit.confirmedControlled).toBe(2);
     expect(responseFindings).toEqual([]);
+    expect(generationDispatches).toBe(1);
     expect(observed.generation).toBe(1);
     expect(observed.search).toBeLessThanOrEqual(2);
     expect(observed.replay).toBe(1);
@@ -548,6 +613,9 @@ test("protected cloud: one real curated solo, accepted-response recovery and ide
           exact_replay: true,
           source: "qloo",
           curator: "genuine_agent",
+          access_mode: access.mode,
+          operator_auth_sent: Boolean(token),
+          discovery_persisted_after_reload: true,
           raw_payloads_retained: false,
           server_coldness_verified: false,
           human_playtest: false,

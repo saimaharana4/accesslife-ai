@@ -51,8 +51,8 @@ def test_expiry_replaces_single_row_and_lower_limit_cannot_be_raised(db_engine, 
         db.execute(text("SELECT set_config('app.usage_scope', :scope, true)"), {"scope": scope})
         db.execute(
             text(
-                "UPDATE tasteduel.usage_budgets SET window_start=clock_timestamp()-interval '2 minute', expires_at=clock_timestamp()-interval '1 minute'"
-            )
+                "UPDATE tasteduel.usage_budgets SET window_start=clock_timestamp()-interval '2 minute', expires_at=clock_timestamp()-interval '1 minute' WHERE scope_hash=:scope AND bucket='test-requests'"
+            ), {"scope": scope}
         )
     admission(db_engine, scope, limit=1)
     with pytest.raises(UsageDenied):
