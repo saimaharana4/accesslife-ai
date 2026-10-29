@@ -2211,7 +2211,7 @@ h1.arena-heading {
 .challenge-share {
   margin-top: 28px;
   border-top: 1px dashed #8a8299;
-  padding-top: 24px;
+  padding: 24px 28px 0;
   text-align: left;
 }
 .challenge-share h2 {

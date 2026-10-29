@@ -39,7 +39,7 @@ bytes/chunks/time, error messages and provider/cache boundaries are bounded.
 Curation/evidence stays allowlisted and accepted-state authorized. Production
 HTML/RSC/DTO/OG and log contracts passed synthetic exposure checks; no upstream
 provider call occurred. The stable guest header removes a measured CLS failure.
-[Measured setup, policy and remaining release gates](../apps/api/AUDIT.md).
+[Measured setup, policy and remaining release gates](../docs/history/security-audit-2026-10-27.md).
 
 ### Historical Prompt 12 boundary - 27 October 2026
 
@@ -52,7 +52,7 @@ Owner revocation/clearing also blocks started replays and replay-only discovery
 support. Fixed replay resharing is prohibited to preserve the parent's revocation.
 Canonical-origin configuration, anonymous bounded server metadata reads, no-store
 routes and original local-font social cards implement sharing. No cloud changed.
-[Contracts, retention and verified local boundary](../apps/api/CHALLENGES.md).
+[Contracts, retention and verified local boundary](../docs/history/challenge-validation-2026-10-27.md).
 The earlier boundaries below describe their historical deliveries.
 
 ### Historical Prompt 11 boundary — 26 October 2026
@@ -67,7 +67,7 @@ patterns avoid a forced final answer. Selection data never enters public DTOs.
 `DiscoveryService` records only explicit accepted-contestant saves and serializes
 save/unsave/clear by session. Collection contracts add expired count/session expiry.
 Cross-tab hints carry no entity/answer data; views refetch and ignore revoked late
-responses. [Implementation/restart proof](../apps/api/SOLO.md). Prompt 12 must
+responses. [Implementation/restart proof](../docs/history/solo-validation-2026-10-26.md). Prompt 12 must
 migrate challenge-side freezing before enabling replay. No cloud resource changed.
 
 Revision 12 - 26 October 2026 - Prompt 11 adaptive solo/discoveries; cloud remains unchanged.
@@ -92,7 +92,7 @@ drive the result ticket and factual Why-this-duel disclosure.
 Original local title cards are the complete artwork policy. Exact owned IDs are
 allowlisted; unapproved provider metadata never triggers a fetch. No external
 image proxy exists. See [integration commands, security and actual verification
-boundaries](../apps/web/INTEGRATION.md). Prompt 8's live corrective-value gate,
+boundaries](../docs/history/browser-integration-2026-10-26.md). Prompt 8's live corrective-value gate,
 canonical MCP typed resolution, broad coverage and cloud rollout remain open.
 
 ### Historical Prompt 9 boundary at delivery
@@ -112,7 +112,7 @@ maps external provider IDs to guest-local entity IDs and preserves mutation outc
 revisions across later progress. Answer and Next use stored evidence only. All
 unplayed pairs stay private; global curation summaries are withheld until five
 answers are complete. The initial selector follows the proven witness path;
-performance adaptation remains Prompt 11. [Gameplay contract and proof](../apps/api/GAMEPLAY.md)
+performance adaptation remains Prompt 11. [Gameplay contract and proof](../docs/history/gameplay-validation-2026-10-26.md)
 include empty-database migration and real API-process restart checks. New tests use
 synthetic contracts; no new Qloo/Vertex or cloud call closes the historical live gate.
 
@@ -197,7 +197,7 @@ objective limits never revoke a valid witness or claim global optimality.
 Prompt 9 persists the full policy configuration/fingerprint and exact oriented
 private witness path. Replay reads frozen choices and winners; it never needs to
 regenerate them from the ephemeral server RNG seed. Detailed
-semantics, safe feedback and tests are in the [pool guide](../apps/api/DUEL_POOL.md).
+semantics, safe feedback and tests are in the [pool guide](../docs/history/pool-validation-2026-10-25.md).
 The real-sample gate remains blocked: Prompt 2 retained aggregates only, while
 MCP ordering/score precedence are still unverified. No additional calls occur.
 

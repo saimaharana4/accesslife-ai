@@ -206,7 +206,13 @@ const messages: Record<string, string> = {
   ANSWER_CONFLICT:
     "A different answer was already accepted. Reload the saved reveal.",
   GENERATION_UNAVAILABLE:
-    "A verified five-round game could not be prepared. Retry the same request or choose another seed.",
+    "This duel could not be prepared. Retry the same saved request.",
+  GENERATION_INSUFFICIENT_COVERAGE:
+    "There are not enough verified comparisons for this favourite. Choose another artist or film.",
+  GENERATION_CONFIGURATION_UNAVAILABLE:
+    "Game preparation is unavailable. Please try again later.",
+  GENERATION_PROVIDER_UNAVAILABLE:
+    "The cultural ranking service is temporarily unavailable. Retry the same saved request.",
   GENERATION_IN_PROGRESS:
     "This generation is still running. Inspect its saved status and retry when its execution claim permits recovery.",
   QLOO_UNAVAILABLE: "Qloo search is temporarily unavailable. Retry shortly.",

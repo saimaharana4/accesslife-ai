@@ -14,8 +14,8 @@ resource "terraform_data" "tasteduel_monitoring_gate" {
   count = var.tasteduel_observability_enabled ? 1 : 0
   lifecycle {
     precondition {
-      condition     = var.tasteduel_public_enabled && var.tasteduel_candidate_tag == null && var.tasteduel_candidate_origin == null
-      error_message = "Public readiness monitoring requires the sealed public release without candidate tags or origins."
+      condition     = var.tasteduel_public_enabled && ((var.tasteduel_candidate_tag == null && var.tasteduel_candidate_origin == null) || var.tasteduel_public_hotfix_preview)
+      error_message = "Readiness monitoring requires the public release; only an explicitly reviewed public hotfix may temporarily retain exact candidate tags/origins."
     }
   }
   depends_on = [terraform_data.cost_gate]

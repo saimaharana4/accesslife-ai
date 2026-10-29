@@ -1,159 +1,52 @@
-# Taste Duel local API foundation
+# Taste Duel API
 
-Prompt 5 adds a separate application under `src/tasteduel`. The old `accesslife`
-entry point, migration lineage, deployed database and containers are unchanged.
-The browser fixture game is not connected to this API yet.
+FastAPI implements authoritative guest gameplay under `src/tasteduel`. Python/Pydantic owns the public contract; OpenAPI generates frontend types. PostgreSQL 16 persists games, evidence, private pools, accepted answers, discoveries and fixed challenges. The current schema head is `td0011`.
 
-**Prompt 9 current status:** authoritative session/game creation, safe generation
-status, answers, explicit advancement and results now operate locally; typed
-search stores minimal owned provider metadata when configured. Generation is
-awaited and fenced, with atomic full receipt/pool publication. See
-[the gameplay guide](GAMEPLAY.md). The older foundation descriptions below are
-historical. Discovery writes and challenge execution still return 501; browser
-forwarding remains disabled. The clean-database/process-restart proof uses
-synthetic data, with no new live provider calls or cloud changes.
+Use the [container guide](CONTAINERS.md) for the maintained local runtime. The web app forwards same-origin `/api/v1` requests to private FastAPI `/v1` routes. Production API invocation requires IAM; public browser credentials and direct provider payloads are never exposed.
 
-Prompt 8 adds a private bounded Vertex curator and explicit HTTP gap adapter;
-see [the curator record](../../ai/prompt8-curator.md). One live artist-to-movie
-pool passed with genuine native tool use; no live corrective case was observed.
-No handlers below were connected, no migration changed, and the expanded
-receipt was then in memory; Prompt 9 now persists it atomically with the pool. The Prompt 7
-sample blocker described below is historical and closed only for this one sample.
+## Implemented interfaces
 
-Prompt 7 adds the private [deterministic pool engine](DUEL_POOL.md), typed
-evidence bridge and safe aggregate curator feedback. Existing public routes and
-OpenAPI remain unchanged. No schema/DB changes, authoritative gameplay, model or
-cloud work occurred; live normalized-sample acceptance is explicitly blocked.
+| Interface | Behavior |
+|---|---|
+| `POST /v1/sessions` | Create or reuse an anonymous guest |
+| `GET /v1/sessions/current` | Return safe current-session state |
+| `DELETE /v1/sessions/current` | Revoke guest access and dependent live shares |
+| `GET /v1/entities/search` | Typed, bounded seed lookup with explicit selection |
+| `POST /v1/games` | Await bounded generation under a transactional idempotent claim |
+| `GET /v1/games/{id}` | Restore authorized state, including a saved accepted reveal |
+| `GET /v1/games/{id}/round` | Deliver only the current unanswered public round |
+| `POST /v1/games/{id}/answer` | Accept once; identical retry returns saved reveal |
+| `POST /v1/games/{id}/advance` | Explicit idempotent advancement/completion |
+| `GET /v1/games/{id}/results` | Server-scored completed result |
+| `GET/POST /v1/discoveries` | List or explicitly save permitted discoveries |
+| `DELETE /v1/discoveries/{entity_id}` | Remove an owned discovery |
+| `POST /v1/challenges` | Freeze exactly five delivered comparisons |
+| `GET/DELETE /v1/challenges/{slug}` | Read a safe invitation or revoke an owned link |
+| `POST /v1/challenges/{slug}/plays` | Create a separate guest-owned fixed replay |
+| `GET /v1/health/live` | Process liveness |
+| `GET /v1/health/ready` | Database/schema and honest admission readiness |
 
-Prompt 6 adds the typed private [Qloo runtime](../../runtime/qloo/README.md),
-bounded stdio lifecycle and shared key-wide SQL admission through `td0005`.
-The new isolated container is separate from legacy Compose/CI. Provider mode is
-disabled by default; explicitly enabled startup may access the existing Secret
-Manager reference through server ADC. No credential lookup or live Qloo call was
-exercised in this delivery. Public handlers below remain as listed; adding the
-private port does not connect search or gameplay to the browser.
+Exact request/response schemas and declared status codes are in the [exported contract](../../packages/contracts/openapi.json). Error envelopes contain a stable code, useful message and retry metadata rather than stack traces. State/signature conflicts return 409, expired evidence 410, validation failures 422, admission limits 429 and unavailable dependencies 503 as applicable. A running generation reservation can return 202 with an expiry/recovery path; no background queue is implied.
 
-From the repository root, with Python 3.12, uv and Docker Desktop running:
+## Authority and isolation
+
+Generation stores the ready pool and full private curation receipt atomically. Expiring fenced execution claims prevent duplicate publication after restart. Reusing an idempotency key with changed input is a conflict, not a new game.
+
+Only an authenticated owner can answer or advance. The playable DTO omits answers, ranks, affinities and future contestants. The reveal DTO exposes only an accepted current round. Reload can restore that reveal without delivering a future answer. Score is derived from stored accepted answers, never client totals.
+
+Solo adaptation uses the validated unused pool without new provider calls. Challenge replay freezes order/sides/context/rules and does not adapt or re-query Qloo. Prediction correctness is never stored as a preference; explicit discovery saves are a separate action.
+
+Runtime and migration roles are separate; forced RLS protects owned records. The runtime cannot perform schema DDL or modify immutable evidence. Private provider controls coordinate key-wide budgets across instances. [Security model](../../docs/security.md) · [Migration lineage](tasteduel_migrations/README.md).
+
+## Contracts and tests
+
+From the repository root:
 
 ```powershell
-uv sync --locked
-uv run --no-sync python scripts/tasteduel_local.py start
-uv run --no-sync python scripts/tasteduel_local.py migrate
-uv run --no-sync python scripts/tasteduel_local.py test -q
+uv sync --project runtime/python --frozen --group dev
 corepack pnpm contracts
-uv run --no-sync python scripts/export_contracts.py --check
-uv run --no-sync python scripts/tasteduel_local.py api
-# http://127.0.0.1:8002/docs ; Ctrl+C stops the API.
-uv run --no-sync python scripts/tasteduel_local.py stop
+uv run --project runtime/python --frozen python scripts/export_contracts.py --check
+.\scripts\tasteduel-compose.ps1 test
 ```
 
-The dedicated container binds only `127.0.0.1:55435`. Runtime and migration URLs
-must name `tasteduel_prompt5` and their distinct roles; there is no fallback to
-`DATABASE_URL`, `.env`, Cloud SQL, Secret Manager or ADC. Generated local-only
-passwords are supplied through child-process environment and dedicated Docker
-configuration, never repository files or command arguments. Docker retains its
-own metadata locally. Stop preserves this synthetic local database.
-
-## Contracts and actual handlers
-
-Python/Pydantic owns the wire schema. `scripts/export_contracts.py` exports this
-application's real OpenAPI paths, then `corepack pnpm contracts` generates the
-frontend declarations. Public schemas forbid extra fields. No upstream Qloo
-specification is used for generation. `ChoicePublic.id` is the opaque delivered
-contestant identifier accepted by `AnswerRequest`; `ChoicePublic.entity.id` is
-the metadata identity used by discovery requests. They are different identities.
-
-Private routes below use `/v1`. The declared browser base `/api` produces
-`/api/v1` after the later same-origin integration. The current web proxy remains
-disabled; no browser fixture request reaches this backend.
-
-| Operation | Current foundation behavior | Intended later success |
-|---|---|---|
-| POST `/sessions` | Create/reuse guest; 201/200, HttpOnly host cookie | Same |
-| GET/DELETE `/sessions/current` | Safe active/expiry references; clear/revoke with 204 | Same; full in-flight publication coordination later |
-| GET `/entities/search` | 501, typed q/type/limit contract | Real typed resolution/ambiguity |
-| POST `/games` | 501, confirmed seed + idempotency contract | 201/200 ready result, bounded 202 existing lease |
-| GET `/games/{id}` | Owned safe state; current playable or accepted reveal | Same with live generated games |
-| GET `/games/{id}/round` | Owned current playable only; answered current returns 409 | Same |
-| POST `/games/{id}/answer` | 501, choice/round/revision contract | Saved accepted reveal, idempotent retries |
-| POST `/games/{id}/advance` | 501, answered-round/revision contract | Explicit sequential next/completion |
-| GET `/games/{id}/results` | Owned completed five answers only; incomplete 409 | Same |
-| GET `/discoveries` | Owned permitted unexpired records | Same |
-| POST `/discoveries`; DELETE `/discoveries/{entity_id}` | 501, save/delete contracts | Owned idempotent save/unsave |
-| POST `/challenges` | 501, completed game contract | Frozen five-round definition and share path |
-| GET `/challenges/{slug}` | 501, safe invitation DTO | Public seed/score/expiry only |
-| POST `/challenges/{slug}/plays` | 501, guest/idempotency contract | Owned exact fixed replay |
-| GET `/health/live` | Process liveness, generation unavailable | Later generation capability reported truthfully |
-| GET `/health/ready` | Exact local schema revision `td0005`, generation unavailable | Later dependency checks |
-
-Database tests insert clearly synthetic private graphs through trusted fixtures.
-Reading those graphs is not evidence that public game creation, acceptance,
-replay, adaptation or provider integration has been implemented.
-
-## Identity, errors and retries
-
-The random session cookie is hashed in storage; neither the token nor hash is
-returned as JSON. Production-default cookies are Secure, HttpOnly, SameSite=Lax,
-host-only, Path=/; the local HTTP launcher explicitly disables Secure for local
-use only. Mutation origins are exact allowlists. Untrusted session/forwarding
-headers cannot select an owner. A cookie UUID only selects a possible session
-row; its complete random-token hash, expiry and revocation are verified before
-any private game query. Session clear irreversibly revokes access and owned live
-challenges; provider/backups/retention cleanup remain separate later work.
-
-Errors use `error.code`, safe `message`, `retryable`, UUID `request_id`, bounded
-field location/type and optional retry guidance. Responses are `no-store`.
-Validation errors omit submitted values, arbitrary field names and Pydantic
-input/context. Actual received mutation bodies are bounded to 16 KiB, including
-missing/forged Content-Length. SQL parameters and raw exceptions are not public.
-
-| Status | Meaning |
-|---|---|
-| 401 | Missing/invalid/expired/revoked session |
-| 403 | Mutation origin rejected |
-| 404 | Uniform absent or inaccessible private identifier |
-| 409 | State conflict, awaiting explicit Next, incomplete result; later signature conflicts |
-| 410 | Owned game/evidence expired; later public expired challenges |
-| 413/422 | Bounded-body or safe input validation failure |
-| 429 | Declared browser admission failure; private Qloo port now has shared admission, browser wiring remains later |
-| 501 | Defined operation not connected in this stage; no fixture fallback |
-| 503 | Sanitized unavailable configuration/database/stored state |
-
-`Idempotency-Key` is a bounded opaque header. Canonical typed JSON signatures
-include session and operation, with sorted object keys and no nonfinite JSON.
-Generation reservations store body hash/lease/fence. Mutation receipts uniquely
-bind owner/operation/key to a signature and checked typed outcome reference.
-Completed answer receipts require a genuine saved answer and authoritative
-revision. The database cannot compare an incoming HTTP body by itself: durable
-claiming, body-conflict responses and lost-response replay handlers now operate in Prompt 9.
-
-## Private/public boundary and storage
-
-`PlayableRoundPublic` contains only current question/context and two choices.
-`RevealedRoundPublic` is built only after owner/state/accepted-answer checks. An
-owned game read can restore its current accepted reveal; subsequent unanswered
-rounds omit prior reveals. Completed results can include only their five accepted
-rounds. No endpoint exposes the unused pool, ranks, affinities or private IDs.
-
-Private `CurationReceipt` records bounded execution counts, modes, domain choices,
-versions, timing and status. It has no raw JSON/prompt/chain-of-thought field.
-`CurationSummaryPublic` explicitly projects successful safe aggregate facts only.
-Optional post-answer evidence includes source, seed/target/timestamp context and
-an optional supported explanation; richer text is absent in this foundation.
-Neither private receipt is an OpenAPI response model. Raw bounded provider cache
-payloads stay private; only synthetic data is stored by these tests.
-
-The [separate migration lineage](tasteduel_migrations/README.md) creates 20 ordinary
-PostgreSQL tables without spatial/vector extensions. Composite owner references,
-forced RLS, immutable snapshots/answers/results/challenge rounds, sequential
-delivery and derived correctness enforce real SQL constraints. Runtime cannot
-perform DDL, create temporary objects/roles or become the migration owner.
-
-The session GUC is trusted application context, not a cryptographic database
-identity. A holder of the private runtime password can set it; API authentication
-and the private database boundary are still essential. Cross-session challenge
-copying, generation execution, verified external quota metadata, retention purge and
-cloud/CI and full Compose migration are later prompts. Prompt 6 adds an isolated
-offline-tested image and engineering admission controls, not verified provider
-quota metadata or live game readiness. Run isolated tests with the
-provided helper so legacy `tests/conftest.py` is never imported.
+Database tests require the isolated local stack described in the container guide. CI uses synthetic provider contracts and a clean PostgreSQL database, not production event keys. Dated component audits preserve their original implementation checkpoints; [current verification](../../docs/verification.md) and [release identities](../../infra/migration/production-release-execution-2026-10-28.md) supersede old stage-status claims.

@@ -18,6 +18,22 @@ from tasteduel.ports.curator import ModelUnavailable
 from curator.synthetic import ScriptedModel, call, finish, provider
 
 
+def test_insufficient_coverage_returns_actionable_safe_error_and_no_playable_round(gameplay, owned_seed):
+    port, upstream, _ = provider(counts=(8,))
+    model = ScriptedModel(call("fetch_ranked", target_domain="movie", limit=10),
+        call("stop", reason="insufficient_coverage"))
+    curator = RoundCuratorAgent(provider=port, model=model, capabilities={"artist": ("movie",)})
+    client, owner, _ = gameplay(generator=curator)
+    response = client.post('/v1/games', json=owned_seed(owner),
+        headers={'Idempotency-Key':'synthetic-insufficient-coverage'})
+    assert response.status_code == 422
+    error = response.json()['error']
+    assert error['code'] == 'GENERATION_INSUFFICIENT_COVERAGE'
+    assert error['retryable'] is False
+    assert 'choice' not in response.text and 'snapshot' not in response.text
+    assert len(upstream.requests) == 1
+
+
 @pytest.mark.parametrize("fallback", [False, True])
 def test_real_curator_code_preserves_full_synthetic_execution_receipt(gameplay, db_engine, fallback):
     port, upstream, admission = provider()

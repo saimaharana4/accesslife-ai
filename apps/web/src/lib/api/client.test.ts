@@ -6,6 +6,7 @@ import {
   readGenerationIntent,
   clearGenerationIntent,
   associateGenerationGame,
+  markGenerationTerminal,
 } from "../../features/seed/generation-intent.ts";
 
 const ID = "12345678-1234-4234-8234-123456789012";
@@ -60,6 +61,10 @@ test("same submission survives reload-like reread; changed seed gets a different
     );
     associateGenerationGame(OTHER);
     assert.equal(readGenerationIntent()?.gameId, OTHER);
+    markGenerationTerminal(readGenerationIntent()!, "coverage");
+    assert.equal(readGenerationIntent()?.terminalFailure, "coverage");
+    assert.equal(readGenerationIntent()?.key, first.key);
+    assert.equal(readGenerationIntent()?.gameId, OTHER);
     const changed = intentFor({
       seed_entity_id: OTHER,
       seed_type: "artist",
@@ -67,10 +72,16 @@ test("same submission survives reload-like reread; changed seed gets a different
     });
     assert.notEqual(changed.key, first.key);
     assert.equal(readGenerationIntent()?.gameId, undefined);
+    assert.equal(readGenerationIntent()?.terminalFailure, undefined);
     assert.ok(!JSON.stringify([...values.values()]).includes("answer"));
     values.set(
       "tasteduel.generation-intent.v1",
       JSON.stringify({ ...changed, private_pool: [] }),
+    );
+    assert.equal(readGenerationIntent(), undefined);
+    values.set(
+      "tasteduel.generation-intent.v1",
+      JSON.stringify({ ...changed, terminalFailure: "PRIVATE_DIAGNOSTICS" }),
     );
     assert.equal(readGenerationIntent(), undefined);
     clearGenerationIntent();

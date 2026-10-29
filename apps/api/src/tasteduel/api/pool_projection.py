@@ -1,4 +1,4 @@
-"""Choice-only projection. Ownership/current-round delivery remains Prompt 9."""
+"""Choice-only projection; gameplay services enforce ownership and current-round delivery."""
 
 from tasteduel.api.schemas import ArtworkPublic, ChoicePublic, EntityPublic
 from tasteduel.domain.duel_pool import PresentedChoice

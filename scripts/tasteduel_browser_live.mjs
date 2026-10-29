@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 if (!process.argv.includes("--run-live"))
   throw new Error("Explicit --run-live required");
-const artifacts = path.resolve(".data/tasteduel-prompt10");
+const artifacts = path.resolve(".data/tasteduel-integration");
 const ledger = async () =>
   JSON.parse(await readFile(path.join(artifacts, "live-budget.json"), "utf8"));
 const initial = await ledger();

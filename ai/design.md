@@ -30,7 +30,7 @@ target visible. Async fallback screens announce politely; accepted reveals still
 focus/announce once. Fixtures override contradictory agent labels. Rendered
 1440/390/320, 200% CSS emulation, failed art and long titles were reviewed with
 loaded local fonts; sampled enabled opaque-text contrast minimum was 8.29:1.
-Manual screen-reader and native zoom remain unverified. [Audit](../apps/api/AUDIT.md).
+Manual screen-reader and native zoom remain unverified. [Audit](../docs/history/security-audit-2026-10-27.md).
 
 ### Prompt 12 sharing design - 27 October 2026
 
@@ -43,7 +43,7 @@ curation. Original 1200x630 social artwork uses local licensed Barlow, a dashed 
 seed title and actual score; bounded glyph fallback prevents external font fetches.
 No purchased domain or third-party imagery is assumed. Desktop/390/320 and actual
 OG renders were inspected. [Manifest](../apps/web/public/assets-LICENSE.md),
-[proof and limitations](../apps/api/CHALLENGES.md).
+[proof and limitations](../docs/history/challenge-validation-2026-10-27.md).
 
 **Prompt 11 — 26 October 2026:** keep Next primary. A closed native “Save a
 discovery” disclosure after accepted reveal provides optional Save/Remove for
@@ -53,7 +53,7 @@ session/evidence expiry. Correctness measures performance, not personal preferen
 Guest clearing uses explicit confirmation and an announced result. Cross-tab,
 offline/reconnect and uncertain responses restore server state without duplicate
 points. Reviewed desktop/390/320 captures include a second compact-reveal pass;
-reduced motion/keyboard/full axe passed. [Evidence](../apps/api/SOLO.md).
+reduced motion/keyboard/full axe passed. [Evidence](../docs/history/solo-validation-2026-10-26.md).
 
 Revision 9 - 26 October 2026 - Prompt 10 connected fight-night arena
 

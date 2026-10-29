@@ -23,9 +23,9 @@ import psycopg
 from psycopg import sql
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTAINER = "tasteduel-prompt5-db"
+CONTAINER = "tasteduel-local-db"
 SCOPE = "tasteduel-local-foundation"
-DATABASE = "tasteduel_prompt5"
+DATABASE = "tasteduel_local"
 PORT = 55435
 IMAGE = "postgres:16-bookworm@sha256:d81f7b51697014367236d07ec58b54153fc28f828b72bf247fe5c7487520bcb0"
 
@@ -124,8 +124,8 @@ def bootstrap() -> tuple[str, str]:
             )
         db.execute("REVOKE ALL ON SCHEMA public FROM PUBLIC")
         db.execute("CREATE SCHEMA IF NOT EXISTS tasteduel AUTHORIZATION tasteduel_migrator")
-        db.execute("REVOKE ALL ON DATABASE tasteduel_prompt5 FROM PUBLIC")
-        db.execute("GRANT CONNECT ON DATABASE tasteduel_prompt5 TO tasteduel_migrator, tasteduel_runtime")
+        db.execute("REVOKE ALL ON DATABASE tasteduel_local FROM PUBLIC")
+        db.execute("GRANT CONNECT ON DATABASE tasteduel_local TO tasteduel_migrator, tasteduel_runtime")
         db.execute("GRANT USAGE ON SCHEMA tasteduel TO tasteduel_runtime")
         db.execute("ALTER ROLE tasteduel_migrator SET search_path = tasteduel, pg_catalog")
         db.execute("ALTER ROLE tasteduel_runtime SET search_path = tasteduel, pg_catalog")

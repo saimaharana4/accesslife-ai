@@ -31,7 +31,7 @@ long titles, missing images, reduced motion and 320px reflow passed automated
 production-build checks. Local lab targets passed; these are not field metrics.
 No prediction becomes an implicit preference. Manual screen-reader/native browser
 zoom and deployed/legacy/retention gates remain open; no release clearance or
-fresh live generation is claimed. [Audit and counts](../apps/api/AUDIT.md).
+fresh live generation is claimed. [Audit and counts](../docs/history/security-audit-2026-10-27.md).
 
 ### Prompt 12 implemented locally - 27 October 2026
 
@@ -41,14 +41,14 @@ each gets an independent score. No adaptive selection or new provider calls occu
 on replay. Prediction accuracy remains game performance, not personal preference.
 Revoked/expired links offer fresh solo play without replacing their answers. Fixed
 replays cannot fork around original revocation. Sharing is casual, not cheat-proof;
-no leaderboard or percentile exists. [Verification/limits](../apps/api/CHALLENGES.md).
+no leaderboard or percentile exists. [Verification/limits](../docs/history/challenge-validation-2026-10-27.md).
 Next Prompt 13; no production deployment is claimed.
 
 **Prompt 11 current outcome — 26 October 2026:** new solo games adapt challenge
 from accepted prediction performance within the stored pool. Only the chosen
 favourite and explicit discovery saves are preference signals; correctness is
 never a like/dislike. Saves/unsaves have ownership, evidence/session expiry and
-clear/recovery behavior. [Verified policy and limits](../apps/api/SOLO.md).
+clear/recovery behavior. [Verified policy and limits](../docs/history/solo-validation-2026-10-26.md).
 Friend replay is Prompt 12; historical milestones below retain their named scope.
 
 Revision 9 - 26 October 2026 - Prompt 10 connected browser journey; no deployment
@@ -61,7 +61,7 @@ curator mode stay visible; Why-this-duel uses only accepted frozen-context facts
 and curation aggregates wait until five answers. Original title cards are the
 supported asset fallback, without third-party imagery or unsupported explanations.
 
-Verification results are recorded in README/memory and the [integration guide](../apps/web/INTEGRATION.md).
+Verification results are recorded in README/memory and the [integration guide](../docs/history/browser-integration-2026-10-26.md).
 Historical prompt-status paragraphs below describe their delivery dates. Adaptive
 solo selection and discoveries (Prompt 11), friend replay, human discovery-value
 validation, broad artist/movie coverage and GCP launch remain later work. Prompt
@@ -74,7 +74,7 @@ answer/Next/result APIs are implemented locally. Generation is awaited under a
 fenced expiring database claim; ready pool, first round and full private receipt
 commit together. Retry/restart preserves one game/evidence outcome. Clean PostgreSQL
 verification passed with synthetic data, including an actual API process restart.
-No new live provider call or cloud change occurred. [Gameplay details](../apps/api/GAMEPLAY.md)
+No new live provider call or cloud change occurred. [Gameplay details](../docs/history/gameplay-validation-2026-10-26.md)
 record current limits; the Prompt 8 live corrective-value gate remains open.
 The browser stays synthetic until Prompt 10. Discovery writes and friend challenge
 execution remain later work. Historical foundation statements below describe their

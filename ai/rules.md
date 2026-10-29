@@ -39,7 +39,7 @@ provider reservations enforce bounded calls before execution; failed work is not
 refunded. Bound request bytes, chunk count and receive time, and contain raw
 exception text before ASGI logging. Never equate axe/CSS zoom with screen-reader
 or native-zoom acceptance, lab samples with field INP, or zero advisories with
-zero risk. [Exact limits and exclusions](../apps/api/AUDIT.md).
+zero risk. [Exact limits and exclusions](../docs/history/security-audit-2026-10-27.md).
 
 ### Prompt 12 rules now enforced - 27 October 2026
 
@@ -50,7 +50,7 @@ to metadata reads, accept request-controlled API/image URLs, assume a production
 domain, cache private pages or fetch unreviewed external artwork/fonts. Replay
 uses frozen evidence only. Clearing/revocation blocks dependent replays and their
 sole discovery support; do not describe this as rewriting backups or recalling
-third-party screenshots. Prohibit detached fixed-replay resharing. [Details](../apps/api/CHALLENGES.md).
+third-party screenshots. Prohibit detached fixed-replay resharing. [Details](../docs/history/challenge-validation-2026-10-27.md).
 
 Prompt 11: correctness changes game performance only; never auto-save or infer
 likes/dislikes. Require explicit saves of accepted contestants and earliest
@@ -60,7 +60,7 @@ reasons. Bands are engineering heuristics, not human-calibrated difficulty.
 Favor side balance without a hard quota revealing future answers. Clear must
 abort/ignore late responses and revoke access while preserving historic answers
 and backup retention. Challenge freezing must use delivered orientation before
-Prompt 12 endpoints are enabled. [Checks/runbook](../apps/api/SOLO.md).
+Prompt 12 endpoints are enabled. [Checks/runbook](../docs/history/solo-validation-2026-10-26.md).
 
 Revision 11 - 26 October 2026 - Prompt 10 browser/private API boundary; deployment remains unproven.
 
@@ -79,7 +79,7 @@ for curation disclosure, and server score. Label fixture/genuine/deterministic
 modes truthfully. The Prompt 10 live check has its own persistent 8-Qloo/6-Vertex
 iteration ceiling; prior ledgers remain closed. All calls, retries and harness
 lookups count; answer/Next must add none. Never renew a spent budget on resume.
-See [browser integration rules](../apps/web/INTEGRATION.md). Historical statements
+See [browser integration rules](../docs/history/browser-integration-2026-10-26.md). Historical statements
 below describe their named delivery, not a direction to disable the new proxy.
 
 ## 1. Authority, scope and preservation
@@ -98,7 +98,7 @@ reveal. Only the completion allowlist may expose a summary. Generate web types f
 the actual FastAPI export; no private receipt schema. Synthetic injection exists only
 as a server test seam, never an HTTP flag or silent production fallback. Preserve
 the original local database during clean checks; never reset its data or use the
-deployed AccessLife database. See [gameplay rules](../apps/api/GAMEPLAY.md).
+deployed AccessLife database. See [gameplay rules](../docs/history/gameplay-validation-2026-10-26.md).
 
 Prompt 8's [curator evidence record](https://github.com/saimaharana4/accesslife-ai/blob/ef5c27c6b1aff925dd504b371dff99e128a2f77b/ai/prompt8-curator.md) specifies actual native
 tools, model configuration and live boundaries. Default providers remain disabled;

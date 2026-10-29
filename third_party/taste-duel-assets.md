@@ -1,9 +1,9 @@
 # Taste Duel assets
 
-Recorded 24 October 2026. This manifest covers the Prompt 3 visual prototype,
+Recorded 24 October 2026. This manifest covers the original visual system,
 not external Qloo data or a licence to third-party promotional imagery.
 
-Prompt 10 extension (26 October 2026): the same project-owned compositions are
+Live application extension (26 October 2026): the same project-owned compositions are
 used as explicitly labelled original title cards for live Qloo entities. They
 are not official posters, artist photographs or provider artwork. Titles remain
 outside the image. Missing/unapproved provider image metadata does not cause a

@@ -4,18 +4,19 @@ services:
   database:
     image: postgres:16.10-bookworm@sha256:38471f330eb885e04de130b768d6db4e10469e2311879c7e5c699f6d2d8a1c74
     environment:
-      POSTGRES_DB: tasteduel_prompt5
+      POSTGRES_DB: tasteduel_local
       POSTGRES_USER: tasteduel_admin
-      POSTGRES_PASSWORD: local_only_tasteduel_admin
-      TASTEDUEL_MIGRATOR_PASSWORD: local_only_tasteduel_migrator
-      TASTEDUEL_RUNTIME_PASSWORD: local_only_tasteduel_runtime
+      # Disposable localhost-only defaults. CI replaces all three with random job credentials.
+      POSTGRES_PASSWORD: ${TASTEDUEL_LOCAL_ADMIN_PASSWORD:-local_only_tasteduel_admin}
+      TASTEDUEL_MIGRATOR_PASSWORD: ${TASTEDUEL_LOCAL_MIGRATOR_PASSWORD:-local_only_tasteduel_migrator}
+      TASTEDUEL_RUNTIME_PASSWORD: ${TASTEDUEL_LOCAL_RUNTIME_PASSWORD:-local_only_tasteduel_runtime}
     ports:
       - "127.0.0.1:${TASTEDUEL_DATABASE_PORT:-55436}:5432"
     volumes:
       - tasteduel-data:/var/lib/postgresql/data
       - ./infra/containers/tasteduel-db-init.sh:/docker-entrypoint-initdb.d/10-tasteduel.sh:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U tasteduel_admin -d tasteduel_prompt5"]
+      test: ["CMD-SHELL", "pg_isready -U tasteduel_admin -d tasteduel_local"]
       interval: 2s
       timeout: 3s
       retries: 30
@@ -28,8 +29,8 @@ services:
       dockerfile: infra/containers/tasteduel-api.Dockerfile
     environment: &database_environment
       TASTEDUEL_CONTAINER_MODE: "true"
-      TASTEDUEL_MIGRATION_DATABASE_URL: postgresql+psycopg://tasteduel_migrator:local_only_tasteduel_migrator@database:5432/tasteduel_prompt5
-      TASTEDUEL_DATABASE_URL: postgresql+psycopg://tasteduel_runtime:local_only_tasteduel_runtime@database:5432/tasteduel_prompt5
+      TASTEDUEL_MIGRATION_DATABASE_URL: postgresql+psycopg://tasteduel_migrator:${TASTEDUEL_LOCAL_MIGRATOR_PASSWORD:-local_only_tasteduel_migrator}@database:5432/tasteduel_local
+      TASTEDUEL_DATABASE_URL: postgresql+psycopg://tasteduel_runtime:${TASTEDUEL_LOCAL_RUNTIME_PASSWORD:-local_only_tasteduel_runtime}@database:5432/tasteduel_local
       TASTEDUEL_ALLOWED_ORIGINS: '["http://127.0.0.1:13001","http://localhost:13001"]'
       TASTEDUEL_COOKIE_SECURE: "false"
       TASTEDUEL_QLOO_ENABLED: "false"
@@ -40,7 +41,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    command: ["alembic", "-c", "apps/api/tasteduel-alembic.ini", "upgrade", "head"]
+    command:
+      ["alembic", "-c", "apps/api/tasteduel-alembic.ini", "upgrade", "head"]
 
   api:
     image: tasteduel-api:local
@@ -57,7 +59,13 @@ services:
       migrate:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/health/live', timeout=2)"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/health/live', timeout=2)",
+        ]
       interval: 5s
       timeout: 3s
       retries: 12
@@ -82,7 +90,13 @@ services:
       api:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
       interval: 5s
       timeout: 3s
       retries: 12
@@ -102,7 +116,13 @@ services:
     ports:
       - "127.0.0.1:13002:3000"
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
       interval: 5s
       timeout: 3s
       retries: 20

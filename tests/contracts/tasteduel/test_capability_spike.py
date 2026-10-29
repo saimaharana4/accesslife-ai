@@ -1,4 +1,4 @@
-"""Prompt 2 synthetic checks; intentionally independent of the old app/database fixtures."""
+"""capability synthetic checks; intentionally independent of the old app/database fixtures."""
 
 import copy
 import importlib.util

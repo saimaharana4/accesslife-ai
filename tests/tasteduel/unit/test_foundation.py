@@ -67,10 +67,10 @@ def test_signature_is_canonical_and_scoped_to_owner_operation_and_typed_body():
 @pytest.mark.parametrize(
     "url",
     [
-        "postgresql+psycopg://tasteduel_runtime:synthetic@cloud.example.invalid:55435/tasteduel_prompt5",
+        "postgresql+psycopg://tasteduel_runtime:synthetic@cloud.example.invalid:55435/tasteduel_local",
         "postgresql+psycopg://accesslife:synthetic@127.0.0.1:5432/accesslife",
-        "postgresql+psycopg://tasteduel_migrator:synthetic@127.0.0.1:55435/tasteduel_prompt5",
-        "sqlite:///tasteduel_prompt5.db",
+        "postgresql+psycopg://tasteduel_migrator:synthetic@127.0.0.1:55435/tasteduel_local",
+        "sqlite:///tasteduel_local.db",
     ],
 )
 def test_runtime_rejects_remote_legacy_wrong_role_or_wrong_driver(url):
@@ -79,21 +79,21 @@ def test_runtime_rejects_remote_legacy_wrong_role_or_wrong_driver(url):
 
 
 def test_compose_database_allowlist_is_explicit_and_non_external(monkeypatch):
-    url = "postgresql+psycopg://tasteduel_runtime:synthetic@database:5432/tasteduel_prompt5"
+    url = "postgresql+psycopg://tasteduel_runtime:synthetic@database:5432/tasteduel_local"
     monkeypatch.delenv("TASTEDUEL_CONTAINER_MODE", raising=False)
     with pytest.raises(ValueError, match="dedicated local"):
         validate_local_url(url)
     monkeypatch.setenv("TASTEDUEL_CONTAINER_MODE", "true")
     assert validate_local_url(url) == url
     assert validate_local_url(
-        "postgresql+psycopg://tasteduel_migrator:synthetic@127.0.0.1:55436/tasteduel_prompt5",
+        "postgresql+psycopg://tasteduel_migrator:synthetic@127.0.0.1:55436/tasteduel_local",
         migration=True,
-    ).endswith("/tasteduel_prompt5")
+    ).endswith("/tasteduel_local")
     for unsafe in (
-        "postgresql+psycopg://tasteduel_runtime:synthetic@db:5432/tasteduel_prompt5",
-        "postgresql+psycopg://tasteduel_runtime:synthetic@database:5433/tasteduel_prompt5",
+        "postgresql+psycopg://tasteduel_runtime:synthetic@db:5432/tasteduel_local",
+        "postgresql+psycopg://tasteduel_runtime:synthetic@database:5433/tasteduel_local",
         "postgresql+psycopg://tasteduel_runtime:synthetic@database:5432/accesslife",
-        "postgresql+psycopg://tasteduel_runtime:synthetic@cloud.example.invalid:5432/tasteduel_prompt5",
+        "postgresql+psycopg://tasteduel_runtime:synthetic@cloud.example.invalid:5432/tasteduel_local",
     ):
         with pytest.raises(ValueError, match="dedicated local"):
             validate_local_url(unsafe)

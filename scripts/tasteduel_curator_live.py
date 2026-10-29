@@ -1,6 +1,6 @@
 """Explicit bounded live checks. Never print/save credentials or provider payloads.
 
-The Prompt 8 ledger is persistent: resuming does not renew its eight Qloo/five
+The curator ledger is persistent: resuming does not renew its eight Qloo/five
 Vertex ceilings. No infrastructure or application endpoint is changed here.
 """
 
@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT / "apps/api/src"))
 import httpx  # noqa: E402
 from tasteduel.adapters.vertex_curator import VertexCuratorModel, MODEL, LOCATION  # noqa: E402
 
-ARTIFACTS = ROOT / ".data/tasteduel-prompt8"
+ARTIFACTS = ROOT / ".data/tasteduel-curator"
 PROJECT = "project-bb13ecd8-9d67-408d-9a7"
 
 
@@ -214,9 +214,9 @@ async def agent_live(budget):
         await process.start()  # initialize/listTools/checksum: zero upstream requests.
         budget.phase = "capability"
         # Artist -> movie has an exact raw typed cross-domain feasibility record
-        # in Prompt 2; fresh agent output still must pass the actual P7 validator.
+        # in capability; fresh agent output still must pass the actual P7 validator.
         verified = ["movie"]
-        report["historical_capability_reference"] = "ai/qloo-capability-matrix.md: artist -> movie, Prompt 2"
+        report["historical_capability_reference"] = "ai/qloo-capability-matrix.md: artist -> movie, capability"
         async with guarded.request_budget(max_requests=6, deadline_seconds=20):
             lookup = await guarded.resolve_seed(ResolveSeedRequest("Radiohead", "artist"))
             if lookup.status != "ok" or len(lookup.entities) != 1:

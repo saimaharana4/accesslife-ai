@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   verify:
-    name: Synthetic contracts, runtime, browser and infra checks
+    name: Application, security and accessibility verification
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -22,8 +22,6 @@ jobs:
       PYTHONPATH: .:apps/api/src
       TASTEDUEL_QLOO_ENABLED: "false"
       TASTEDUEL_GENERATION_ENABLED: "false"
-      TASTEDUEL_TEST_DATABASE_URL: postgresql+psycopg://tasteduel_runtime:local_only_tasteduel_runtime@127.0.0.1:55436/tasteduel_prompt5
-      TASTEDUEL_TEST_MIGRATION_DATABASE_URL: postgresql+psycopg://tasteduel_migrator:local_only_tasteduel_migrator@127.0.0.1:55436/tasteduel_prompt5
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -58,6 +56,23 @@ jobs:
           corepack pnpm install --frozen-lockfile
           uv sync --project runtime/python --frozen --group dev
           npm ci --prefix runtime/qloo --ignore-scripts --no-audit --no-fund
+
+      - name: Generate disposable database credentials
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          import secrets
+          credentials = {role: secrets.token_hex(24) for role in ("ADMIN", "MIGRATOR", "RUNTIME")}
+          values = {f"TASTEDUEL_LOCAL_{role}_PASSWORD": value for role, value in credentials.items()}
+          values["TASTEDUEL_TEST_DATABASE_URL"] = f"postgresql+psycopg://tasteduel_runtime:{credentials['RUNTIME']}@127.0.0.1:55436/tasteduel_local"
+          values["TASTEDUEL_TEST_MIGRATION_DATABASE_URL"] = f"postgresql+psycopg://tasteduel_migrator:{credentials['MIGRATOR']}@127.0.0.1:55436/tasteduel_local"
+          for value in values.values():
+              print(f"::add-mask::{value}")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as output:
+              for name, value in values.items():
+                  output.write(f"{name}={value}\n")
+          PY
 
       - name: Lint Python and TypeScript sources
         run: |
@@ -124,14 +139,32 @@ jobs:
           # real production-mode web shell, not the separate fictional demo.
           TASTEDUEL_TEST_WEB_URL=http://127.0.0.1:13001 corepack pnpm test:audit
           TASTEDUEL_TEST_WEB_URL=http://127.0.0.1:13001 corepack pnpm test:challenges
+          TASTEDUEL_LIVE_WEB_URL=http://127.0.0.1:13001 corepack pnpm exec playwright test --config playwright.live.config.ts --grep "preparation failure|insufficient coverage"
 
       - name: Scan tracked source for secrets
         shell: bash
         run: |
           set -euo pipefail
           tracked_source="$(mktemp -d)"
-          trap 'rm -rf "$tracked_source"' EXIT
+          canary_source="$(mktemp -d)"
+          trap 'rm -rf "$tracked_source" "$canary_source"' EXIT
           git archive --format=tar HEAD | tar -xf - -C "$tracked_source"
+          python - "$canary_source" <<'PY'
+          from pathlib import Path
+          import secrets
+          import string
+          import sys
+          # Never-issued synthetic token. This must be detected by the real scanner.
+          token = "ghp_" + "".join(secrets.choice(string.ascii_letters + string.digits) for _ in range(36))
+          (Path(sys.argv[1]) / "canary.txt").write_text("GITHUB_TOKEN=" + token)
+          PY
+          if docker run --rm -v "$canary_source:/canary:ro" -v "$tracked_source/.gitleaks.toml:/config.toml:ro" zricethezav/gitleaks:v8.28.0 detect --source /canary --config /config.toml --no-git --redact --exit-code 1; then
+            echo 'Secret scanner missed the synthetic canary.'
+            exit 1
+          else
+            result=$?
+            if [ "$result" -ne 1 ]; then exit "$result"; fi
+          fi
           docker run --rm -v "$tracked_source:/repo:ro" zricethezav/gitleaks:v8.28.0 detect --source /repo --config /repo/.gitleaks.toml --no-git --redact --exit-code 1
 
       - name: Validate Terraform without a backend or credentials
@@ -152,8 +185,9 @@ jobs:
           name: tasteduel-playwright-evidence-${{ github.sha }}
           path: |
             test-results/tasteduel-fixtures/
-            test-results/tasteduel-prompt13/
-            test-results/tasteduel-prompt12/
+            test-results/tasteduel-audit/
+            test-results/tasteduel-challenges/
+            test-results/tasteduel-integration/
             playwright-report/tasteduel-fixtures/
           if-no-files-found: ignore
           retention-days: 7

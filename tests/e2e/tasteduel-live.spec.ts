@@ -70,6 +70,7 @@ async function publicHarness(
     unavailable?: boolean;
     generationRecovery?: boolean;
     holdCreate?: boolean;
+    generationFailure?: "temporary" | "coverage";
   } = {},
 ) {
   let ordinal = 1;
@@ -230,6 +231,18 @@ async function publicHarness(
       keys.create.push(request.headers()["idempotency-key"] || "");
       createBodies.push(request.postDataJSON() as S["CreateGameRequest"]);
       created = true;
+      if (options.generationFailure && keys.create.length === 1)
+        return options.generationFailure === "coverage"
+          ? fail(
+              "GENERATION_INSUFFICIENT_COVERAGE",
+              "There are not enough verified comparisons for this favourite. Choose another artist or film.",
+              422,
+            )
+          : fail(
+              "GENERATION_PROVIDER_UNAVAILABLE",
+              "The cultural ranking service is temporarily unavailable. Retry the same saved request.",
+              503,
+            );
       if (options.loseCreate && keys.create.length === 1)
         return route.abort("failed");
       if (options.generationRecovery && keys.create.length === 1) {
@@ -828,5 +841,68 @@ test("delayed accepted creation cannot redirect after navigation and retains rec
   expect(new Set(harness.keys.create).size).toBe(1);
   expect(harness.createBodies[1]).toEqual(harness.createBodies[0]);
   expect(harness.answers).toHaveLength(0);
+  harness.check();
+});
+
+test("temporary preparation failure has one safe retry with identical identity", async ({
+  page,
+}, info) => {
+  const harness = await publicHarness(page, { generationFailure: "temporary" });
+  await page.goto("/");
+  await selectSeed(page);
+  await page.getByTestId("start-duel").click();
+  await expect(page.locator(".seed-launcher").getByRole("alert")).toContainText(
+    "temporarily unavailable",
+  );
+  await expect(page.getByTestId("start-duel")).toHaveCount(0);
+  const retry = page.getByRole("button", {
+    name: "Retry same duel",
+    exact: true,
+  });
+  await expect(retry).toHaveCount(1);
+  await expect(retry).toBeFocused();
+  await expect(
+    page.getByText(/will not create a duplicate game/),
+  ).toBeVisible();
+  await capture(page, info, "11-retryable-preparation-failure");
+  await tabTo(page, retry);
+  await page.keyboard.press("Enter");
+  await expect(page.getByTestId("choice-card").first()).toBeEnabled();
+  expect(harness.keys.create).toHaveLength(2);
+  expect(new Set(harness.keys.create).size).toBe(1);
+  expect(harness.createBodies[0]).toEqual(harness.createBodies[1]);
+  harness.check();
+});
+
+test("insufficient coverage offers a different favourite without a retry loop", async ({
+  page,
+}, info) => {
+  const harness = await publicHarness(page, { generationFailure: "coverage" });
+  await page.goto("/");
+  await selectSeed(page);
+  await page.getByTestId("start-duel").click();
+  await expect(page.locator(".seed-launcher").getByRole("alert")).toContainText(
+    "not enough verified comparisons",
+  );
+  await expect(page.getByTestId("start-duel")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Retry same duel" }),
+  ).toHaveCount(0);
+  await capture(page, info, "12-insufficient-coverage-preparation");
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Retry same duel" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Recover unfinished request" }),
+  ).toHaveCount(0);
+  expect(harness.keys.create).toHaveLength(1);
+  await page
+    .getByRole("button", { name: "Choose another favourite", exact: true })
+    .click();
+  await expect(
+    page.getByRole("combobox", { name: "Choose your favourite" }),
+  ).toHaveValue("");
+  expect(harness.keys.create).toHaveLength(1);
   harness.check();
 });

@@ -1,3 +1,6 @@
+[extend]
+useDefault = true
+
 [[allowlists]]
 description = "Exact empty Secret Manager bindings and stable synthetic identifiers"
 regexTarget = "line"
@@ -9,4 +12,13 @@ regexes = [
   '''^const storageKey = "tasteduel\.generation-intent\.v1";$''',
   '''^\s*key === "tasteduel\.generation-intent\.v1" \|\|$''',
   '''^\s*headers=\{"Idempotency-Key": "synthetic-prompt11-save"\},$''',
+]
+
+[[allowlists]]
+description = "Public storage namespace and exact historical Cloud Run revision names, never credentials"
+regexTarget = "secret"
+regexes = [
+  '''^tasteduel\.generation-intent\.v1$''',
+  '''^synthetic-(prompt11|discovery)-save$''',
+  '''^tasteduel-api-(00005-kdm|r19c-e49564c|r19p-e49564c|r19r-e49564c|hf[cs]-[a-f0-9]{7})$''',
 ]

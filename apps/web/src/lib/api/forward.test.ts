@@ -68,6 +68,23 @@ const error = (code = "QLOO_UNAVAILABLE") => ({
   },
 });
 
+for (const [code, status, fragment] of [
+  ["GENERATION_INSUFFICIENT_COVERAGE", 422, "not enough verified comparisons"],
+  ["GENERATION_PROVIDER_UNAVAILABLE", 503, "temporarily unavailable"],
+  ["GENERATION_CONFIGURATION_UNAVAILABLE", 503, "try again later"],
+] as const) {
+  test(`preparation failure ${code} preserves its safe action without upstream details`, async () => {
+    const response = await forwardApi(
+      request("/sessions/current"),
+      settings(async () => Response.json(error(code), { status })),
+    );
+    const value = await response.json();
+    assert.equal(value.error.code, code);
+    assert.ok(value.error.message.includes(fragment));
+    assert.ok(!JSON.stringify(value).includes("PRIVATE_PROVIDER_DIAGNOSTIC"));
+  });
+}
+
 for (const [status, code] of [
   [429, "SESSION_RATE_LIMITED"],
   [408, "REQUEST_TIMEOUT"],

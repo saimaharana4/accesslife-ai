@@ -58,7 +58,7 @@ function Assert-Configuration([switch]$CheckPorts) {
 
 function Assert-DatabaseAndMigrations {
     $compose = Get-ComposeArguments
-    Invoke-Docker -Arguments ($compose + @('exec', '-T', 'database', 'pg_isready', '-U', 'tasteduel_admin', '-d', 'tasteduel_prompt5')) -Quiet
+    Invoke-Docker -Arguments ($compose + @('exec', '-T', 'database', 'pg_isready', '-U', 'tasteduel_admin', '-d', 'tasteduel_local')) -Quiet
     $revision = & docker @($compose + @('run', '--rm', 'migrate', 'alembic', '-c', 'apps/api/tasteduel-alembic.ini', 'current'))
     if ($LASTEXITCODE -ne 0 -or ($revision -join "`n") -notmatch '\btd0011\b') {
         throw 'Taste Duel database is not at the expected td0011 migration head. Run the explicit migrate action; no volume was changed.'
@@ -118,20 +118,20 @@ switch ($Action) {
         foreach ($name in $names) { $saved[$name] = [Environment]::GetEnvironmentVariable($name, 'Process') }
         try {
             $env:TASTEDUEL_CONTAINER_MODE = 'true'
-            $env:TASTEDUEL_TEST_DATABASE_URL = 'postgresql+psycopg://tasteduel_runtime:local_only_tasteduel_runtime@127.0.0.1:55436/tasteduel_prompt5'
-            $env:TASTEDUEL_TEST_MIGRATION_DATABASE_URL = 'postgresql+psycopg://tasteduel_migrator:local_only_tasteduel_migrator@127.0.0.1:55436/tasteduel_prompt5'
+            $env:TASTEDUEL_TEST_DATABASE_URL = 'postgresql+psycopg://tasteduel_runtime:local_only_tasteduel_runtime@127.0.0.1:55436/tasteduel_local'
+            $env:TASTEDUEL_TEST_MIGRATION_DATABASE_URL = 'postgresql+psycopg://tasteduel_migrator:local_only_tasteduel_migrator@127.0.0.1:55436/tasteduel_local'
             $env:PYTHONPATH = "$repo;$(Join-Path $repo 'apps/api/src')"
             corepack pnpm test:web-contracts
             if ($LASTEXITCODE -ne 0) { throw 'Frontend contract tests failed.' }
-            uv run --no-sync python -m pytest -c pytest.tasteduel.ini --confcutdir=tests/tasteduel tests/tasteduel -q
+            uv run --project runtime/python --frozen python -m pytest -c pytest.tasteduel.ini --confcutdir=tests/tasteduel tests/tasteduel -q
             if ($LASTEXITCODE -ne 0) { throw 'Taste Duel tests against the Compose database failed.' }
         } finally {
             foreach ($name in $names) { [Environment]::SetEnvironmentVariable($name, $saved[$name], 'Process') }
         }
     }
     persistence {
-        Invoke-Docker -Arguments ($composeArgs + @('exec', '-T', 'database', 'pg_isready', '-U', 'tasteduel_admin', '-d', 'tasteduel_prompt5')) -Quiet
-        $artifactRoot = Join-Path $repo '.data/tasteduel-prompt14'
+        Invoke-Docker -Arguments ($composeArgs + @('exec', '-T', 'database', 'pg_isready', '-U', 'tasteduel_admin', '-d', 'tasteduel_local')) -Quiet
+        $artifactRoot = Join-Path $repo '.data/tasteduel-containers'
         New-Item -ItemType Directory -Force -Path $artifactRoot | Out-Null
         $stateFile = Join-Path $artifactRoot 'persistence-state.json'
         $reportFile = Join-Path $artifactRoot 'container-persistence-verification.json'
@@ -140,10 +140,10 @@ switch ($Action) {
         foreach ($name in $names) { $saved[$name] = [Environment]::GetEnvironmentVariable($name, 'Process') }
         try {
             $env:TASTEDUEL_CONTAINER_MODE = 'true'
-            $env:TASTEDUEL_TEST_DATABASE_URL = 'postgresql+psycopg://tasteduel_runtime:local_only_tasteduel_runtime@127.0.0.1:55436/tasteduel_prompt5'
-            $env:TASTEDUEL_TEST_MIGRATION_DATABASE_URL = 'postgresql+psycopg://tasteduel_migrator:local_only_tasteduel_migrator@127.0.0.1:55436/tasteduel_prompt5'
+            $env:TASTEDUEL_TEST_DATABASE_URL = 'postgresql+psycopg://tasteduel_runtime:local_only_tasteduel_runtime@127.0.0.1:55436/tasteduel_local'
+            $env:TASTEDUEL_TEST_MIGRATION_DATABASE_URL = 'postgresql+psycopg://tasteduel_migrator:local_only_tasteduel_migrator@127.0.0.1:55436/tasteduel_local'
             $env:TASTEDUEL_PERSISTENCE_STATE_FILE = $stateFile
-            uv run --no-sync python -m pytest -c pytest.tasteduel.ini --confcutdir=tests/tasteduel tests/tasteduel/gameplay/test_compose_restart_persistence.py -q
+            uv run --project runtime/python --frozen python -m pytest -c pytest.tasteduel.ini --confcutdir=tests/tasteduel tests/tasteduel/gameplay/test_compose_restart_persistence.py -q
             if ($LASTEXITCODE -ne 0) { throw 'Synthetic game/challenge preparation against the Compose database failed.' }
             Invoke-Docker -Arguments ($composeArgs + @('restart', 'api'))
             $ready = $false
@@ -155,12 +155,12 @@ switch ($Action) {
                 Start-Sleep -Seconds 1
             }
             if (-not $ready) { throw 'The restarted Taste Duel API did not become ready.' }
-            uv run --no-sync python scripts/tasteduel-compose-persistence-verify.py
+            uv run --project runtime/python --frozen python scripts/tasteduel-compose-persistence-verify.py
             if ($LASTEXITCODE -ne 0) { throw 'The restarted API did not return the saved game/challenge/fixed replay.' }
             $report = [ordered]@{
                 checked_at_utc = [DateTime]::UtcNow.ToString('o')
                 compose_project = 'taste-duel'
-                migrated_database = 'tasteduel_prompt5'
+                migrated_database = 'tasteduel_local'
                 api_restarted = $true
                 creator_result_retained = $true
                 public_invitation_retained = $true

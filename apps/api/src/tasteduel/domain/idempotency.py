@@ -1,6 +1,6 @@
 """Canonical typed-body signatures, scoped to session and operation.
 
-This is a contract helper. Durable claim/retry execution arrives in Prompt 9.
+Gameplay services use these signatures for durable reservations and safe retries.
 """
 
 import hashlib

@@ -45,7 +45,7 @@ def test_cloud_guard_rejects_wrong_scope_and_connection_overrides(user, database
 def test_cloud_and_local_modes_do_not_implicitly_accept_each_other():
     with pytest.raises(ValueError):
         validate_local_url(cloud_url())
-    local = "postgresql+psycopg://tasteduel_runtime:synthetic@127.0.0.1:55435/tasteduel_prompt5"
+    local = "postgresql+psycopg://tasteduel_runtime:synthetic@127.0.0.1:55435/tasteduel_local"
     with pytest.raises(ValueError):
         validate_database_url(local, mode="cloud_sql")
     with pytest.raises(ValueError):

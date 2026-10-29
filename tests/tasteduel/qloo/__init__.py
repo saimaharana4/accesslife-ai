@@ -1,1 +1,1 @@
-"""Offline-only Prompt 6 provider contracts."""
+"""Offline-only provider provider contracts."""

@@ -77,6 +77,11 @@ variable "tasteduel_public_enabled" {
   type    = bool
   default = false
 }
+variable "tasteduel_public_hotfix_preview" {
+  type        = bool
+  default     = false
+  description = "Explicit reviewed follow-on hotfix preview: web tag is publicly reachable, never an IAM boundary."
+}
 variable "tasteduel_api_traffic_revision" {
   type     = string
   default  = null
@@ -184,17 +189,25 @@ resource "terraform_data" "tasteduel_release_gate" {
     }
     precondition {
       condition = (!var.tasteduel_public_enabled || (
-        var.tasteduel_candidate_tag == null && var.tasteduel_candidate_origin == null && var.tasteduel_candidate_api_url == null &&
+        ((var.tasteduel_candidate_tag == null && var.tasteduel_candidate_origin == null && var.tasteduel_candidate_api_url == null) || var.tasteduel_public_hotfix_preview) &&
         var.tasteduel_api_traffic_revision != null && var.tasteduel_web_traffic_revision != null &&
       var.tasteduel_vertex_requests_per_day == 50 && var.tasteduel_qloo_requests_per_day == 100))
-      error_message = "Public release requires explicit compatible revision pins, no reachable candidate web tags/origins, and the reviewed public quota pair. Public tagged previews have no approved guard and fail closed."
+      error_message = "Public release requires compatible revision pins, reviewed quota limits and no tags except an explicitly reviewed publicly reachable hotfix preview."
     }
     precondition {
       condition = (var.tasteduel_candidate_tag == null ? (var.tasteduel_candidate_origin == null && var.tasteduel_candidate_api_url == null) : (
-        !var.tasteduel_public_enabled && var.tasteduel_candidate_origin != null && var.tasteduel_candidate_api_url != null &&
+        (!var.tasteduel_public_enabled || var.tasteduel_public_hotfix_preview) && var.tasteduel_candidate_origin != null && var.tasteduel_candidate_api_url != null &&
         var.tasteduel_api_candidate_revision != null && var.tasteduel_web_candidate_revision != null &&
       var.tasteduel_api_traffic_revision != null && var.tasteduel_web_traffic_revision != null))
-      error_message = "No-traffic candidate tags require an IAM-private web, both exact revision pins and a verified temporary origin."
+      error_message = "Candidate tags require an IAM-private initial release or explicit public hotfix preview, both revision pins and exact temporary origins."
+    }
+    precondition {
+      condition = (!var.tasteduel_public_hotfix_preview ? true : (
+        var.tasteduel_candidate_tag == null ? false : (
+          var.tasteduel_public_enabled && var.tasteduel_observability_enabled &&
+          var.tasteduel_candidate_origin == "https://${var.tasteduel_candidate_tag}---tasteduel-web-dfthmgvvaa-el.a.run.app" &&
+      var.tasteduel_candidate_api_url == "https://${var.tasteduel_candidate_tag}---tasteduel-api-dfthmgvvaa-el.a.run.app")))
+      error_message = "A public hotfix preview must retain monitoring and use only the exact existing services' tag URLs. A zero-percent web tag remains public."
     }
     precondition {
       condition = ((var.tasteduel_vertex_requests_per_day == 10 && var.tasteduel_qloo_requests_per_day == 12) ||

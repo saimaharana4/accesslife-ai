@@ -1,1 +1,0 @@
-"""AccessLife application."""

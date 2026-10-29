@@ -161,6 +161,19 @@ class RoundCuratorAgent:
                             await run.fallback()
         except _Halt as failure:
             run.failure = failure.code
+            # A model formatting/tool mistake must not discard verified evidence.
+            # Never fetch again here or recover auth, deadline, budget or veto failures.
+            if (
+                allow_fallback
+                and failure.code in {
+                    "MALFORMED_MODEL_OUTPUT", "MALFORMED_TOOL_ARGUMENTS", "UNSUPPORTED_TOOL",
+                    "REPEATED_TOOL_CALL", "UNKNOWN_SNAPSHOT", "UNNECESSARY_CORRECTION",
+                }
+                and run.current and run.current.pool and run.current.pool.path
+                and run.current.feedback.status == "ready" and run.remaining() > 0
+            ):
+                await run.fallback()
+                run.failure = None
         except TimeoutError:
             run.failure = "CURATION_DEADLINE"
             run.fact("model_request", "timeout", started)

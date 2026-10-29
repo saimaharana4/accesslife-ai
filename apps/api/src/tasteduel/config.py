@@ -18,13 +18,13 @@ def validate_local_url(value: str, *, migration: bool = False) -> str:
         local_foundation = (
             url.host in {"127.0.0.1", "localhost", "::1"}
             and url.port in {55435, 55436}
-            and url.database == "tasteduel_prompt5"
+            and url.database == "tasteduel_local"
         )
         compose_database = (
             os.environ.get("TASTEDUEL_CONTAINER_MODE") == "true"
             and url.host == "database"
             and url.port == 5432
-            and url.database == "tasteduel_prompt5"
+            and url.database == "tasteduel_local"
         )
         valid = url.drivername == "postgresql+psycopg" and (local_foundation or compose_database) and url.username == expected_user and not url.query
     except Exception:

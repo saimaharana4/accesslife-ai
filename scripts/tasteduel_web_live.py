@@ -1,6 +1,6 @@
-"""Explicit local Prompt 10 live preview, with a persistent non-renewing budget.
+"""Explicit local integration live preview, with a persistent non-renewing budget.
 
-Run with --serve after reviewing .data/tasteduel-prompt10/live-budget.json.
+Run with --serve after reviewing .data/tasteduel-integration/live-budget.json.
 No cloud resources are changed. ADC and Secret Manager values stay in memory.
 """
 
@@ -15,7 +15,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "apps/api/src"))
-ARTIFACTS = ROOT / ".data/tasteduel-prompt10"
+ARTIFACTS = ROOT / ".data/tasteduel-integration"
 
 
 def load_script(name):

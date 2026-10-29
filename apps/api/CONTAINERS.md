@@ -1,12 +1,9 @@
 # Taste Duel local containers
 
-The root Compose file now targets the separate Taste Duel project named
-`taste-duel`. Its loopback ports
-are 55436 (PostgreSQL), 18005 (API), and 13001 (web), so it does not attach to
-the running AccessLife Compose project, the earlier Taste Duel foundation DB on
-55435, or the AccessLife 5432/3000/8000 ports. The existing AccessLife
-containers and volume retain their original project and are not managed by the
-Taste Duel helper. PostgreSQL is a plain pinned PostgreSQL 16 image; this
+The root Compose file targets the separate Taste Duel project `taste-duel`.
+Its loopback ports are 55436 (PostgreSQL), 18005 (API), and 13001 (web).
+The helper never attaches to or stops an unrelated Docker project. PostgreSQL
+is a plain pinned PostgreSQL 16 image; this
 product needs no PostGIS, pgvector, embedding model,
 ingestion job, or background worker.
 
@@ -56,9 +53,9 @@ The standalone migration operation is `docker compose --project-name taste-duel
 --env-file compose.tasteduel.env -f compose.yaml run --rm migrate`. Both use
 the dedicated `tasteduel_migrator` role; API uses the
 separate restricted `tasteduel_runtime` role. The API and Alembic accept only
-the existing local foundation DB tuple on loopback port 55435/55436 or the exact
+the dedicated local `tasteduel_local` database on loopback port 55435/55436 or the exact
 opt-in Compose tuple
-(`database:5432/tasteduel_prompt5` with the expected role). The Compose API
+(`database:5432/tasteduel_local` with the expected role). The Compose API
 image contains the pinned Qloo harness, tested Python runtime dependencies,
 the Taste Duel migration lineage and Alembic configuration. It has no runtime
 dependency download step. Web and API run as non-root; PostgreSQL uses its
@@ -96,7 +93,7 @@ session and migration state. A container restart and image rebuild preserve
 that volume.
 
 The test action connects the isolated integration suite to the Compose DB at
-loopback port 55436; it does not call the older helper that owns port 55435.
+loopback port 55436; the standalone helper's optional port is 55435.
 The current source migration head is `td0011`, which adds restricted expiry
 maintenance and hash-only expired-link tombstones after private activity
 accounting in `td0010`. Rebuild the migration/API image and run the explicit migration action
@@ -106,7 +103,7 @@ Accounting defaults to excluded test activity. See the
 before any operational opt-in.
 The persistence action uses the test-only `SyntheticCurator`, records one
 short-lived guest token/slug and expected public first-round choices under the
-ignored `.data/tasteduel-prompt14/` directory, restarts only this project's API,
+ignored `.data/tasteduel-containers/` directory, restarts only this project's API,
 then verifies via HTTP against the restarted API that the creator result and
 invitation remain and a new guest starts the identical fixed first round. It
 removes that token/slug artifact after the check; the retained report contains

@@ -31,6 +31,7 @@ from tasteduel.adapters.usage_budget import ModelDailyBudget, UsageDenied, reser
 from tasteduel.api import presenters, schemas as s
 from tasteduel.api.body_limit import BoundedBodyMiddleware
 from tasteduel.application.errors import AppError
+from tasteduel.application.generation_failure import preparation_failure
 from tasteduel.application.discoveries import DiscoveryService
 from tasteduel.application.challenges import ChallengeService
 from tasteduel.application.entity_search import remember_search_entities
@@ -517,12 +518,7 @@ def create_app(
                     claim.seed, game_id=claim.game_id, rng_seed=secrets.token_hex(32), allow_fallback=True
                 )
             if outcome.pool is None:
-                raise AppError(
-                    503,
-                    "GENERATION_UNAVAILABLE",
-                    "A verified five-round game could not be prepared. Retry or choose another seed.",
-                    retryable=True,
-                )
+                raise preparation_failure(outcome)
             if generator is None and outcome.receipt.curator_mode == "fixture":
                 raise AppError(
                     503, "GENERATION_UNAVAILABLE", "Synthetic evidence is not enabled in this runtime."

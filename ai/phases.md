@@ -40,7 +40,7 @@ Independent security review found no unresolved serious defect in inspected code
 Original CLS, fixture-label, async announcement and focus-occlusion findings were
 fixed. Manual AT/native zoom, deployed verification, legacy key coordination and
 retention remain release checks. Next Prompt 14; no provisioning or CI push here.
-[Commands and evidence](../apps/api/AUDIT.md).
+[Commands and evidence](../docs/history/security-audit-2026-10-27.md).
 
 ### Prompt 12 gate - 27 October 2026
 
@@ -51,13 +51,13 @@ sides/order/winners and independent scores; provider calls were zero. Fifteen
 intercepted browser scenarios covered expiry, lost responses and accessible copy
 fallback. The prerequisite delivered-orientation migration is additive td0008.
 Next Prompt 13. Cloud, external crawler verification, manual AT/zoom and physical
-cleanup remain later gates. [Commands and evidence](../apps/api/CHALLENGES.md).
+cleanup remain later gates. [Commands and evidence](../docs/history/challenge-validation-2026-10-27.md).
 
 **Prompt 11 locally verified — 26 October 2026:** versioned adaptive solo selection,
 explicit saves/unsaves and session/cross-tab recovery. Passed 638 backend/53 Node
 checks, 18 distinct browser cases plus six affected reruns, 21 full axe captures
 and real API/browser process recovery, with zero provider test calls/cloud changes.
-[Actual policy/limits](../apps/api/SOLO.md). Next: **Prompt 12**; first update
+[Actual policy/limits](../docs/history/solo-validation-2026-10-26.md). Next: **Prompt 12**; first update
 challenge-freezing SQL for immutable delivered orientation via an additive
 migration. Human calibration, live corrective value and cloud release remain open.
 

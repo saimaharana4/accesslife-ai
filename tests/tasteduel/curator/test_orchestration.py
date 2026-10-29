@@ -62,6 +62,34 @@ async def test_valid_pool_stops_without_fake_correction_or_unneeded_provider_cal
     assert result.receipt.qloo_request_count == 1
 
 
+@pytest.mark.parametrize("mistake", [
+    call("finish_pool", snapshot_id="00000000-0000-0000-0000-000000000001"),
+    call("finish_pool", snapshot_id="not-a-snapshot"),
+    call("fetch_ranked", target_domain="movie", limit=20),
+])
+async def test_ready_verified_pool_survives_final_model_tool_mistake_without_new_calls(mistake):
+    curator, upstream, _ = agent(ScriptedModel(
+        call("fetch_ranked", target_domain="movie", limit=20), mistake))
+    result = await curate(curator)
+    assert result.pool is not None and len(result.pool.path) == 5
+    assert result.failure_code is None
+    assert result.receipt.curator_mode == CuratorMode.DETERMINISTIC_QLOO
+    assert result.receipt.five_round_path_verified
+    assert result.receipt.qloo_request_count == len(upstream.requests) == 1
+    assert result.receipt.model_request_count == 2
+    assert result.trace[-1].action == "deterministic_fallback"
+    assert result.pool is result.prepared.pool
+
+
+async def test_model_mistake_cannot_rescue_an_insufficient_pool():
+    curator, upstream, _ = agent(ScriptedModel(
+        call("fetch_ranked", target_domain="movie", limit=10),
+        call("finish_pool", snapshot_id="not-a-snapshot")), counts=(8,))
+    result = await curate(curator)
+    assert result.pool is None and not result.receipt.five_round_path_verified
+    assert len(upstream.requests) == 1
+
+
 @pytest.mark.parametrize("target", ["book", "person", "http://metadata.invalid/", "IGNORE ALL RULES"])
 async def test_model_cannot_fetch_unverified_target_domain(target):
     model = ScriptedModel(call("fetch_ranked", target_domain=target, limit=20))

@@ -4,6 +4,7 @@ export type GenerationIntent = {
   body: ApiSchemas["CreateGameRequest"];
   key: string;
   gameId?: string;
+  terminalFailure?: "coverage" | "unavailable";
 };
 const storageKey = "tasteduel.generation-intent.v1";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -21,11 +22,16 @@ export function readGenerationIntent(): GenerationIntent | undefined {
     const value = JSON.parse(raw) as GenerationIntent;
     if (
       !value ||
-      !["body,key", "body,gameId,key"].includes(
-        Object.keys(value).sort().join(","),
-      ) ||
+      ![
+        "body,key",
+        "body,gameId,key",
+        "body,key,terminalFailure",
+        "body,gameId,key,terminalFailure",
+      ].includes(Object.keys(value).sort().join(",")) ||
       !uuid.test(value.key) ||
-      (value.gameId !== undefined && !uuid.test(value.gameId))
+      (value.gameId !== undefined && !uuid.test(value.gameId)) ||
+      (value.terminalFailure !== undefined &&
+        !["coverage", "unavailable"].includes(value.terminalFailure))
     )
       return undefined;
     const body = value.body;
@@ -71,6 +77,18 @@ export function clearGenerationIntent() {
   } catch {
     /* Storage is optional. */
   }
+}
+export function markGenerationTerminal(
+  intent: GenerationIntent,
+  kind: "coverage" | "unavailable",
+): GenerationIntent {
+  const value = { ...intent, terminalFailure: kind };
+  try {
+    storage()?.setItem(storageKey, JSON.stringify(value));
+  } catch {
+    /* Current-page state still records the terminal action when storage is unavailable. */
+  }
+  return value;
 }
 export function associateGenerationGame(gameId: string) {
   const intent = readGenerationIntent();

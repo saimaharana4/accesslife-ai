@@ -1,14 +1,11 @@
-# Model redistribution
+# Source and asset rights
 
-The API image includes CPU ONNX weights, tokenizer and model card for
-[`sentence-transformers/all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2),
-revision `c9745ed1d9f207416be6d2e6f8de32d1f16199bf`. Its model card declares Apache License 2.0.
-The unchanged model card is bundled in the image cache; [the Apache license](MiniLM-LICENSE.txt)
-is included here and in `/opt/models/MiniLM-APACHE-2.0-LICENSE`. Weights are downloaded
-from the original publisher during image build and are not committed to Git.
+Taste Duel source and original SVG/CSS artwork are distributed under the repository [MIT licence](../LICENSE). Locally hosted Barlow Condensed and Manrope fonts retain their separate SIL Open Font License notices. [Asset manifest and immutable font provenance](taste-duel-assets.md).
 
-MapLibre uses the [OpenFreeMap Liberty style](https://openfreemap.org/quick_start/).
-Keep its map attribution visible. OSM data retains ODbL attribution and rights;
-venue source pages retain their own copyright. Original short factual summaries
-and source links are recorded in the backend catalogue. Qloo payloads stay in a
-private database cache with a one-hour validity TTL and periodic expiry cleanup; they are never published as a dataset.
+The current application requires no embedding weights, map tiles, venue catalogue or corpus ingestion. Historical AccessLife dependencies do not describe Taste Duel’s container contents.
+
+Qloo supplies private ranking evidence; the application does not redistribute raw provider responses or a cultural dataset. Permitted metadata/evidence retention remains bounded by the applicable source policy, expiry and server-side controls. The MIT licence does not relicense Qloo data or unrelated artwork.
+
+Original title cards remain the approved fallback for real artists/films. They are not official posters, album covers or artist photographs. A returned image URL is metadata, not proof of permission to mirror, transform or reuse it socially. No optional external image provider is required or enabled merely because it exists.
+
+[Capability and rights decisions](../ai/qloo-capability-matrix.md) · [Security and retention](../docs/security.md)

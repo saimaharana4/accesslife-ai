@@ -13,7 +13,7 @@ from .conftest import SyntheticCurator
 
 @pytest.mark.skipif(
     not os.environ.get("TASTEDUEL_PERSISTENCE_STATE_FILE"),
-    reason="only the explicit Prompt 14 Compose persistence check writes local state",
+    reason="only the explicit runtime Compose persistence check writes local state",
 )
 def test_write_synthetic_completed_game_and_challenge_for_restart_check(gameplay, owned_seed):
     path = Path(os.environ["TASTEDUEL_PERSISTENCE_STATE_FILE"])

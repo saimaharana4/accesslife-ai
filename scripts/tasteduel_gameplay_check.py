@@ -209,8 +209,8 @@ def main():
     os.chdir(ROOT)
     original = load("original_local_setup", ROOT / "scripts/tasteduel_local.py")
     clean = load("clean_local_setup", ROOT / "scripts/tasteduel_local.py")
-    clean.CONTAINER = "tasteduel-prompt9-clean-db"
-    clean.SCOPE = "tasteduel-prompt9-clean"
+    clean.CONTAINER = "tasteduel-gameplay-clean-db"
+    clean.SCOPE = "tasteduel-gameplay-clean"
     if clean.docker("ps", "-a", "--filter", f"name=^/{clean.CONTAINER}$", "--format", "{{.Names}}"):
         raise RuntimeError("Clean check container already exists; retain it, do not reset its data")
     if not original.verify_scope():
@@ -218,13 +218,13 @@ def main():
     was_running = original.docker("inspect", "--format", "{{.State.Running}}", original.CONTAINER) == "true"
     report = {
         "original_preserved": True,
-        "database": "tasteduel_prompt5",
+        "database": "tasteduel_local",
         "port": 55435,
         "clean_container": clean.CONTAINER,
         "cloud_changes": False,
         "credential_files_written": False,
     }
-    out = ROOT / ".data/tasteduel-prompt9"
+    out = ROOT / ".data/tasteduel-gameplay"
     out.mkdir(parents=True, exist_ok=True)
     try:
         if was_running:
@@ -260,7 +260,7 @@ def main():
                 "--confcutdir=tests/tasteduel",
                 "tests/tasteduel",
                 "-q",
-                "--junitxml=.data/tasteduel-prompt9/clean-tests.xml",
+                "--junitxml=.data/tasteduel-gameplay/clean-tests.xml",
             ],
             env=env,
             check=True,

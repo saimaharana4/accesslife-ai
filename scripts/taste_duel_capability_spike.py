@@ -1,4 +1,4 @@
-"""Bounded Prompt 2 probe. Live output is aggregate metadata, never API payloads.
+"""Bounded capability probe. Live output is aggregate metadata, never API payloads.
 
 Install the reviewed harness into ignored .data/qloo-prompt2/harness first.
 Offline is the default; --live additionally requires the explicit review flag.
@@ -109,7 +109,7 @@ class McpProbe:
         threading.Thread(target=self._read_stdout, daemon=True).start()
         # Drain without printing/storing arbitrary stderr, including payload-bearing errors.
         threading.Thread(target=lambda: self.process.stderr.read(), daemon=True).start()
-        self.rpc("initialize", {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "tasteduel-prompt2-probe", "version": "1"}})
+        self.rpc("initialize", {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "tasteduel-capability-probe", "version": "1"}})
         self.process.stdin.write(json.dumps({"jsonrpc": "2.0", "method": "notifications/initialized"}) + "\n")
         self.process.stdin.flush()
 
@@ -247,11 +247,11 @@ def live_inspection(*, resume_reviewed: bool = False) -> dict:
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     # Persistent reservations prohibit a second invocation from resetting the cap.
     if ledger_count() and not resume_reviewed:
-        raise RuntimeError("This Prompt 2 ledger already contains requests; inspect it instead of restarting the live spike")
+        raise RuntimeError("This capability ledger already contains requests; inspect it instead of restarting the live spike")
     if resume_reviewed and ledger_count() != 6:
         raise RuntimeError("Reviewed continuation is permitted only from the six-request checkpoint")
     with lock_path.open("x", encoding="utf-8") as lock:
-        lock.write("Single sequential Prompt 2 live owner; no credentials\n")
+        lock.write("Single sequential capability live owner; no credentials\n")
     probe = None
     try:
         from google.cloud import secretmanager
@@ -260,7 +260,7 @@ def live_inspection(*, resume_reviewed: bool = False) -> dict:
         key = response.payload.data.decode("utf-8").strip()
         probe = McpProbe(live=True, key=key)
         del key, response
-        report = {"harness_version": HARNESS_VERSION, "transport": "official canonical MCP exports with injected bounded QlooClient", "max_attempts": 1, "request_timeout_ms": 12000, "hard_request_cap": HARD_REQUEST_LIMIT, "seeds": [], "rankings": [], "vertex": "deferred to Prompt 8"}
+        report = {"harness_version": HARNESS_VERSION, "transport": "official canonical MCP exports with injected bounded QlooClient", "max_attempts": 1, "request_timeout_ms": 12000, "hard_request_cap": HARD_REQUEST_LIMIT, "seeds": [], "rankings": [], "vertex": "deferred to curator"}
         seeds = []
         initial_seeds = (("artist-seed", "Radiohead", "artist"), ("movie-seed", "Inception", "movie"))
         for label, name, kind in (() if resume_reviewed else initial_seeds):

@@ -17,6 +17,7 @@ import {
   associateGenerationGame,
   clearGenerationIntent,
   intentFor,
+  markGenerationTerminal,
   readGenerationIntent,
   type GenerationIntent,
 } from "./generation-intent";
@@ -36,6 +37,7 @@ export function LiveSeedLauncher() {
   const [retry, setRetry] = useState(0);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [canRetry, setCanRetry] = useState(true);
   const [recovery, setRecovery] = useState<GenerationIntent>();
   const [hydrated, setHydrated] = useState(false);
   const revision = useRef(0);
@@ -43,8 +45,20 @@ export function LiveSeedLauncher() {
   const submitAbort = useRef<AbortController | undefined>(undefined);
   const lock = useRef(false);
   const activeIntent = useRef<GenerationIntent | undefined>(undefined);
+  const recoveryAction = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    setRecovery(readGenerationIntent());
+    if (error && !pending) recoveryAction.current?.focus();
+  }, [error, pending]);
+  useEffect(() => {
+    const saved = readGenerationIntent();
+    setRecovery(saved);
+    setCanRetry(!saved?.terminalFailure);
+    if (saved?.terminalFailure)
+      setError(
+        saved.terminalFailure === "coverage"
+          ? "There are not enough verified comparisons for this favourite. Choose another artist or film."
+          : "This saved request cannot continue. Return to search and try again later.",
+      );
     setHydrated(true);
     if (!submitAbort.current || submitAbort.current.signal.aborted) {
       submitAbort.current = undefined;
@@ -120,6 +134,7 @@ export function LiveSeedLauncher() {
     submitAbort.current = controller;
     setPending(true);
     setError("");
+    setCanRetry(true);
     invalidateSearch();
     const body: ApiSchemas["CreateGameRequest"] = saved?.body ?? {
       seed_entity_id: selected!.id,
@@ -159,6 +174,17 @@ export function LiveSeedLauncher() {
           ? failure.message
           : "The response was interrupted. Retry this same duel safely.",
       );
+      setCanRetry(!(failure instanceof ApiError) || failure.retryable);
+      if (failure instanceof ApiError && !failure.retryable) {
+        const stopped = markGenerationTerminal(
+          intent,
+          failure.code === "GENERATION_INSUFFICIENT_COVERAGE"
+            ? "coverage"
+            : "unavailable",
+        );
+        activeIntent.current = stopped;
+        setRecovery(stopped);
+      }
     } finally {
       if (submitAbort.current === controller) {
         submitAbort.current = undefined;
@@ -170,6 +196,11 @@ export function LiveSeedLauncher() {
 
   // Retain a committed identity in the controlled collection until input changes.
   const results = selected ? [selected] : (search.data?.results ?? []);
+  const recovering =
+    recovery &&
+    (!selected ||
+      (recovery.body.seed_entity_id === selected.id &&
+        recovery.body.seed_type === selected.type));
   return (
     <div className="seed-launcher" aria-busy={pending || !hydrated}>
       <fieldset className="live-seed-types" disabled={pending || !hydrated}>
@@ -266,21 +297,23 @@ export function LiveSeedLauncher() {
           {selected.disambiguation && <p>{selected.disambiguation}</p>}
         </section>
       )}
-      <div className="launch-actions">
-        <ActionButton
-          data-testid="start-duel"
-          disabled={!selected || pending}
-          onClick={() => void start()}
-        >
-          {pending ? "Preparing verified duels…" : "Start Qloo duel"}
-          <span aria-hidden="true">↗</span>
-        </ActionButton>
-        <span className="launch-note">
-          Five Qloo-backed predictions.
-          <br />
-          No account. Your taste is never graded.
-        </span>
-      </div>
+      {!recovering && (
+        <div className="launch-actions">
+          <ActionButton
+            data-testid="start-duel"
+            disabled={!selected || pending}
+            onClick={() => void start()}
+          >
+            {pending ? "Preparing verified duels…" : "Start Qloo duel"}
+            <span aria-hidden="true">↗</span>
+          </ActionButton>
+          <span className="launch-note">
+            Five Qloo-backed predictions.
+            <br />
+            No account. Your taste is never graded.
+          </span>
+        </div>
+      )}
       {pending && (
         <p className="selection-note" role="status">
           Preparing a Qloo-grounded pool. You will receive a game only after its
@@ -292,18 +325,41 @@ export function LiveSeedLauncher() {
           {error}
         </p>
       )}
-      {recovery && !pending && (
+      {recovering && !pending && (
         <div className="live-recovery">
           <p className="seed-help">
-            An unfinished request is saved in this tab. Retry to recover its
-            authoritative result.
+            {canRetry
+              ? "Your request is saved. Retrying resumes the same duel and will not create a duplicate game."
+              : "This saved request cannot continue. Return to search when you are ready."}
           </p>
-          <ActionButton
-            variant="secondary"
-            onClick={() => void start(recovery)}
-          >
-            Recover unfinished request
-          </ActionButton>
+          {canRetry ? (
+            <ActionButton
+              ref={recoveryAction}
+              variant="secondary"
+              onClick={() => void start(recovery)}
+            >
+              {error ? "Retry same duel" : "Recover unfinished request"}
+            </ActionButton>
+          ) : (
+            <ActionButton
+              ref={recoveryAction}
+              variant="secondary"
+              onClick={() => {
+                clearGenerationIntent();
+                activeIntent.current = undefined;
+                setRecovery(undefined);
+                setSelected(null);
+                setQuery("");
+                setError("");
+                setCanRetry(true);
+                invalidateSearch();
+              }}
+            >
+              {recovery?.terminalFailure === "coverage"
+                ? "Choose another favourite"
+                : "Return to search"}
+            </ActionButton>
+          )}
         </div>
       )}
     </div>

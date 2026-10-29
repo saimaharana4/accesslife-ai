@@ -28,7 +28,7 @@ class RankedCandidatesRequest:
 def ranked_context_hash(request: RankedCandidatesRequest, *, transport: str = "mcp") -> str:
     """Bind a normalized snapshot to the exact pinned MCP recommendation inputs.
 
-    This is the existing Prompt 6 fingerprint, not a second provider schema.
+    This is the existing provider fingerprint, not a second provider schema.
     A future transport/filter change must version/review this contract too.
     """
     if transport == "http_ranked":
