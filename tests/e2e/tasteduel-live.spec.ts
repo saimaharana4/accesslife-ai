@@ -187,6 +187,7 @@ async function publicHarness(
       return reply(
         {
           active: true,
+          display_name: "Synthetic player",
           expires_at: expiry,
           resumable_game_ids: created ? [GAME] : [],
         } satisfies S["SessionPublic"],

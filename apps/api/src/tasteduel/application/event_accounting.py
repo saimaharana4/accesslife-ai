@@ -7,7 +7,7 @@ Events commit with the authoritative mutation; retries reuse the semantic subjec
 import os
 from datetime import timedelta
 
-from sqlalchemy import delete, select, text
+from sqlalchemy import delete, select, text, update
 from sqlalchemy.dialects.postgresql import insert
 
 from tasteduel.persistence import models as m
@@ -31,11 +31,8 @@ def record(db, *, owner, game_id, event, subject_id):
     mode = "fixture" if receipt is None or receipt.curator_mode == "fixture" else "qloo"
     cohort = "operational" if os.getenv("TASTEDUEL_EVENT_COHORT") == "operational" else "excluded"
     now = db.scalar(select(text("clock_timestamp()")))
-    # Migration td0012 installs activity with session_live atomically. Keep
-    # legacy rollback actions live, committing the touch with their event.
-    if db.scalar(text("SELECT to_regprocedure('tasteduel.session_live(uuid)')")) is not None:
-        db.execute(text("UPDATE tasteduel.sessions SET last_activity_at=:now WHERE id=:owner"),
-                   {"now": now, "owner": owner})
+    # Only committed semantic user actions extend activity, never GET/polling.
+    db.execute(update(m.Session).where(m.Session.id == owner).values(last_activity_at=now))
     # Bounded to this owner's short-lived rows under forced RLS. A privileged
     # scheduled purge remains an explicit production operation, not a hidden job.
     db.execute(delete(m.ProductEvent).where(m.ProductEvent.expires_at <= now))

@@ -42,6 +42,10 @@ Stopping preserves the `taste-duel-data` volume. Default local startup disables 
 
 ## Implementation and verification
 
+The working source adds named guest entry, “Poke a friend”, participant-only
+verdicts and inactivity/completion cleanup. This feature has local verification;
+it is **not deployed**. See [behaviour, cleanup and rollout](docs/named-challenges.md).
+
 Next.js App Router and TypeScript provide the web interface. FastAPI/Pydantic owns the API contracts, generated into frontend types. PostgreSQL 16 persists guest-owned games, immutable evidence, accepted answers and fixed challenges. GCP runs a public web service, an IAM-private API and one migration job on the existing dedicated SQL instance. No embedding model, ingestion pipeline or background worker is required.
 
 The recorded release passed genuine Qloo/Vertex five-round play on its sealed production configuration, followed by unauthenticated public fixed replay and typed search. Checks cover response-loss recovery, isolated sessions, discovery persistence, keyboard/mobile/reduced-motion behavior, full axe scans and inspected answer/credential secrecy. Compatible revision recovery preserved stored history and enforced normal expiry. [Exact deployed identities and release evidence](infra/migration/production-release-execution-2026-10-28.md).

@@ -87,6 +87,8 @@ class Session(Created, Base):
     )
     id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     token_hash: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    display_name: Mapped[str | None] = mapped_column(String(24))
+    last_activity_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=text("clock_timestamp()"))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
@@ -439,6 +441,7 @@ class ChallengePlay(Owned, Created, Base):
     challenge_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     slug_hash: Mapped[str | None] = mapped_column(String(64))
     game_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
+    attempt_number: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
 
 
 class Discovery(Owned, Created, Base):

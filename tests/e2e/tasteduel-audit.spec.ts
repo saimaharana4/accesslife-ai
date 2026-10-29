@@ -158,6 +158,7 @@ async function harness(
       return reply(
         {
           active: true,
+          display_name: "Synthetic player",
           expires_at: expiry,
           resumable_game_ids: [GAME],
         } satisfies S["SessionPublic"],
@@ -200,6 +201,7 @@ async function harness(
         recovery_action: "retry_same_request",
         retry_after_seconds: null,
       });
+    if (path === `/games/${GAME}/duels`) return reply({ status: "not_shared", outcomes: [] });
     if (path === `/games/${GAME}`) return reply(game());
     if (path === `/games/${GAME}/results`)
       return reply({

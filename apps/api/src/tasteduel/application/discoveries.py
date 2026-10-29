@@ -71,7 +71,9 @@ class DiscoveryService:
     def _session(self, db, owner):
         row = db.scalar(select(m.Session).where(m.Session.id == owner).with_for_update())
         now = db.scalar(select(text("clock_timestamp()")))
-        if row is None or row.revoked_at is not None or row.expires_at <= now:
+        if row is None or row.revoked_at is not None or row.expires_at <= now or not db.scalar(
+            select(text("tasteduel.session_live(:owner)")).params(owner=owner)
+        ):
             raise AppError(401, "SESSION_REQUIRED", "An active guest session is required.")
         return row, now
 

@@ -24,11 +24,15 @@ const safeHeaders = {
 };
 const allowed = [
   ["POST", /^\/v1\/sessions$/],
+  ["POST", /^\/v1\/sessions\/name$/],
   ["GET", /^\/v1\/sessions\/current$/],
   ["DELETE", /^\/v1\/sessions\/current$/],
   ["GET", /^\/v1\/entities\/search$/],
   ["POST", /^\/v1\/games$/],
-  ["GET", /^\/v1\/games\/[0-9a-f-]{36}(?:\/(?:round|generation|results))?$/i],
+  [
+    "GET",
+    /^\/v1\/games\/[0-9a-f-]{36}(?:\/(?:round|generation|results|duels))?$/i,
+  ],
   ["POST", /^\/v1\/games\/[0-9a-f-]{36}\/(?:answer|advance)$/i],
   ["GET", /^\/v1\/health\/(?:live|ready)$/],
   ["GET", /^\/v1\/discoveries$/],
@@ -168,6 +172,10 @@ function safeSetCookie(
   return `${COOKIE}=${token}; Path=/; Max-Age=${age}; HttpOnly; SameSite=Lax${local ? "" : "; Secure"}`;
 }
 const messages: Record<string, string> = {
+  PLAY_CLOSED: "Play has closed for this demo.",
+  NAME_ALREADY_SET:
+    "This session already has a nickname. Clear it to start fresh.",
+  SELF_CHALLENGE: "That is your own poke. Send it to a friend.",
   SESSION_RATE_LIMITED:
     "This guest session has made too many requests. Pause, then retry the same saved action.",
   REQUEST_TIMEOUT:

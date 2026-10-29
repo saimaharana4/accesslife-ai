@@ -18,6 +18,7 @@ import {
 } from "../browser-contracts/controlled-acceptance.mjs";
 
 const enabled = process.env.TASTEDUEL_CLOUD_BROWSER_ENABLED === "true";
+const named = process.env.TASTEDUEL_CLOUD_NAMED === "true";
 test.skip(
   !enabled,
   "Cloud gameplay requires a separately approved tiny live budget and protected candidate URL.",
@@ -229,6 +230,12 @@ test("cloud: one real curated solo, accepted-response recovery and identical fri
   try {
     const firstNavigation = performance.now();
     await page.goto(baseURL);
+    if (named) {
+      await expect(page.getByTestId("name-entry")).toBeVisible();
+      await inspect(page, info, "desktop-nickname");
+      await page.getByLabel("Your nickname").fill("Demo Challenger");
+      await page.getByRole("button", { name: /Let.s go/ }).click();
+    }
     await expect(
       page.getByRole("combobox", { name: "Choose your favourite" }),
     ).toBeEnabled();
@@ -459,7 +466,9 @@ test("cloud: one real curated solo, accepted-response recovery and identical fri
     await inspect(page, info, "desktop-result");
     await tabTo(
       page,
-      page.getByRole("button", { name: /Create friend challenge/ }),
+      page.getByRole("button", {
+        name: named ? /Poke a friend/ : /Create friend challenge/,
+      }),
     );
     await page.keyboard.press("Enter");
     const invitation = page.getByRole("link", {
@@ -480,6 +489,14 @@ test("cloud: one real curated solo, accepted-response recovery and identical fri
     const friend = await context({ width: 390, height: 844 });
     const friendPage = await friend.newPage();
     await friendPage.goto(`${baseURL}${sharePath}`);
+    if (named) {
+      await expect(friendPage.getByTestId("name-entry")).toContainText(
+        "Demo Challenger",
+      );
+      await inspect(friendPage, info, "mobile-nickname-invitation");
+      await friendPage.getByLabel("Your nickname").fill("Demo Friend");
+      await friendPage.getByRole("button", { name: /Let.s go/ }).click();
+    }
     await expect(friendPage.getByTestId("challenge-invitation")).toBeVisible();
     await expect(friendPage.getByTestId("choice-card")).toHaveCount(0);
     await inspect(friendPage, info, "mobile-invitation");
@@ -569,6 +586,27 @@ test("cloud: one real curated solo, accepted-response recovery and identical fri
       `/games/${friendGame}/results`,
     );
     expect(friendResult.score).toBe(result.score);
+    if (named) {
+      for (const resultPage of [page, friendPage]) {
+        const verdict = resultPage.getByTestId("duel-verdict");
+        await expect(verdict).toContainText("Demo Challenger", {
+          timeout: 35_000,
+        });
+        await expect(verdict).toContainText("Demo Friend");
+        await expect(verdict).toContainText("A TIE. THE AUDACITY IS MUTUAL.");
+        await expect(verdict).toContainText(
+          `Demo Challenger: ${result.score}/5`,
+        );
+        await expect(verdict).toContainText(
+          `Demo Friend: ${friendResult.score}/5`,
+        );
+        await resultPage.reload();
+        await expect(resultPage.getByTestId("name-entry")).toHaveCount(0);
+        await expect(resultPage.getByTestId("duel-verdict")).toContainText(
+          "Demo Friend",
+        );
+      }
+    }
     await inspect(friendPage, info, "mobile-fixed-result");
     await friendPage.goto(`${baseURL}/c/nonexistent_capability_1234567890`);
     await expect(
@@ -622,6 +660,7 @@ test("cloud: one real curated solo, accepted-response recovery and identical fri
           real_rounds: 5,
           distinct_contestants: 10,
           exact_replay: true,
+          named_verdict_and_reload: named,
           source: "qloo",
           curator: "genuine_agent",
           access_mode: access.mode,

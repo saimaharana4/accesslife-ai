@@ -93,7 +93,10 @@ export function LiveInvitation({ slug }: { slug: string }) {
         key.current,
         controller.signal,
       );
-      if (!controller.signal.aborted) router.push(`/g/${game.game_id}`);
+      if (!controller.signal.aborted)
+        router.push(
+          `${game.phase === "completed" ? "/results" : "/g"}/${game.game_id}`,
+        );
     } catch (error) {
       if (!controller.signal.aborted) {
         if (error instanceof ApiError && error.status === 410) {
@@ -156,7 +159,9 @@ export function LiveInvitation({ slug }: { slug: string }) {
   return (
     <section className="challenge-page" aria-labelledby="challenge-title">
       <div className="challenge-ticket" data-testid="challenge-invitation">
-        <p className="eyebrow">AN OPEN INVITATION TO A CULTURE CLASH</p>
+        <p className="eyebrow">
+          {invitation.creator_name ?? "A friend"} poked you. Your move.
+        </p>
         <div className="challenge-mark" aria-hidden="true">
           ✳
         </div>
@@ -168,7 +173,7 @@ export function LiveInvitation({ slug }: { slug: string }) {
         <p className="challenge-summary">
           The favourite: <strong>{invitation.seed.name}.</strong>
           <br />
-          Creator's prediction score:{" "}
+          {invitation.creator_name ?? "Your friend"}’s prediction score:{" "}
           <strong>{invitation.creator_score} out of 5.</strong>
         </p>
         <div className="challenge-rules">

@@ -176,6 +176,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/v1/games/{game_id}/duels": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Duel Results */
+    get: operations["getDuelResults"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/v1/games/{game_id}/generation": {
     parameters: {
       query?: never;
@@ -296,6 +313,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/v1/sessions/name": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Name Session */
+    post: operations["nameSession"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -374,7 +408,13 @@ export interface components {
       total: 5;
     };
     /** ChallengePlayRequest */
-    ChallengePlayRequest: Record<string, never>;
+    ChallengePlayRequest: {
+      /**
+       * New Attempt
+       * @default false
+       */
+      new_attempt: boolean;
+    };
     /**
      * ChoicePublic
      * @description An opaque delivered choice, distinct from its searchable entity ID.
@@ -466,6 +506,54 @@ export interface components {
        * Format: date-time
        */
       saved_at: string;
+    };
+    /** DuelOutcomePublic */
+    DuelOutcomePublic: {
+      /**
+       * Attempt Id
+       * Format: uuid
+       */
+      attempt_id: string;
+      /** Attempt Number */
+      attempt_number: number;
+      /** Challenger Name */
+      challenger_name: string | null;
+      /** Challenger Score */
+      challenger_score: number;
+      /**
+       * Completed At
+       * Format: date-time
+       */
+      completed_at: string;
+      /** Creator Name */
+      creator_name: string | null;
+      /** Creator Score */
+      creator_score: number;
+      /**
+       * Outcome
+       * @enum {string}
+       */
+      outcome: "creator" | "challenger" | "tie";
+    };
+    /** DuelResultsPublic */
+    DuelResultsPublic: {
+      /** Expires At */
+      expires_at?: string | null;
+      /** Next Cursor */
+      next_cursor?: string | null;
+      /**
+       * Outcomes
+       * @default []
+       */
+      outcomes: components["schemas"]["DuelOutcomePublic"][];
+      /** Replay Slug */
+      replay_slug?: string | null;
+      /**
+       * Status
+       * @default active
+       * @enum {string}
+       */
+      status: "not_shared" | "active" | "retired";
     };
     /** EntityPublic */
     EntityPublic: {
@@ -842,7 +930,15 @@ export interface components {
       winning_choice_id: string;
     };
     /** SessionCreateRequest */
-    SessionCreateRequest: Record<string, never>;
+    SessionCreateRequest: {
+      /** Display Name */
+      display_name?: string | null;
+    };
+    /** SessionNameRequest */
+    SessionNameRequest: {
+      /** Display Name */
+      display_name: string;
+    };
     /** SessionPublic */
     SessionPublic: {
       /** Active */
@@ -2404,6 +2500,129 @@ export interface operations {
       };
     };
   };
+  getDuelResults: {
+    parameters: {
+      query?: {
+        cursor?: string | null;
+      };
+      header?: never;
+      path: {
+        game_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DuelResultsPublic"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Timeout */
+      408: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
   getGenerationStatus: {
     parameters: {
       query?: never;
@@ -3008,7 +3227,9 @@ export interface operations {
   createSession: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        "Idempotency-Key"?: string | null;
+      };
       path?: never;
       cookie?: never;
     };
@@ -3271,6 +3492,129 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Timeout */
+      408: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Gone */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Request Entity Too Large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Unprocessable Entity */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Not Implemented */
+      501: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+      /** @description Service Unavailable */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorEnvelope"];
+        };
+      };
+    };
+  };
+  nameSession: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SessionNameRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SessionPublic"];
+        };
       };
       /** @description Unauthorized */
       401: {

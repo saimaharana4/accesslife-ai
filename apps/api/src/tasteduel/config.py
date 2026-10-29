@@ -69,6 +69,7 @@ class Settings(BaseSettings):
     cookie_secure: bool = True
     cookie_name: str = "tasteduel_session"
     session_ttl_seconds: int = 86400
+    # Cloud release sets the reviewed cutoff; local development has no cutoff.
     session_admission_closes_at: AwareDatetime | None = None
     session_hard_closes_at: AwareDatetime | None = None
     allowed_origins: tuple[str, ...] = ("http://127.0.0.1:3001", "http://localhost:3001")

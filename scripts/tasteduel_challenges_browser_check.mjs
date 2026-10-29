@@ -4,7 +4,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const origin = "http://127.0.0.1:3003";
+const origin = process.env.TASTEDUEL_TEST_WEB_URL ?? "http://127.0.0.1:3003";
+assert(["http://127.0.0.1:3001", "http://127.0.0.1:3003"].includes(origin));
 const directory = ".data/tasteduel-challenges/browser";
 let browser;
 let stage = "private-handoff";
@@ -110,7 +111,7 @@ try {
       r.request().method() === "POST",
   );
   await creatorPage
-    .getByRole("button", { name: /create.*challenge|challenge.*friend/i })
+    .getByRole("button", { name: /poke a friend/i })
     .first()
     .click();
   const createdResponse = await responsePromise;
@@ -149,6 +150,8 @@ try {
   for (const [index, page] of pages.entries()) {
     stage = `invitation-player-${index + 1}`;
     await page.goto(origin + invitationPath);
+    await page.getByLabel("Your nickname", { exact: true }).fill(`Synthetic friend ${index + 1}`);
+    await page.getByRole("button", { name: /let’s go/i }).click();
     await page
       .getByRole("button", {
         name: /play.*five|play.*challenge|accept.*challenge|take.*challenge/i,
@@ -257,6 +260,14 @@ try {
     findings.responsesChecked += 12;
   }
   assert.deepEqual(records[0], records[1]);
+  stage = "shared-named-verdicts";
+  const verdict = await creator.request.get(`${origin}/api/v1/games/${payload.game_id}/duels`);
+  assert.equal(verdict.status(), 200);
+  const comparison = await verdict.json();
+  assert.equal(comparison.outcomes.length, 2);
+  assert(comparison.outcomes.every((r) => r.creator_name === "Synthetic challenger"));
+  assert.deepEqual(comparison.outcomes.map((r) => r.challenger_name).sort(), ["Synthetic friend 1", "Synthetic friend 2"]);
+  for (const page of pages) await page.getByTestId("duel-verdict").getByRole("heading", { name: /VERDICT IS IN/i }).waitFor();
   assert.equal(
     scores[0] + scores[1],
     5,
@@ -298,6 +309,7 @@ try {
     roundsPerReplay: 5,
     exactSidesOrderWinners: true,
     independentScores: scores,
+    namedSharedVerdicts: true,
     refreshRestoredAcceptedReveal: true,
     creatorClearRevokedDependentAccess: true,
     keyboard: true,

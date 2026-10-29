@@ -30,7 +30,7 @@ def complete(client, game, *, choose_winner=None, expected=None):
             body["choice_id"] = next(
                 c["id"] for c in current["choices"] if (c["entity"]["name"] == winner_name) == choose_winner
             )
-        result = post(client, f"/v1/games/{game['game_id']}/answer", body, f"challenge-answer-{ordinal:04d}")
+        result = post(client, f"/v1/games/{game['game_id']}/answer", body, f"challenge-answer-{game['game_id']}-{ordinal:04d}")
         assert result.status_code == 200
         reveal = result.json()
         reveals.append(reveal)
@@ -38,7 +38,7 @@ def complete(client, game, *, choose_winner=None, expected=None):
             client,
             f"/v1/games/{game['game_id']}/advance",
             next_body(reveal),
-            f"challenge-advance-{ordinal:04d}",
+            f"challenge-advance-{game['game_id']}-{ordinal:04d}",
         )
         assert result.status_code == 200
         game = result.json()
@@ -59,7 +59,7 @@ def test_two_guests_exact_frozen_rounds_independent_scores_no_providers(gameplay
     slug = shared_["invitation"]["slug"]
     assert len(slug) == 43
     public = creator.get(f"/v1/challenges/{slug}").json()
-    assert set(public) == {"slug", "seed", "creator_score", "total", "source", "expires_at"}
+    assert set(public) == {"slug", "seed", "creator_name", "creator_score", "total", "source", "expires_at"}
     assert public["creator_score"] == source["score"]
     assert "session" not in str(public) and "winning" not in str(public)
     for correct in (True, False):
@@ -191,8 +191,9 @@ def test_challenge_expiry_never_requeries_or_replaces_rounds(gameplay, owned_see
         db.execute(update(m.Challenge).where(m.Challenge.share_slug == slug).values(expires_at=expiry))
     time.sleep(0.09)
     assert guest.get(f"/v1/challenges/{slug}").status_code == 410
-    assert guest.get(f"/v1/games/{game['game_id']}").status_code == 410
-    assert post(guest, f"/v1/challenges/{slug}/plays", {}, "expired-new-play-key-0001").status_code == 410
+    # Its sole linked session now expires with the challenge lifecycle.
+    assert guest.get(f"/v1/games/{game['game_id']}").status_code == 401
+    assert post(guest, f"/v1/challenges/{slug}/plays", {}, "expired-new-play-key-0001").status_code == 401
     assert curator.calls == 1 and unused.calls == 0
 
 

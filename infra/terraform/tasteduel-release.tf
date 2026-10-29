@@ -338,6 +338,16 @@ resource "google_cloud_run_v2_service" "tasteduel_api" {
         name  = "TASTEDUEL_COOKIE_SECURE"
         value = "true"
       }
+      dynamic "env" {
+        for_each = var.tasteduel_cleanup_enabled ? {
+          TASTEDUEL_SESSION_ADMISSION_CLOSES_AT = timeadd(var.reviewed_through_utc, "-2h")
+          TASTEDUEL_SESSION_HARD_CLOSES_AT      = timeadd(var.reviewed_through_utc, "-30m")
+        } : {}
+        content {
+          name  = env.key
+          value = env.value
+        }
+      }
       env {
         name  = "TASTEDUEL_ALLOWED_ORIGINS"
         value = jsonencode(local.tasteduel_release_origins)

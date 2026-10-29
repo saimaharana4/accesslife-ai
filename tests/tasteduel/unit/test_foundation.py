@@ -19,6 +19,7 @@ def test_export_is_actual_application_paths_and_no_private_receipt_schema():
     required = {
         "/v1/sessions",
         "/v1/sessions/current",
+        "/v1/sessions/name",
         "/v1/entities/search",
         "/v1/games",
         "/v1/games/{game_id}",
@@ -27,6 +28,7 @@ def test_export_is_actual_application_paths_and_no_private_receipt_schema():
         "/v1/games/{game_id}/answer",
         "/v1/games/{game_id}/advance",
         "/v1/games/{game_id}/results",
+        "/v1/games/{game_id}/duels",
         "/v1/discoveries",
         "/v1/discoveries/{entity_id}",
         "/v1/challenges",
@@ -111,7 +113,7 @@ def test_unknown_seed_cannot_create_a_game_and_cookies_are_private(create_guest)
     client, _ = create_guest()
     response = client.post("/v1/sessions", json={})
     assert response.status_code == 200
-    assert set(response.json()) == {"active", "expires_at", "resumable_game_ids"}
+    assert set(response.json()) == {"active", "display_name", "expires_at", "resumable_game_ids"}
     assert "token" not in response.text
     assert "token_hash" not in response.text
     response = client.post(

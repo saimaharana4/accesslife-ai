@@ -71,18 +71,78 @@ def purge(db, *, execute=False):
               if table.name in OWNED and table.name != "challenge_plays"]
     counts = {}
     started = time.monotonic()
+    # Bound the expensive lifecycle graph checks to owners with plausible
+    # expiry, then use cheap indexed IDs for each child table's candidate set.
+    owners = list(db.execute(text("""SELECT s.id FROM tasteduel.sessions s WHERE
+        (s.revoked_at IS NOT NULL OR s.expires_at<=clock_timestamp()
+         OR s.last_activity_at<=clock_timestamp()-interval '10 minutes'
+         OR EXISTS(SELECT 1 FROM tasteduel.challenges c JOIN tasteduel.challenge_plays p ON p.challenge_id=c.id
+           JOIN tasteduel.game_results r ON r.game_id=p.game_id
+           WHERE (c.session_id=s.id OR p.session_id=s.id) AND r.created_at<=clock_timestamp()-interval '10 minutes'))
+        AND NOT tasteduel.session_live(s.id) ORDER BY s.id LIMIT 100""")).scalars())
+    challenges = list(db.execute(text("""SELECT c.id FROM tasteduel.challenges c
+        JOIN tasteduel.sessions s ON s.id=c.session_id WHERE
+        (c.revoked_at IS NOT NULL OR c.expires_at<=clock_timestamp() OR s.revoked_at IS NOT NULL
+         OR s.expires_at<=clock_timestamp() OR s.last_activity_at<=clock_timestamp()-interval '10 minutes'
+         OR EXISTS(SELECT 1 FROM tasteduel.challenge_plays p JOIN tasteduel.game_results r ON r.game_id=p.game_id
+           WHERE p.challenge_id=c.id AND r.created_at<=clock_timestamp()-interval '10 minutes'))
+        AND tasteduel.maintenance_deletable('challenges',to_jsonb(c)) ORDER BY c.session_id,c.id LIMIT 100""")).scalars())
+    games = list(db.execute(text("""SELECT g.id FROM tasteduel.games g WHERE g.session_id=ANY(:owners)
+        OR g.expires_at<=clock_timestamp()
+        OR EXISTS(SELECT 1 FROM tasteduel.challenges c WHERE c.id=ANY(:challenges) AND c.source_game_id=g.id)
+        OR EXISTS(SELECT 1 FROM tasteduel.challenge_plays p
+          WHERE p.game_id=g.id AND p.challenge_id=ANY(:challenges)) ORDER BY g.id LIMIT 1000"""),
+        {"owners": owners, "challenges": challenges}).scalars())
     if execute:
+        # Challenge/game windows are independent of the first 100 owner IDs.
+        # Persist expiry for every affected graph owner before deleting edges:
+        # otherwise a completed duel outside that owner window could lose its
+        # last link and regain the unlinked one-hour fallback. A game has at
+        # most one replay edge, so this set is bounded by 100+100+1000+1000 IDs.
+        affected = list(db.execute(text("""SELECT id FROM tasteduel.sessions WHERE id=ANY(:owners)
+            UNION SELECT session_id FROM tasteduel.games WHERE id=ANY(:games)
+            UNION SELECT c.session_id FROM tasteduel.challenges c WHERE c.id=ANY(:challenges)
+              OR EXISTS(SELECT 1 FROM tasteduel.challenge_plays p
+                WHERE p.challenge_id=c.id AND p.game_id=ANY(:games))"""),
+            {"owners": owners, "games": games, "challenges": challenges}).scalars())
+        # Match gameplay's sorted session locks. Re-evaluate in the following
+        # statement, after any already-committing player action becomes visible.
+        db.execute(text("SELECT id FROM tasteduel.sessions WHERE id=ANY(:affected) ORDER BY id FOR UPDATE"),
+                   {"affected": affected}).all()
+        db.execute(text("""UPDATE tasteduel.sessions SET revoked_at=clock_timestamp()
+            WHERE id=ANY(:affected) AND revoked_at IS NULL AND NOT tasteduel.session_live(id)"""),
+            {"affected": affected})
         db.execute(text("""INSERT INTO tasteduel.challenge_tombstones(slug_hash,reason,expires_at)
             SELECT c.slug_hash,CASE WHEN c.revoked_at IS NOT NULL OR s.revoked_at IS NOT NULL
               THEN 'revoked' ELSE 'expired' END,clock_timestamp()+interval '7 days'
             FROM tasteduel.challenges c JOIN tasteduel.sessions s ON s.id=c.session_id
-            WHERE tasteduel.maintenance_deletable('challenges',to_jsonb(c))
-            ORDER BY c.session_id,c.id LIMIT 100 ON CONFLICT(slug_hash) DO NOTHING"""))
+            WHERE c.id=ANY(:challenges)
+            ON CONFLICT(slug_hash) DO NOTHING"""), {"challenges": challenges})
+    snapshots = list(db.execute(text("""SELECT id FROM tasteduel.ranking_snapshots WHERE game_id=ANY(:games)
+        OR expires_at<=clock_timestamp() ORDER BY id LIMIT 1000"""), {"games": games}).scalars())
+    entities = list(db.execute(text("SELECT id FROM tasteduel.entities WHERE expires_at<=clock_timestamp() ORDER BY id LIMIT 1000")).scalars())
+    parameters = {"owners": owners, "challenges": challenges, "games": games, "snapshots": snapshots, "entities": entities}
+    exhausted = False
     for _ in range(3 if execute else 1):
         for table in tables:
             if time.monotonic()-started > 25:
-                raise OperationBlocked("MAINTENANCE_DEADLINE")
-            predicate = f"tasteduel.maintenance_deletable('{table.name}',to_jsonb(t))"
+                exhausted = True
+                break  # Commit completed work; the next bounded run continues.
+            candidates = ["t.id=ANY(:owners)"] if table.name == "sessions" else ["t.session_id=ANY(:owners)"]
+            for column, parameter in (("game_id", "games"), ("snapshot_id", "snapshots"), ("challenge_id", "challenges"), ("entity_id", "entities")):
+                if column in table.c:
+                    candidates.append(f't."{column}"=ANY(:{parameter})')
+            if "expires_at" in table.c:
+                candidates.append("t.expires_at<=clock_timestamp()")
+            if table.name == "challenges":
+                # Only these bounded graph roots have had every affected
+                # participant checked/revoked before their edges can vanish.
+                candidates = ["t.id=ANY(:challenges)"]
+            if table.name == "games":
+                candidates = ["t.id=ANY(:games)"]
+            if table.name == "usage_counters":
+                candidates.append("t.window_end<=clock_timestamp()")
+            predicate = "(" + " OR ".join(candidates) + f") AND tasteduel.maintenance_deletable('{table.name}',to_jsonb(t))"
             if execute:
                 # Foreign-key references are checked before deletion; oversized batches
                 # leave parents for the next run rather than cascading active rows.
@@ -92,16 +152,26 @@ def purge(db, *, execute=False):
                 ordering = "t.id" if table.name == "sessions" else "t.session_id,t.id"
                 result = db.execute(text(f'''DELETE FROM tasteduel."{table.name}" WHERE id IN
                     (SELECT t.id FROM tasteduel."{table.name}" t WHERE {predicate}
-                     ORDER BY {ordering} LIMIT 100)'''))
+                     ORDER BY {ordering} LIMIT 100)'''), parameters)
                 counts[table.name] = counts.get(table.name, 0)+result.rowcount
             else:
                 counts[table.name] = db.execute(text(f'''SELECT count(*) FROM
-                    (SELECT 1 FROM tasteduel."{table.name}" t WHERE {predicate} LIMIT 101) bounded''')).scalar_one()
+                    (SELECT 1 FROM tasteduel."{table.name}" t WHERE {predicate} LIMIT 101) bounded'''), parameters).scalar_one()
+        if exhausted:
+            break
     if execute:
+        counts["usage_budgets"] = db.execute(text("""DELETE FROM tasteduel.usage_budgets WHERE (scope_hash,bucket) IN
+          (SELECT scope_hash,bucket FROM tasteduel.usage_budgets WHERE expires_at<=clock_timestamp()
+           ORDER BY expires_at LIMIT 100)""")).rowcount
         counts["challenge_tombstones"] = db.execute(text("""DELETE FROM tasteduel.challenge_tombstones
             WHERE slug_hash IN(SELECT slug_hash FROM tasteduel.challenge_tombstones
               WHERE expires_at<=clock_timestamp() ORDER BY slug_hash LIMIT 100)""")).rowcount
+    oldest = db.execute(text("""SELECT coalesce(max(extract(epoch FROM (clock_timestamp()-coalesce(revoked_at,
+        tasteduel.session_deadline(id),expires_at)))) FILTER(WHERE NOT tasteduel.session_live(id)),0)
+        FROM tasteduel.sessions WHERE id=ANY(:owners)"""), {"owners": owners}).scalar_one()
     return {"operation": "purge-expired", "executed": execute, "bounded_counts": counts,
+            "oldest_expired_session_seconds": max(0, int(oldest)),
+            "batch_deadline_reached": exhausted,
             "count_cap": 300 if execute else 101, "counts_exclude_cascades": True,
             "backups_rewritten": False}
 
@@ -194,6 +264,13 @@ def reviewed_mutation(cost_hash):
         raise OperationBlocked("REVIEWED_OPERATING_WINDOW_REQUIRED") from None
 
 
+def verified_schema_revision(db):
+    revision = db.execute(text("SELECT version_num FROM tasteduel.tasteduel_alembic_version")).scalar_one()
+    if revision != "td0014":
+        raise OperationBlocked("MIGRATION_REVISION_VERIFICATION_FAILED")
+    return revision
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("migrate", "purge-expired", "promote-public-budget"))
@@ -212,7 +289,15 @@ def main(argv=None):
                                     capture_output=True, text=True, timeout=240)
             if result.returncode != 0:
                 raise OperationBlocked("MIGRATION_FAILED_REVIEW_REQUIRED")
-            facts = {"operation": "migrate", "schema_revision": "td0011", "executed": True}
+            from tasteduel.adapters.database_secrets import resolve_database_url
+            from tasteduel.config import Settings
+            from tasteduel.persistence.db import database_engine
+
+            settings = Settings()
+            engine = database_engine(resolve_database_url(settings, migration=True), migration=True, mode=settings.database_mode)
+            with engine.begin() as db:
+                revision = verified_schema_revision(db)
+            facts = {"operation": "migrate", "schema_revision": revision, "executed": True}
         else:
             from tasteduel.adapters.database_secrets import resolve_database_url
             from tasteduel.config import Settings

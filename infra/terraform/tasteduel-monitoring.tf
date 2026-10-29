@@ -67,7 +67,7 @@ resource "google_monitoring_dashboard" "tasteduel" {
     mosaicLayout = { columns = 12, tiles = [
       { width = 12, height = 3, widget = {
         title = "Readiness, errors and bounded admission"
-        text  = { format = "MARKDOWN", content = "Canonical: ${local.tasteduel_web_origin}\n\nGeneration/request_error/provider_admission_snapshot events contain numeric execution facts only. Admitted calls are conservative reservations, not exact billed usage. No raw rankings, searches, answers, chain-of-thought or identities. Billing alerts notify; they do not cap spend. The cumulative reviewed ceiling is USD90 through 7 November 2026 04:45 UTC." }
+        text  = { format = "MARKDOWN", content = "Canonical: ${local.tasteduel_web_origin}\n\nGeneration/request_error/provider_admission_snapshot events contain numeric execution facts only. Admitted calls are conservative reservations, not exact billed usage. No raw rankings, searches, answers, chain-of-thought or identities. Billing alerts notify; they do not cap spend. The cumulative reviewed ceiling is USD100 through 7 November 2026 04:45 UTC." }
       } },
       { yPos = 3, width = 12, height = 5, widget = {
         title = "API request rate by response class"

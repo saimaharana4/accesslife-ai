@@ -23,6 +23,7 @@ const seed: S["EntityPublic"] = {
   artwork: null,
 };
 const invitation: S["ChallengeInvitationPublic"] = {
+  creator_name: "Mira",
   slug: SLUG,
   seed,
   creator_score: 3,
@@ -104,10 +105,17 @@ async function fixture(
       });
     if (path === "/sessions/current" || path === "/sessions")
       return reply(
-        { active: true, expires_at: expires, resumable_game_ids: [GAME] },
+        {
+          active: true,
+          display_name: "Synthetic player",
+          expires_at: expires,
+          resumable_game_ids: [GAME],
+        },
         req.method() === "POST" ? 201 : 200,
       );
     if (path === `/games/${GAME}/results`) return reply(result);
+    if (path === `/games/${GAME}/duels`)
+      return reply({ status: "not_shared", outcomes: [] });
     if (path === "/discoveries" && req.method() === "POST") {
       const requested = req.postDataJSON().entity_id;
       const entity = result.answered_rounds
@@ -307,6 +315,132 @@ test("synthetic result opens answered choices before an explicit keyboard save",
   await inspect(page, info, "explicit-save-from-answered-choices");
   h.check();
 });
+
+test("nickname entrance is accessible, atomic and remembered", async ({
+  page,
+  context,
+  baseURL,
+}, info) => {
+  const h = await fixture(context, new URL(baseURL!).origin);
+  let nickname: string | null = null;
+  const bootstraps: string[] = [];
+  await page.route("**/api/v1/sessions**", async (route) => {
+    const request = route.request();
+    if (request.method() === "POST") {
+      nickname = request.postDataJSON().display_name ?? nickname;
+      bootstraps.push(request.headers()["idempotency-key"] ?? "");
+    }
+    if (!nickname)
+      return route.fulfill({
+        status: 401,
+        json: { error: { code: "SESSION_REQUIRED" } },
+      });
+    return route.fulfill({
+      json: {
+        active: true,
+        display_name: nickname,
+        expires_at: expires,
+        resumable_game_ids: [],
+      },
+    });
+  });
+  await page.goto(`/c/${SLUG}`);
+  await expect(page.getByTestId("name-entry")).toContainText(
+    "Mira poked you. Your move.",
+  );
+  await expect(page.getByRole("button", { name: /let’s go/i })).toBeDisabled();
+  await inspect(page, info, "nickname-entrance");
+  await page.getByLabel("Your nickname", { exact: true }).fill("Rio");
+  await page.getByRole("button", { name: /let’s go/i }).click();
+  await expect(page.getByTestId("challenge-invitation")).toBeVisible();
+  expect(bootstraps).toHaveLength(1);
+  expect(bootstraps[0]).toMatch(/^[A-Za-z0-9_-]{43}$/);
+  await page.reload();
+  await expect(page.getByTestId("challenge-invitation")).toBeVisible();
+  await expect(page.getByTestId("name-entry")).toHaveCount(0);
+  expect(
+    await page.evaluate(() =>
+      JSON.stringify({ ...sessionStorage, ...localStorage }),
+    ),
+  ).not.toContain("Rio");
+  h.check();
+});
+
+test("a friend verdict arrives through polling with names, scores and attempt labels", async ({
+  page,
+  context,
+  baseURL,
+}, info) => {
+  const h = await fixture(context, new URL(baseURL!).origin);
+  let finished = false;
+  await page.route(`**/api/v1/games/${GAME}/duels*`, (route) =>
+    route.fulfill({
+      json: {
+        status: "active",
+        expires_at: expires,
+        next_cursor: null,
+        replay_slug: null,
+        outcomes: !finished
+          ? []
+          : [
+              {
+                attempt_id: id(701),
+                attempt_number: 2,
+                completed_at: stamp,
+                creator_name: "Mira",
+                challenger_name: "Rio",
+                creator_score: 3,
+                challenger_score: 5,
+                outcome: "challenger",
+              },
+            ],
+      },
+    }),
+  );
+  await page.goto(`/results/${GAME}`);
+  await expect(page.getByTestId("duel-verdict")).toContainText(
+    "BRAGGING RIGHTS: PENDING.",
+  );
+  finished = true;
+  await expect(page.getByTestId("duel-verdict")).toContainText(
+    "THE VERDICT IS IN.",
+    { timeout: 20_000 },
+  );
+  await expect(page.getByTestId("duel-verdict")).toContainText("Mira: 3/5");
+  await expect(page.getByTestId("duel-verdict")).toContainText("Rio: 5/5");
+  await expect(page.getByTestId("duel-verdict")).toContainText("ATTEMPT 2");
+  await inspect(page, info, "named-shared-verdict");
+  h.check();
+});
+
+test("native share cancellation stays neutral and shares the embedded URL", async ({
+  page,
+  context,
+  baseURL,
+}) => {
+  const h = await fixture(context, new URL(baseURL!).origin);
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "share", {
+      configurable: true,
+      value: async (data: ShareData) => {
+        (window as Window & { shared?: ShareData }).shared = data;
+        throw new DOMException("Cancelled", "AbortError");
+      },
+    });
+  });
+  await page.goto(`/results/${GAME}`);
+  await page.getByRole("button", { name: /poke a friend/i }).click();
+  await page.getByRole("button", { name: /share the poke/i }).click();
+  expect(
+    await page.evaluate(
+      () => (window as Window & { shared?: ShareData }).shared?.url,
+    ),
+  ).toBe(`${new URL(baseURL!).origin}/c/${SLUG}`);
+  await expect(
+    page.getByRole("textbox", { name: "Challenge link", exact: true }),
+  ).toBeHidden();
+  h.check();
+});
 test("create response loss retains its key and accessible manual copy does not claim success", async ({
   page,
   context,
@@ -326,7 +460,7 @@ test("create response loss retains its key and accessible manual copy does not c
     }),
   );
   await page.goto(`/results/${GAME}`);
-  const create = page.getByRole("button", { name: /create friend challenge/i });
+  const create = page.getByRole("button", { name: /poke a friend/i });
   await create.focus();
   await page.keyboard.press("Enter");
   await expect(

@@ -74,6 +74,7 @@ export function ChallengeShare({
       );
       if (version === epoch.current) {
         setCreated(saved);
+        window.dispatchEvent(new Event("tasteduel:challenge-ready"));
         setNotice("Challenge ready. The same five comparisons are frozen.");
       }
     } catch (error) {
@@ -106,8 +107,8 @@ export function ChallengeShare({
     }
     try {
       await navigator.share({
-        title: "Taste Duel — same five, your prediction",
-        text: "Predict the same five frozen cultural comparisons. No timer.",
+        title: "Taste Duel — you’ve been poked",
+        text: `${created?.invitation.creator_name ?? "A friend"} poked you. Same five rounds. Think you can beat ${created?.invitation.creator_score ?? "their"}/5? Your move.`,
         url,
       });
       setNotice("Share sheet opened. Sending is your choice.");
@@ -149,7 +150,7 @@ export function ChallengeShare({
       data-testid="challenge-share"
     >
       <p className="eyebrow">PASS THE CULTURE CLASH ON</p>
-      <h2 id="share-title">YOUR FIVE. THEIR PREDICTIONS.</h2>
+      <h2 id="share-title">POKE THE GROUP CHAT.</h2>
       <p>
         Freeze your actual rounds, order and sides. Your friend gets their own
         score against the{" "}
@@ -164,14 +165,16 @@ export function ChallengeShare({
           pendingLabel="Freezing your five…"
           disabled={!canonicalOrigin}
         >
-          Create friend challenge <span aria-hidden="true">↗</span>
+          Poke a friend <span aria-hidden="true">↗</span>
         </Button>
       ) : created ? (
         <>
           <div className="state-actions">
-            <Button onClick={() => void copy()}>Copy challenge link</Button>
-            <Button variant="secondary" onClick={() => void share()}>
-              Share invitation
+            <Button onClick={() => void share()}>
+              Share the poke <span aria-hidden="true">↗</span>
+            </Button>
+            <Button variant="secondary" onClick={() => void copy()}>
+              Copy challenge link
             </Button>
             <ActionLink href={`/c/${created.invitation.slug}`} variant="quiet">
               View invitation

@@ -8,7 +8,9 @@ reveals; shape validation alone does not establish authorization.
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import Field, StrictBool, StrictInt, StringConstraints, model_validator
+import unicodedata
+
+from pydantic import Field, StrictBool, StrictInt, StringConstraints, field_validator, model_validator
 
 from tasteduel.domain.types import (
     Count,
@@ -30,14 +32,37 @@ from tasteduel.domain.types import (
 Message = Annotated[str, StringConstraints(min_length=1, max_length=600)]
 
 
+Nickname = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=24)]
+
+
+class SessionNameRequest(StrictRecord):
+    display_name: Nickname
+
+    @field_validator("display_name", mode="before")
+    @classmethod
+    def clean_name(cls, value):
+        if not isinstance(value, str):
+            raise ValueError("A nickname is required")
+        value = unicodedata.normalize("NFKC", value).strip()
+        if any(unicodedata.category(c).startswith("C") or c in "<>" for c in value):
+            raise ValueError("Use a nickname without markup or control characters")
+        return " ".join(value.split())
+
+
 class SessionCreateRequest(StrictRecord):
-    pass
+    # Optional for existing API clients. New onboarding always submits a name.
+    display_name: Nickname | None = None
+
+    @field_validator("display_name", mode="before")
+    @classmethod
+    def optional_name(cls, value):
+        return None if value is None else SessionNameRequest.clean_name(value)
 
 
 class SessionPublic(StrictRecord):
-    display_name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=24)] | None = None
     active: StrictBool
     expires_at: UtcDatetime
+    display_name: Nickname | None = None
     resumable_game_ids: Annotated[tuple[UUID, ...], Field(max_length=20)] = ()
 
 
@@ -96,7 +121,7 @@ class ChallengeCreateRequest(StrictRecord):
 
 
 class ChallengePlayRequest(StrictRecord):
-    pass
+    new_attempt: StrictBool = False
 
 
 class CurationSummaryPublic(StrictRecord):
@@ -350,7 +375,7 @@ class GameResultPublic(StrictRecord):
 
 
 class ChallengeInvitationPublic(StrictRecord):
-    creator_name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=24)] | None = None
+    creator_name: Nickname | None = None
     slug: Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9_-]{22,80}$")]
     seed: EntityPublic
     creator_score: Score
@@ -375,6 +400,25 @@ class ChallengeCreatedPublic(StrictRecord):
         if self.share_path != f"/c/{self.invitation.slug}":
             raise ValueError("Share path must reference this invitation")
         return self
+
+
+class DuelOutcomePublic(StrictRecord):
+    attempt_id: UUID
+    attempt_number: Annotated[StrictInt, Field(ge=1)]
+    completed_at: UtcDatetime
+    creator_name: Nickname | None
+    challenger_name: Nickname | None
+    creator_score: Score
+    challenger_score: Score
+    outcome: Literal["creator", "challenger", "tie"]
+
+
+class DuelResultsPublic(StrictRecord):
+    status: Literal["not_shared", "active", "retired"] = "active"
+    expires_at: UtcDatetime | None = None
+    replay_slug: Annotated[str | None, StringConstraints(pattern=r"^[A-Za-z0-9_-]{22,80}$")] = None
+    next_cursor: Annotated[str | None, StringConstraints(max_length=160)] = None
+    outcomes: Annotated[tuple[DuelOutcomePublic, ...], Field(max_length=20)] = ()
 
 
 class HealthPublic(StrictRecord):

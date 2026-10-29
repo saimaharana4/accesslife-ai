@@ -10,6 +10,7 @@ import { sourceLabel } from "./presentation";
 import { LiveDiscoveries } from "@/features/discoveries/live-discoveries";
 import { subscribeSessionChanges } from "@/lib/api/session-events";
 import { ChallengeShare } from "@/features/challenges/challenge-share";
+import { DuelVerdict } from "@/features/challenges/duel-verdict";
 
 export function LiveResults({
   gameId,
@@ -116,6 +117,7 @@ export function LiveResults({
             : "Five synthetic rounds. This is a development test, not a live Qloo result."}
         </p>
       </div>
+      <DuelVerdict gameId={gameId} fixed={result.mode === "fixed"} />
       <div className="result-ticket" data-testid="result-ticket">
         <div className="ticket-top">
           <span>TASTE DUEL</span>

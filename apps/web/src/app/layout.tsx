@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import { FixtureProvider } from "tasteduel-fixture-entry";
 import { fixturesEnabled } from "@/features/mode/config";
 import { GuestSessionControls } from "@/features/seed/guest-session-controls";
+import { NameGate } from "@/features/seed/name-gate";
 import "./globals.css";
 
 const displayFont = localFont({
@@ -84,7 +85,7 @@ export default async function RootLayout({
               </nav>
             </header>
             <main id="main" className="main-shell" tabIndex={-1}>
-              {children}
+              {fixturesEnabled ? children : <NameGate>{children}</NameGate>}
             </main>
             <footer className="site-footer">
               <span>FOLLOW YOUR CURIOSITY.</span>

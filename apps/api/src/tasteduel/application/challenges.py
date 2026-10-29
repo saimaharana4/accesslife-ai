@@ -5,11 +5,12 @@ unguessable share capability. All source reads and copying share one transaction
 """
 
 from hashlib import sha256
+from base64 import urlsafe_b64decode, urlsafe_b64encode
+from datetime import datetime
 import secrets
 from uuid import UUID, uuid4
 
-from sqlalchemy import null, select, text
-from sqlalchemy.orm.attributes import set_committed_value
+from sqlalchemy import func, null, select, text
 
 from tasteduel.application.errors import AppError, not_found
 from tasteduel.application.event_accounting import record
@@ -26,19 +27,12 @@ def capability(db, digest):
     db.execute(text("SELECT set_config('app.challenge_hash',:digest,true)"), {"digest": digest})
 
 
-def effective_deadline(db, challenge):
-    if challenge is not None and db.scalar(text("SELECT to_regprocedure('tasteduel.challenge_deadline(uuid)')")) is not None:
-        deadline = db.scalar(text("SELECT tasteduel.challenge_deadline(:id)"), {"id": challenge.id})
-        if deadline is not None:
-            set_committed_value(challenge, "expires_at", min(challenge.expires_at, deadline))
-
-
-def active(challenge, now):
+def active(challenge, now, deadline=None):
     if challenge is None:
         raise not_found()
     if challenge.revoked_at is not None:
         raise AppError(410, "CHALLENGE_REVOKED", "The creator cleared or revoked this challenge.")
-    if challenge.expires_at <= now:
+    if min(challenge.expires_at, deadline or challenge.expires_at) <= now:
         raise AppError(410, "CHALLENGE_EXPIRED", "This challenge and its evidence have expired.")
 
 
@@ -47,8 +41,8 @@ def require_replay_active(db, game_id):
     if play is not None:
         capability(db, play.slug_hash or "")
         challenge = db.scalar(select(m.Challenge).where(m.Challenge.id == play.challenge_id))
-        effective_deadline(db, challenge)
-        active(challenge, db.scalar(select(text("clock_timestamp()"))))
+        active(challenge, db.scalar(select(text("clock_timestamp()"))), db.scalar(
+            text("SELECT tasteduel.challenge_deadline(:id)"), {"id": play.challenge_id}))
 
 
 def copy_values(row, **overrides):
@@ -75,8 +69,8 @@ class ChallengeService:
             if tombstone is not None:
                 raise AppError(410, "CHALLENGE_REVOKED" if tombstone.reason == "revoked" else "CHALLENGE_EXPIRED",
                                "This challenge is no longer available.")
-        effective_deadline(db, challenge)
-        active(challenge, db.scalar(select(text("clock_timestamp()"))))
+        active(challenge, db.scalar(select(text("clock_timestamp()"))), db.scalar(
+            text("SELECT tasteduel.challenge_deadline(:id)"), {"id": challenge.id}) if challenge else None)
         return challenge
 
     def invitation(self, slug):
@@ -84,13 +78,50 @@ class ChallengeService:
             challenge = self._lookup(db, slug)
             scope(db, challenge.session_id)
             owner, now = self.gameplay._session(db, challenge.session_id)
-            effective_deadline(db, challenge)
             active(challenge, now)
             game = db.get(m.Game, challenge.source_game_id)
             seed = db.get(m.Entity, game.seed_entity_id)
             if seed is None or seed.expires_at <= now:
                 raise AppError(410, "CHALLENGE_EXPIRED", "The challenge seed evidence has expired.")
-            return challenge, seed
+            deadline = db.scalar(text("SELECT tasteduel.challenge_deadline(:id)"), {"id": challenge.id})
+            return challenge, seed, owner.display_name, min(challenge.expires_at, deadline)
+
+    def results(self, owner, game_id, cursor=None):
+        with scoped_session(self.engine, owner) as db:
+            _, now = self.gameplay._session(db, owner)
+            game = self.gameplay._game(db, owner, game_id, now)
+            if game.mode == "fixed":
+                require_replay_active(db, game_id)
+            if game.status != "completed":
+                raise AppError(409, "GAME_INCOMPLETE", "Complete the five rounds before comparing scores.")
+            play = db.scalar(select(m.ChallengePlay).where(m.ChallengePlay.game_id == game_id))
+            if play:
+                capability(db, play.slug_hash)
+                challenge = db.get(m.Challenge, play.challenge_id)
+            else:
+                challenge = db.scalar(select(m.Challenge).where(m.Challenge.source_game_id == game_id))
+            deadline = db.scalar(text("SELECT tasteduel.challenge_deadline(:id)"), {"id": challenge.id}) if challenge else None
+            status = "not_shared" if challenge is None else "retired" if challenge.revoked_at or deadline is None or deadline <= now else "active"
+            parameters = {"game": game_id}
+            predicate = ""
+            if cursor:
+                try:
+                    stamp, reference = urlsafe_b64decode(cursor + "=" * (-len(cursor) % 4)).decode().split("|")
+                    parameters.update(stamp=datetime.fromisoformat(stamp), reference=UUID(reference))
+                    if parameters["stamp"].tzinfo is None:
+                        raise ValueError()
+                    predicate = "WHERE (completed_at,attempt_id)<(:stamp,:reference)"
+                except (ValueError, UnicodeError):
+                    raise AppError(422, "INVALID_INPUT", "The result cursor is invalid.") from None
+            rows = [] if status != "active" else [dict(row) for row in db.execute(text(
+                f"SELECT * FROM tasteduel.completed_duels(:game) {predicate} ORDER BY completed_at DESC,attempt_id DESC LIMIT 21"
+            ), parameters).mappings()]
+            next_cursor = None
+            if len(rows) > 20:
+                last = rows[19]
+                next_cursor = urlsafe_b64encode(f"{last['completed_at'].isoformat()}|{last['attempt_id']}".encode()).decode().rstrip("=")
+            return {"status": status, "expires_at": deadline, "replay_slug": challenge.share_slug if play and status == "active" else None,
+                    "outcomes": rows[:20], "next_cursor": next_cursor}
 
     def create(self, owner, game_id, key):
         digest = signature(game_id=game_id)
@@ -161,7 +192,6 @@ class ChallengeService:
                 )
                 db.add(challenge)
                 db.flush()
-            effective_deadline(db, challenge)
             active(challenge, now)
             if receipt is None:
                 db.add(
@@ -200,10 +230,12 @@ class ChallengeService:
             if challenge.revoked_at is None:
                 challenge.revoked_at = now
 
-    def play(self, owner, slug, key):
-        digest = signature(slug=slug)
+    def play(self, owner, slug, key, *, new_attempt=False):
+        digest = signature(slug=slug) if not new_attempt else signature(slug=slug, new_attempt=True)
         with scoped_session(self.engine, owner) as db:
             challenge = self._lookup(db, slug)
+            if challenge.session_id == owner:
+                raise AppError(409, "SELF_CHALLENGE", "That is your own poke. Send it to a friend.")
             # Globally ordered session locks also cover reciprocal A/B replays.
             sessions = {}
             for session_id in sorted({owner, challenge.session_id}, key=str):
@@ -221,16 +253,29 @@ class ChallengeService:
             if prior and prior.signature_hash != digest:
                 raise conflict("IDEMPOTENCY_CONFLICT")
             db.refresh(challenge)
-            effective_deadline(db, challenge)
             active(challenge, now)
             if prior:
                 return prior.outcome_id, False
+            latest = db.scalar(select(m.ChallengePlay).where(
+                m.ChallengePlay.challenge_id == challenge.id, m.ChallengePlay.session_id == owner
+            ).order_by(m.ChallengePlay.attempt_number.desc()).limit(1))
+            if latest:
+                existing = db.get(m.Game, latest.game_id)
+                if existing.status != "completed" or not new_attempt:
+                    db.add(m.MutationReceipt(session_id=owner, operation="play_challenge", idempotency_key=key,
+                        signature_hash=digest, subject_kind="game", subject_id=existing.id,
+                        outcome_kind="game", outcome_id=existing.id, outcome_revision=existing.revision,
+                        status="completed", expires_at=existing.expires_at))
+                    db.flush()
+                    record(db, owner=owner, game_id=existing.id, event="replay", subject_id=existing.id)
+                    return existing.id, False
+            attempt_number = (db.scalar(select(func.max(m.ChallengePlay.attempt_number)).where(
+                m.ChallengePlay.challenge_id == challenge.id, m.ChallengePlay.session_id == owner)) or 0) + 1
             # Serialize with creator clearing/revocation. Do not grant a source
             # row to the guest or attach their game to creator-owned entities.
             scope(db, challenge.session_id)
             self.gameplay._session(db, challenge.session_id)
             db.refresh(challenge)
-            effective_deadline(db, challenge)
             active(challenge, now)
             source = db.get(m.Game, challenge.source_game_id)
             rounds = list(
@@ -383,6 +428,7 @@ class ChallengeService:
             db.refresh(game)
             db.add(
                 m.ChallengePlay(
+                    attempt_number=attempt_number,
                     session_id=owner,
                     game_id=game.id,
                     challenge_id=challenge.id,

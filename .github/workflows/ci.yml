@@ -89,6 +89,9 @@ jobs:
       - name: Start isolated Taste Duel PostgreSQL
         run: docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml up --detach --wait database
 
+      - name: Verify populated legacy replay upgrade and transactional rollback
+        run: uv run --project runtime/python --frozen python scripts/tasteduel_verify_named_upgrade.py
+
       - name: Apply the immutable Taste Duel migrations
         run: docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml run --rm migrate
 

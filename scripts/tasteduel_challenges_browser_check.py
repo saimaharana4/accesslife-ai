@@ -34,8 +34,12 @@ def load(name, path):
 
 
 def main():
+    origin = os.environ.get("TASTEDUEL_TEST_WEB_URL", "http://127.0.0.1:3003")
+    if origin not in {"http://127.0.0.1:3001", "http://127.0.0.1:3003"}:
+        raise RuntimeError("Only the two explicit loopback web previews are permitted")
+    api_port = 8004 if origin.endswith(":3001") else 8005
     with socket.socket() as probe:
-        probe.bind(("127.0.0.1", 8005))
+        probe.bind(("127.0.0.1", api_port))
     local = load("prompt12_browser_scope", ROOT / "scripts/tasteduel_local.py")
     if not local.verify_scope():
         raise RuntimeError("Only the recognized local Taste Duel database is permitted")
@@ -52,7 +56,7 @@ def main():
         base_url="https://testserver",
         headers={"Origin": "https://testserver"},
     ) as client:
-        assert client.post("/v1/sessions", json={}).status_code == 201
+        assert client.post("/v1/sessions", json={"display_name": "Synthetic challenger"}).status_code == 201
         cookie = client.cookies.get("tasteduel_session")
         owner = UUID(cookie.split(".", 1)[0])
         seed = uuid4()
@@ -110,7 +114,7 @@ def main():
         "TASTEDUEL_DATABASE_URL": runtime,
         "TASTEDUEL_QLOO_ENABLED": "false",
         "TASTEDUEL_GENERATION_ENABLED": "false",
-        "TASTEDUEL_ALLOWED_ORIGINS": '["http://127.0.0.1:3003"]',
+        "TASTEDUEL_ALLOWED_ORIGINS": json.dumps([origin]),
         "TASTEDUEL_COOKIE_SECURE": "false",
     }
     process = subprocess.Popen(
@@ -122,7 +126,7 @@ def main():
             "--host",
             "127.0.0.1",
             "--port",
-            "8005",
+            str(api_port),
             "--no-access-log",
         ],
         cwd=ROOT,
@@ -138,7 +142,7 @@ def main():
                 raise RuntimeError("Owned browser-check API exited")
             try:
                 if (
-                    httpx.get("http://127.0.0.1:8005/v1/health/ready", timeout=1, trust_env=False).status_code
+                    httpx.get(f"http://127.0.0.1:{api_port}/v1/health/ready", timeout=1, trust_env=False).status_code
                     == 200
                 ):
                     break

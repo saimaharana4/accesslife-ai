@@ -303,8 +303,7 @@ def create_app(
                 or not hmac.compare_digest(row.token_hash, digest)
                 or row.revoked_at is not None
                 or row.expires_at <= datetime.now(UTC)
-                or (db.scalar(text("SELECT to_regprocedure('tasteduel.session_live(uuid)')")) is not None
-                    and not db.scalar(text("SELECT tasteduel.session_live(:owner)"), {"owner": owner}))
+                or not db.scalar(text("SELECT tasteduel.session_live(:owner)"), {"owner": owner})
             ):
                 raise AppError(401, "SESSION_REQUIRED", "Start a guest session to continue.")
             yield db, row
@@ -321,7 +320,8 @@ def create_app(
                 .limit(20)
             )
         )
-        return s.SessionPublic(active=True, expires_at=row.expires_at, resumable_game_ids=ids)
+        deadline = db.scalar(text("SELECT tasteduel.session_deadline(:owner)"), {"owner": row.id})
+        return s.SessionPublic(active=True, expires_at=deadline or row.expires_at, display_name=row.display_name, resumable_game_ids=ids)
 
     def admit_guest_request(request):
         # Only a verified random guest token determines scope. No IP, forwarding
@@ -353,36 +353,56 @@ def create_app(
 
     @app.post(
         "/v1/sessions",
-        response_model=s.SessionPublic, response_model_exclude={"display_name"},
+        response_model=s.SessionPublic,
         status_code=201,
         responses={200: {"model": s.SessionPublic}},
         operation_id="createSession",
     )
-    def create_session(body: s.SessionCreateRequest, request: Request, response: Response):
+    def create_session(body: s.SessionCreateRequest, request: Request, response: Response,
+                       bootstrap_key: Annotated[str | None, Header(alias="Idempotency-Key", pattern=r"^[A-Za-z0-9_-]{43}$")] = None):
         if request.cookies.get(settings.cookie_name):
             try:
                 with owned_db(request) as (db, row):
+                    if body.display_name is not None:
+                        db.refresh(row, with_for_update=True)
+                        if row.display_name is not None and row.display_name != body.display_name:
+                            raise AppError(409, "NAME_ALREADY_SET", "This session already has a nickname.")
+                        row.display_name = body.display_name
                     response.status_code = 200
                     return session_public(db, row)
             except AppError as failure:
                 if failure.status != 401:
                     raise
-        owner = uuid4()
-        token = f"{owner}.{secrets.token_urlsafe(32)}"
         now = datetime.now(UTC)
-        if ((settings.session_admission_closes_at is not None and now >= settings.session_admission_closes_at)
-            or (settings.session_hard_closes_at is not None and now >= settings.session_hard_closes_at)):
+        cutoff = settings.session_admission_closes_at
+        if (cutoff is not None and now >= cutoff) or (settings.session_hard_closes_at is not None and now >= settings.session_hard_closes_at):
             raise AppError(503, "PLAY_CLOSED", "Play has closed for this demo.")
+        # A 256-bit memory-only bootstrap key is credential material, never a
+        # persisted browser intent. It recovers the identical token after loss.
+        owner = UUID(bytes=hashlib.sha256(bootstrap_key.encode()).digest()[:16]) if bootstrap_key else uuid4()
+        token = f"{owner}.{bootstrap_key or secrets.token_urlsafe(32)}"
         with scoped_session(database(), owner) as db:
-            row = m.Session(
-                id=owner,
-                token_hash=hashlib.sha256(token.encode()).hexdigest(),
-                created_at=now,
-                expires_at=min(now + timedelta(seconds=settings.session_ttl_seconds), settings.session_hard_closes_at or datetime.max.replace(tzinfo=UTC)),
-            )
-            db.add(row)
-            db.flush()
-            result = s.SessionPublic(active=True, expires_at=row.expires_at)
+            db.execute(text("SELECT pg_advisory_xact_lock(hashtextextended(:owner,0))"), {"owner": str(owner)})
+            existing = db.get(m.Session, owner)
+            if existing is not None:
+                if existing.display_name != body.display_name:
+                    raise AppError(409, "NAME_ALREADY_SET", "This request already has a nickname.")
+                if not db.scalar(text("SELECT tasteduel.session_live(:owner)"), {"owner": owner}):
+                    raise AppError(401, "SESSION_REQUIRED", "Start a new guest session.")
+                response.status_code = 200
+                result = session_public(db, existing)
+            else:
+                row = m.Session(
+                    id=owner,
+                    display_name=body.display_name,
+                    token_hash=hashlib.sha256(token.encode()).hexdigest(),
+                    created_at=now,
+                    last_activity_at=now,
+                    expires_at=min(now + timedelta(seconds=settings.session_ttl_seconds), settings.session_hard_closes_at or datetime.max.replace(tzinfo=UTC)),
+                )
+                db.add(row)
+                db.flush()
+                result = session_public(db, row)
         response.set_cookie(
             settings.cookie_name,
             token,
@@ -394,9 +414,21 @@ def create_app(
         )
         return result
 
-    @app.get("/v1/sessions/current", response_model=s.SessionPublic, response_model_exclude={"display_name"}, operation_id="getCurrentSession")
+    @app.get("/v1/sessions/current", response_model=s.SessionPublic, operation_id="getCurrentSession")
     def current_session(request: Request):
         with owned_db(request) as (db, row):
+            return session_public(db, row)
+
+    @app.post("/v1/sessions/name", response_model=s.SessionPublic, operation_id="nameSession")
+    def name_session(body: s.SessionNameRequest, request: Request):
+        with owned_db(request) as (db, row):
+            db.refresh(row, with_for_update=True)
+            if row.revoked_at is not None or row.expires_at <= datetime.now(UTC):
+                raise AppError(401, "SESSION_REQUIRED", "Start a guest session to continue.")
+            if row.display_name is not None and row.display_name != body.display_name:
+                raise AppError(409, "NAME_ALREADY_SET", "This session already has a nickname. Clear it to start fresh.")
+            row.display_name = body.display_name
+            db.flush()
             return session_public(db, row)
 
     @app.delete("/v1/sessions/current", status_code=204, operation_id="clearSession")
@@ -699,7 +731,7 @@ def create_app(
             return s.DiscoveriesPublic(
                 discoveries=tuple(presenters.discovery_public(d) for d in items),
                 expired_count=expired,
-                session_expires_at=row.expires_at,
+                session_expires_at=db.scalar(text("SELECT tasteduel.session_deadline(:owner)"), {"owner": row.id}),
             )
 
     @app.post(
@@ -737,19 +769,20 @@ def create_app(
         return Response(status_code=204)
 
     def challenge_invitation(slug):
-        challenge, seed = ChallengeService(database()).invitation(slug)
+        challenge, seed, creator_name, deadline = ChallengeService(database()).invitation(slug)
         source = "fixture" if seed.provider == "fixture" else "qloo"
         return s.ChallengeInvitationPublic(
+            creator_name=creator_name,
             slug=slug,
             seed=s.EntityPublic(id=seed.id, name=seed.name, type=seed.entity_type, source=source),
             creator_score=challenge.creator_score,
             source=source,
-            expires_at=challenge.expires_at,
+            expires_at=deadline,
         )
 
     @app.post(
         "/v1/challenges",
-        response_model=s.ChallengeCreatedPublic, response_model_exclude={"invitation": {"creator_name"}},
+        response_model=s.ChallengeCreatedPublic,
         status_code=201,
         responses={200: {"model": s.ChallengeCreatedPublic}},
         operation_id="createChallenge",
@@ -765,7 +798,7 @@ def create_app(
 
     @app.get(
         "/v1/challenges/{slug}",
-        response_model=s.ChallengeInvitationPublic, response_model_exclude={"creator_name"},
+        response_model=s.ChallengeInvitationPublic,
         operation_id="getChallengeInvitation",
     )
     def invitation(slug: Annotated[str, Path(min_length=22, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")]):
@@ -797,9 +830,20 @@ def create_app(
     ):
         with owned_db(request) as (_, row):
             owner = row.id
-        game_id, created = ChallengeService(database()).play(owner, slug, idempotency_key)
+        game_id, created = ChallengeService(database()).play(owner, slug, idempotency_key, new_attempt=body.new_attempt)
         response.status_code = 201 if created else 200
         return read_game(request, game_id)
+
+    @app.get("/v1/games/{game_id}/duels", response_model=s.DuelResultsPublic, operation_id="getDuelResults")
+    def duel_results(game_id: UUID, request: Request, cursor: Annotated[str | None, Query(max_length=160)] = None):
+        with owned_db(request) as (_, row):
+            owner = row.id
+        result = ChallengeService(database()).results(owner, game_id, cursor)
+        rows = result.pop("outcomes")
+        return s.DuelResultsPublic(**result, outcomes=tuple(s.DuelOutcomePublic(
+            **item, outcome="tie" if item["creator_score"] == item["challenger_score"] else
+            "creator" if item["creator_score"] > item["challenger_score"] else "challenger"
+        ) for item in rows))
 
     @app.get("/v1/health/live", response_model=s.HealthPublic, operation_id="liveness")
     def live():
@@ -811,7 +855,7 @@ def create_app(
             revision = connection.execute(
                 text("SELECT version_num FROM tasteduel.tasteduel_alembic_version LIMIT 1")
             ).scalar_one()
-            if revision not in {"td0011", "td0012", "td0013", "td0014"}:
+            if revision != "td0014":
                 raise AppError(503, "SCHEMA_NOT_READY", "The schema is not ready.", retryable=True)
         available = app.state.generator is not None
         if available and settings.qloo_enabled:

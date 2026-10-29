@@ -2714,3 +2714,134 @@ h1.arena-heading {
     font-size: 1.375rem;
   }
 }
+
+/* A nickname makes an entrance; the existing fight-night system sets the tone. */
+.name-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 80px);
+  min-height: 65svh;
+  padding: clamp(24px, 5vw, 72px) 0;
+}
+.name-entry h1 {
+  font-family: var(--font-display), Impact, sans-serif;
+  font-size: clamp(3.5rem, 7.5vw, 7.5rem);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  margin-bottom: 28px;
+}
+.name-entry-copy,
+.name-form,
+.name-entry-art {
+  min-width: 0;
+}
+.name-form {
+  max-width: 460px;
+}
+.name-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.name-form input {
+  width: 100%;
+  min-height: 60px;
+  padding: 14px 18px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-control);
+  color: var(--text);
+  background: var(--surface);
+  font-size: 1.125rem;
+}
+.name-form input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+.name-form .seed-help {
+  margin: 12px 0 24px;
+}
+.name-form [role="status"] {
+  margin-top: 16px;
+  color: var(--coral);
+}
+.name-inviter,
+.duel-outcome {
+  overflow-wrap: anywhere;
+}
+.name-entry-art {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(ellipse at 80% 10%, #b9a9ff26, transparent 65%),
+    var(--surface);
+  padding: clamp(24px, 4vw, 56px);
+  transform: rotate(2deg);
+}
+.name-orbit {
+  display: block;
+  color: var(--lavender);
+  font-size: 8rem;
+  line-height: 1;
+  margin-bottom: 36px;
+}
+.name-entry-art > p {
+  font-family: var(--font-display), Impact, sans-serif;
+  font-size: clamp(2.75rem, 4.5vw, 5rem);
+  line-height: 0.95;
+}
+.name-entry-art > p > span {
+  color: var(--primary);
+}
+.duel-verdict {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: clamp(20px, 4vw, 40px);
+  border: 1px solid var(--lavender);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+.duel-verdict h2,
+.duel-verdict h3 {
+  font-family: var(--font-display), Impact, sans-serif;
+  font-weight: 700;
+  line-height: 1.05;
+}
+.duel-verdict h2 {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+}
+.duel-verdict h3 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+.duel-outcome {
+  padding: 20px 0;
+  border-top: 1px dashed var(--line);
+}
+.duel-scoreline {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--primary);
+}
+.duel-verdict .button {
+  margin: 8px 12px 16px 0;
+}
+@media (max-width: 760px) {
+  .name-entry {
+    grid-template-columns: 1fr;
+  }
+  .name-entry-art {
+    transform: none;
+  }
+  .name-orbit {
+    font-size: 4rem;
+    margin-bottom: 16px;
+  }
+  .name-entry-art > p {
+    font-size: 2.75rem;
+  }
+  .name-entry .button {
+    width: 100%;
+  }
+}
