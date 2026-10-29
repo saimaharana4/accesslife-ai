@@ -1,7 +1,9 @@
 # Taste Duel release and recovery
 
-The public `e49564c` application, schema `td0011`, private API, live monitoring
-and compatible rollback/return are verified in [current execution](../migration/production-release-execution-2026-10-28.md).
+The public `99c23fc` application, schema `td0011`, private API and live monitoring
+are verified in the [current hotfix record](../migration/production-hotfix-2026-10-29.md).
+The initial `e49564c` release and compatible rollback/return remain recorded in
+[initial execution](../migration/production-release-execution-2026-10-28.md).
 The earlier [candidate preflight](../migration/production-release-preflight-2026-10-28.md)
 was blocked at its recorded checkpoint; the subsequent reviewed release resolved
 those prerequisites. See **Current controlled release** below for the active state.

@@ -1,0 +1,19 @@
+{
+  "kind": "tasteduel-production-hotfix",
+  "released_at_utc": "2026-10-29T13:17:02.685986Z",
+  "source_sha": "99c23fc8824e8588af4e4c794e7683607e18e53c",
+  "ci_run": 40843484745,
+  "schema_revision": "td0011",
+  "api_revision": "tasteduel-api-hfs-99c23fc",
+  "web_revision": "tasteduel-web-hfs-99c23fc",
+  "api_image_digest": "sha256:86351d5e904cfc37e8f8b9ab8cd5892a8fd774111001b6d3b6d9765676e7ea94",
+  "web_image_digest": "sha256:af8e8fff8e6a9d541c09def47992c3b2afa0f78211c6c06fb957af22025019ad",
+  "traffic_percent": 100,
+  "revision_tags": [],
+  "private_api_verified": true,
+  "full_root_no_op_resources": 79,
+  "cost_reviewed_total_usd": 88.15,
+  "cost_ceiling_usd": 90,
+  "cost_reviewed_through_utc": "2026-11-07T04:45:00Z",
+  "original_incident_cause": "unconfirmed"
+}

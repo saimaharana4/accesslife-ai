@@ -43,6 +43,15 @@ def test_explicitly_authorized_ceiling_accepts_reviewed_total_without_changing_b
     assert "backup_retention_settings" not in variables
 
 
+def test_release_review_can_span_two_days_but_not_longer():
+    now = datetime.now(timezone.utc)
+    accepted = {**review(), "approved_at_utc": (now - timedelta(hours=47)).isoformat()}
+    assert planner.approved_variables(accepted)["budget_usd"] == 90
+    stale = {**review(), "approved_at_utc": (now - timedelta(hours=49)).isoformat()}
+    with pytest.raises(planner.PlanBlocked, match="COST_APPROVAL_STALE"):
+        planner.approved_variables(stale)
+
+
 def change(address, actions, before=None, after=None):
     return {"address": address, "change": {"actions": actions, "before": before or {}, "after": after or {}}}
 

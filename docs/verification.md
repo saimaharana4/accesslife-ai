@@ -4,7 +4,7 @@ The [release record](../infra/migration/production-release-execution-2026-10-28.
 
 The four-seed [quality matrix](../ai/round-quality-validation.md) checked two artist-to-film and two film-to-artist paths, each with ten distinct contestants. This is sampled technical coverage, not universal coverage or a measured surprise rate. Difficulty bands are engineering heuristics.
 
-Tests exercise actual PostgreSQL constraints/RLS, concurrent/idempotent mutations, DTO secrecy, provider failures, contract drift and browser interactions. CI uses synthetic contracts without event keys. [Recorded application-source CI](https://github.com/saimaharana4/taste-duel/actions/runs/40696917534) is tied to that deployed source; new patches need their own verification and release.
+Tests exercise actual PostgreSQL constraints/RLS, concurrent/idempotent mutations, DTO secrecy, provider failures, contract drift and browser interactions. CI uses synthetic contracts without event keys. [Current application-source CI](https://github.com/saimaharana4/taste-duel/actions/runs/40843484745) passed for deployed source `99c23fc`; the [hotfix record](../infra/migration/production-hotfix-2026-10-29.md) binds that source to the running image digests and external checks.
 
 ## Measured samples
 

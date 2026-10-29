@@ -2,7 +2,7 @@
 
 The deployed topology is public `tasteduel-web`, IAM-private `tasteduel-api`, one restricted migration job and the `tasteduel` logical PostgreSQL database on the retained dedicated SQL instance. It needs no ingestion worker, embedding model, queue, second SQL instance or separate environment projects.
 
-The [release execution record](migration/production-release-execution-2026-10-28.md) owns verified deployed source/image/schema/secret identities and measured boundaries. [Release/recovery tooling](terraform/RELEASE.md) describes immutable images, reviewed full-root saved plans, controlled candidates, public cutover, compatible revision recovery and bounded manual maintenance. Source fixes awaiting publication are not assumed deployed.
+The [initial release record](migration/production-release-execution-2026-10-28.md) and [current hotfix record](migration/production-hotfix-2026-10-29.md) own verified deployed source/image/schema/secret identities and measured boundaries. [Release/recovery tooling](terraform/RELEASE.md) describes immutable images, reviewed full-root saved plans, controlled candidates, public cutover, compatible revision recovery and bounded manual maintenance.
 
 ## Identity and preservation
 

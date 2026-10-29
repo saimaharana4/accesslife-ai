@@ -6,11 +6,11 @@ Stopping preserves the database volume. Deleting a volume is a separate destruct
 
 ## Production
 
-The canonical app uses [its actual Cloud Run URL](https://tasteduel-web-902056825143.asia-south1.run.app); no purchased domain is claimed. The API is IAM-private; web uses its canonical URI as the token audience. Cookies are host scoped, mutation origins exact and temporary candidate tags/origins removed before public release.
+The canonical app uses [its actual Cloud Run URL](https://tasteduel-web-902056825143.asia-south1.run.app); no purchased domain is claimed. The API is IAM-private; web uses its canonical URI as the token audience. Cookies are host scoped and mutation origins exact. A deliberately public zero-traffic tag was used only for the reviewed hotfix candidate; it was removed with the temporary origin before promotion.
 
 Build from a committed successful-CI source archive and publish immutable digests. Independently review migrations and full-root saved Terraform plans. Test controlled candidates before explicit promotion. A zero-percent tag remains reachable and is not a security boundary; new services start with real allocation under the reviewed IAM boundary.
 
-[Release/recovery tooling](../infra/terraform/RELEASE.md) and [execution evidence](../infra/migration/production-release-execution-2026-10-28.md) record exact source, digests, schema and secret versions. A local patch or successful build does not establish deployment. Generation-failure/retry changes remain release work until that record verifies their publication.
+[Release/recovery tooling](../infra/terraform/RELEASE.md), [initial execution evidence](../infra/migration/production-release-execution-2026-10-28.md) and the [current hotfix record](../infra/migration/production-hotfix-2026-10-29.md) record exact source, digests, schema and secret versions. A local patch or successful build does not establish deployment.
 
 ## Monitoring and recovery
 

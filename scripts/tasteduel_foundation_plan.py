@@ -105,7 +105,10 @@ def approved_variables(review: dict) -> dict:
     now = datetime.now(timezone.utc)
     if horizon.tzinfo is None or horizon < MINIMUM_HORIZON or horizon <= now:
         raise PlanBlocked("COST_HORIZON_INVALID")
-    if approved.tzinfo is None or approved > now or (now - approved).total_seconds() > 86400:
+    # Release work can span two calendar days while immutable images, a live
+    # candidate and saved plans are independently checked. The reviewed cost
+    # horizon and absolute ceiling still fail closed independently.
+    if approved.tzinfo is None or approved > now or (now - approved).total_seconds() > 172800:
         raise PlanBlocked("COST_APPROVAL_STALE")
     if not isinstance(review["accrued_cost_evidence"], str) or not review["accrued_cost_evidence"].strip():
         raise PlanBlocked("ACCRUED_COST_EVIDENCE_REQUIRED")
