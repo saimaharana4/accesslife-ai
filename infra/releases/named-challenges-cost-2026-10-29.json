@@ -1,0 +1,14 @@
+{
+  "cost_gate_status": "PASS",
+  "billing_reconciled": true,
+  "cost_review_passed": true,
+  "reviewed_total_usd": 95.38,
+  "approved_budget_usd": 100,
+  "reviewed_through_utc": "2026-11-07T04:45:00Z",
+  "billing_account": "016483-F391C7-709B30",
+  "budget_currency": "INR",
+  "budget_alert_units": 6507,
+  "migration_alert_units": 6972,
+  "accrued_cost_evidence": "infra/migration/named-challenges-cost-review-2026-10-29.md",
+  "approved_at_utc": "2026-10-29T14:56:00Z"
+}

@@ -9,6 +9,7 @@ import secrets
 from uuid import UUID, uuid4
 
 from sqlalchemy import null, select, text
+from sqlalchemy.orm.attributes import set_committed_value
 
 from tasteduel.application.errors import AppError, not_found
 from tasteduel.application.event_accounting import record
@@ -25,6 +26,13 @@ def capability(db, digest):
     db.execute(text("SELECT set_config('app.challenge_hash',:digest,true)"), {"digest": digest})
 
 
+def effective_deadline(db, challenge):
+    if challenge is not None and db.scalar(text("SELECT to_regprocedure('tasteduel.challenge_deadline(uuid)')")) is not None:
+        deadline = db.scalar(text("SELECT tasteduel.challenge_deadline(:id)"), {"id": challenge.id})
+        if deadline is not None:
+            set_committed_value(challenge, "expires_at", min(challenge.expires_at, deadline))
+
+
 def active(challenge, now):
     if challenge is None:
         raise not_found()
@@ -39,6 +47,7 @@ def require_replay_active(db, game_id):
     if play is not None:
         capability(db, play.slug_hash or "")
         challenge = db.scalar(select(m.Challenge).where(m.Challenge.id == play.challenge_id))
+        effective_deadline(db, challenge)
         active(challenge, db.scalar(select(text("clock_timestamp()"))))
 
 
@@ -66,6 +75,7 @@ class ChallengeService:
             if tombstone is not None:
                 raise AppError(410, "CHALLENGE_REVOKED" if tombstone.reason == "revoked" else "CHALLENGE_EXPIRED",
                                "This challenge is no longer available.")
+        effective_deadline(db, challenge)
         active(challenge, db.scalar(select(text("clock_timestamp()"))))
         return challenge
 
@@ -74,6 +84,7 @@ class ChallengeService:
             challenge = self._lookup(db, slug)
             scope(db, challenge.session_id)
             owner, now = self.gameplay._session(db, challenge.session_id)
+            effective_deadline(db, challenge)
             active(challenge, now)
             game = db.get(m.Game, challenge.source_game_id)
             seed = db.get(m.Entity, game.seed_entity_id)
@@ -150,6 +161,7 @@ class ChallengeService:
                 )
                 db.add(challenge)
                 db.flush()
+            effective_deadline(db, challenge)
             active(challenge, now)
             if receipt is None:
                 db.add(
@@ -209,6 +221,7 @@ class ChallengeService:
             if prior and prior.signature_hash != digest:
                 raise conflict("IDEMPOTENCY_CONFLICT")
             db.refresh(challenge)
+            effective_deadline(db, challenge)
             active(challenge, now)
             if prior:
                 return prior.outcome_id, False
@@ -217,6 +230,7 @@ class ChallengeService:
             scope(db, challenge.session_id)
             self.gameplay._session(db, challenge.session_id)
             db.refresh(challenge)
+            effective_deadline(db, challenge)
             active(challenge, now)
             source = db.get(m.Game, challenge.source_game_id)
             rounds = list(

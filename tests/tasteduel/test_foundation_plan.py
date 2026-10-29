@@ -52,6 +52,20 @@ def test_release_review_can_span_two_days_but_not_longer():
         planner.approved_variables(stale)
 
 
+def test_explicit_hundred_dollar_review_does_not_raise_historical_default():
+    current = {**review(), "reviewed_total_usd": 95.38, "approved_budget_usd": 100}
+    assert planner.approved_variables(current)["budget_usd"] == 100
+    current.pop("approved_budget_usd")
+    with pytest.raises(planner.PlanBlocked, match="CUMULATIVE_TOTAL_INVALID"):
+        planner.approved_variables(current)
+
+
+@pytest.mark.parametrize("ceiling,total", [(101, 95), (True, 70), (100, 100.01), (100, float("inf"))])
+def test_new_cost_ceiling_still_fails_closed(ceiling, total):
+    with pytest.raises(planner.PlanBlocked):
+        planner.approved_variables({**review(), "approved_budget_usd": ceiling, "reviewed_total_usd": total})
+
+
 def change(address, actions, before=None, after=None):
     return {"address": address, "change": {"actions": actions, "before": before or {}, "after": after or {}}}
 

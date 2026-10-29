@@ -70,7 +70,10 @@ class GameplayService:
     def _session(self, db, session_id):
         row = db.scalar(select(m.Session).where(m.Session.id == session_id).with_for_update())
         now = db.scalar(select(text("clock_timestamp()")))
-        if row is None or row.revoked_at is not None or row.expires_at <= now:
+        lifecycle_missing = db.scalar(text("SELECT to_regprocedure('tasteduel.session_live(uuid)')")) is None
+        if row is None or row.revoked_at is not None or row.expires_at <= now or (
+            not lifecycle_missing and not db.scalar(text("SELECT tasteduel.session_live(:id)"), {"id": session_id})
+        ):
             raise AppError(401, "SESSION_REQUIRED", "An active guest session is required.")
         return row, now
 

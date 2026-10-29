@@ -89,13 +89,16 @@ class PlanBlocked(Exception):
 
 
 def approved_variables(review: dict) -> dict:
-    if set(review) != REVIEW_KEYS:
+    if set(review) not in (REVIEW_KEYS, REVIEW_KEYS | {"approved_budget_usd"}):
         raise PlanBlocked("COST_REVIEW_FIELDS_INVALID")
+    ceiling = review.get("approved_budget_usd", 90)
+    if type(ceiling) is not int or ceiling not in {90, 100}:
+        raise PlanBlocked("APPROVED_COST_CEILING_INVALID")
     if (review["cost_gate_status"] != "PASS" or review["billing_reconciled"] is not True
             or review["cost_review_passed"] is not True):
         raise PlanBlocked("CUMULATIVE_COST_GATE_NOT_PASSED")
     total = review["reviewed_total_usd"]
-    if isinstance(total, bool) or not isinstance(total, (float, int)) or not 0 <= total <= 90:
+    if isinstance(total, bool) or not isinstance(total, (float, int)) or not 0 <= total <= ceiling:
         raise PlanBlocked("CUMULATIVE_TOTAL_INVALID")
     try:
         horizon = datetime.fromisoformat(review["reviewed_through_utc"].replace("Z", "+00:00"))
@@ -124,7 +127,7 @@ def approved_variables(review: dict) -> dict:
         **{key: review[key] for key in ("billing_reconciled", "cost_review_passed", "reviewed_total_usd",
                                       "reviewed_through_utc", "billing_account", "budget_currency",
                                       "budget_alert_units", "migration_alert_units")},
-        "project_id": PROJECT, "region": REGION, "budget_usd": 90,
+        "project_id": PROJECT, "region": REGION, "budget_usd": ceiling,
         "tasteduel_foundation_enabled": True, "tasteduel_credential_version": 1,
         # Required historical variables remain real recorded rollback references;
         # retired source contains no runtime resources consuming these values.

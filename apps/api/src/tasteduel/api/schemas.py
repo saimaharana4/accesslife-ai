@@ -35,6 +35,7 @@ class SessionCreateRequest(StrictRecord):
 
 
 class SessionPublic(StrictRecord):
+    display_name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=24)] | None = None
     active: StrictBool
     expires_at: UtcDatetime
     resumable_game_ids: Annotated[tuple[UUID, ...], Field(max_length=20)] = ()
@@ -349,6 +350,7 @@ class GameResultPublic(StrictRecord):
 
 
 class ChallengeInvitationPublic(StrictRecord):
+    creator_name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=24)] | None = None
     slug: Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9_-]{22,80}$")]
     seed: EntityPublic
     creator_score: Score

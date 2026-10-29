@@ -125,6 +125,19 @@
       "ChallengeInvitationPublic": {
         "additionalProperties": false,
         "properties": {
+          "creator_name": {
+            "anyOf": [
+              {
+                "maxLength": 24,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Creator Name"
+          },
           "creator_score": {
             "maximum": 5.0,
             "minimum": 0.0,
@@ -1194,6 +1207,19 @@
           "active": {
             "title": "Active",
             "type": "boolean"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "maxLength": 24,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
           },
           "expires_at": {
             "format": "date-time",

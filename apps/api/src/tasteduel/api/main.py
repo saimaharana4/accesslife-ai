@@ -303,6 +303,8 @@ def create_app(
                 or not hmac.compare_digest(row.token_hash, digest)
                 or row.revoked_at is not None
                 or row.expires_at <= datetime.now(UTC)
+                or (db.scalar(text("SELECT to_regprocedure('tasteduel.session_live(uuid)')")) is not None
+                    and not db.scalar(text("SELECT tasteduel.session_live(:owner)"), {"owner": owner}))
             ):
                 raise AppError(401, "SESSION_REQUIRED", "Start a guest session to continue.")
             yield db, row
@@ -351,7 +353,7 @@ def create_app(
 
     @app.post(
         "/v1/sessions",
-        response_model=s.SessionPublic,
+        response_model=s.SessionPublic, response_model_exclude={"display_name"},
         status_code=201,
         responses={200: {"model": s.SessionPublic}},
         operation_id="createSession",
@@ -368,12 +370,15 @@ def create_app(
         owner = uuid4()
         token = f"{owner}.{secrets.token_urlsafe(32)}"
         now = datetime.now(UTC)
+        if ((settings.session_admission_closes_at is not None and now >= settings.session_admission_closes_at)
+            or (settings.session_hard_closes_at is not None and now >= settings.session_hard_closes_at)):
+            raise AppError(503, "PLAY_CLOSED", "Play has closed for this demo.")
         with scoped_session(database(), owner) as db:
             row = m.Session(
                 id=owner,
                 token_hash=hashlib.sha256(token.encode()).hexdigest(),
                 created_at=now,
-                expires_at=now + timedelta(seconds=settings.session_ttl_seconds),
+                expires_at=min(now + timedelta(seconds=settings.session_ttl_seconds), settings.session_hard_closes_at or datetime.max.replace(tzinfo=UTC)),
             )
             db.add(row)
             db.flush()
@@ -389,7 +394,7 @@ def create_app(
         )
         return result
 
-    @app.get("/v1/sessions/current", response_model=s.SessionPublic, operation_id="getCurrentSession")
+    @app.get("/v1/sessions/current", response_model=s.SessionPublic, response_model_exclude={"display_name"}, operation_id="getCurrentSession")
     def current_session(request: Request):
         with owned_db(request) as (db, row):
             return session_public(db, row)
@@ -744,7 +749,7 @@ def create_app(
 
     @app.post(
         "/v1/challenges",
-        response_model=s.ChallengeCreatedPublic,
+        response_model=s.ChallengeCreatedPublic, response_model_exclude={"invitation": {"creator_name"}},
         status_code=201,
         responses={200: {"model": s.ChallengeCreatedPublic}},
         operation_id="createChallenge",
@@ -760,7 +765,7 @@ def create_app(
 
     @app.get(
         "/v1/challenges/{slug}",
-        response_model=s.ChallengeInvitationPublic,
+        response_model=s.ChallengeInvitationPublic, response_model_exclude={"creator_name"},
         operation_id="getChallengeInvitation",
     )
     def invitation(slug: Annotated[str, Path(min_length=22, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")]):
@@ -806,7 +811,7 @@ def create_app(
             revision = connection.execute(
                 text("SELECT version_num FROM tasteduel.tasteduel_alembic_version LIMIT 1")
             ).scalar_one()
-            if revision != "td0011":
+            if revision not in {"td0011", "td0012", "td0013", "td0014"}:
                 raise AppError(503, "SCHEMA_NOT_READY", "The schema is not ready.", retryable=True)
         available = app.state.generator is not None
         if available and settings.qloo_enabled:

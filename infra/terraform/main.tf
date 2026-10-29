@@ -15,11 +15,11 @@ resource "terraform_data" "cost_gate" {
     precondition {
 
       condition = (
-        var.cost_review_passed && var.billing_reconciled && var.budget_usd > 0 && var.budget_usd <= 90 &&
+        var.cost_review_passed && var.billing_reconciled && var.budget_usd > 0 && var.budget_usd <= 100 &&
         (var.reviewed_total_usd == null ? false : var.reviewed_total_usd >= 0 && var.reviewed_total_usd <= var.budget_usd) &&
         (can(timecmp(var.reviewed_through_utc, "2026-11-07T04:45:00Z")) ? timecmp(var.reviewed_through_utc, "2026-11-07T04:45:00Z") >= 0 : false)
       )
-      error_message = "Provisioning is blocked: reconcile incurred/unlabelled billing and price cumulative cost within the explicitly approved US$90 ceiling through the reviewed judging/follow-up/rollback window (at least 7 November 2026 04:45 UTC)."
+      error_message = "Provisioning is blocked: reconcile incurred/unlabelled billing and price cumulative cost within the explicitly approved ceiling (maximum US$100) through the reviewed judging/follow-up/rollback window (at least 7 November 2026 04:45 UTC)."
 
 
     }

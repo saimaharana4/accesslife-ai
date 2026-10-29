@@ -114,7 +114,8 @@ def main() -> int:
             images[name] = {"reference": reference, "digest": digest}
         record = {"source_sha": args.source_sha, "ci": ci, "source_archive_sha256": context_hash,
                   "images": images, "platform": "linux/amd64", "deployed": False,
-                  "cost_reviewed_total_usd": review["reviewed_total_usd"], "cost_ceiling_usd": 90}
+                  "cost_reviewed_total_usd": review["reviewed_total_usd"],
+                  "cost_ceiling_usd": review.get("approved_budget_usd", 90)}
         output = directory / "images.json"
         output.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
         print(json.dumps({"status": "IMAGES_PUBLISHED", "record": str(output), "deployed": False}))

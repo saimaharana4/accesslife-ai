@@ -353,6 +353,8 @@ export interface components {
     };
     /** ChallengeInvitationPublic */
     ChallengeInvitationPublic: {
+      /** Creator Name */
+      creator_name?: string | null;
       /** Creator Score */
       creator_score: number;
       /**
@@ -845,6 +847,8 @@ export interface components {
     SessionPublic: {
       /** Active */
       active: boolean;
+      /** Display Name */
+      display_name?: string | null;
       /**
        * Expires At
        * Format: date-time
