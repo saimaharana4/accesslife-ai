@@ -2,6 +2,10 @@ import { test, expect, type Page, type Route } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { writeFile } from "node:fs/promises";
 import { createResponseAudit } from "../browser-contracts/cloud-response-audit.mjs";
+import {
+  createControlledAcceptance,
+  type ControlledMutationKind,
+} from "../browser-contracts/controlled-acceptance.mjs";
 
 const slug = process.env.TASTEDUEL_CLOUD_REPLAY_SLUG;
 test.skip(
@@ -20,6 +24,7 @@ test("provider-free protected cloud replay: network, evidence, save and identica
   const audit = createResponseAudit(token);
   const findings = audit.findings;
   const controlled = new Map<string, Promise<void>>();
+  const acceptance = createControlledAcceptance();
   const unavailable: {
     method: string;
     path: string;
@@ -136,7 +141,7 @@ test("provider-free protected cloud replay: network, evidence, save and identica
       if (guest === 0) {
         let answerLost = false,
           nextLost = false;
-        async function lose(route: Route) {
+        async function lose(route: Route, kind: ControlledMutationKind) {
           const key = route.request().headers()["idempotency-key"];
           const work = route
             .fetch({
@@ -160,18 +165,19 @@ test("provider-free protected cloud replay: network, evidence, save and identica
             key,
             work.catch(() => {}),
           );
+          acceptance.track(kind, key, work);
           await work;
           await route.abort("failed");
         }
         await page.route("**/api/v1/games/*/answer", async (route) => {
           if (answerLost) return route.fallback();
           answerLost = true;
-          await lose(route);
+          await lose(route, "answer");
         });
         await page.route("**/api/v1/games/*/advance", async (route) => {
           if (nextLost) return route.fallback();
           nextLost = true;
-          await lose(route);
+          await lose(route, "advance");
         });
       }
       async function state() {
@@ -209,6 +215,8 @@ test("provider-free protected cloud replay: network, evidence, save and identica
         await choice.focus();
         await page.keyboard.press("Enter");
         if (guest === 0 && ordinal === 1) {
+          await acceptance.wait("answer");
+          expect(audit.confirmedControlled).toBe(1);
           await page.waitForLoadState("networkidle");
           await Promise.all(checks);
           await page.reload({ waitUntil: "domcontentloaded" });
@@ -239,6 +247,8 @@ test("provider-free protected cloud replay: network, evidence, save and identica
         await next.focus();
         await page.keyboard.press("Enter");
         if (guest === 0 && ordinal === 1) {
+          await acceptance.wait("advance");
+          expect(audit.confirmedControlled).toBe(2);
           await page.waitForLoadState("networkidle");
           await Promise.all(checks);
           await page.reload({ waitUntil: "domcontentloaded" });

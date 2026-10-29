@@ -1,12 +1,19 @@
-# Controlled Taste Duel candidate release
+# Taste Duel release and recovery
 
-Production promotion is currently blocked by the
-[dated candidate-gate and release/rollback preflight](../migration/production-release-preflight-2026-10-28.md).
-This document's candidate tooling does not implement public promotion.
+The public `e49564c` application, schema `td0011`, private API, live monitoring
+and compatible rollback/return are verified in [current execution](../migration/production-release-execution-2026-10-28.md).
+The earlier [candidate preflight](../migration/production-release-preflight-2026-10-28.md)
+was blocked at its recorded checkpoint; the subsequent reviewed release resolved
+those prerequisites. See **Current controlled release** below for the active state.
 
-This configuration prepares two explicit full-root releases after the applied
-foundation. It does not enable public access. Each actual plan needs independent
-review, refreshed cumulative-cost approval and a separately authorized apply.
+## Historical initial candidate procedure
+
+The following procedure describes initial private service creation. Do not
+reapply initial migration-only switches to an existing public deployment.
+
+The initial configuration prepared two explicit full-root releases after the
+applied foundation and did not enable public access. Each actual plan requires
+independent review, an applicable cumulative-cost approval and authorized apply.
 Both feature switches default false for unconfigured clones; preserve true
 applied switches in every later reviewed plan to avoid proposing removal.
 
@@ -127,4 +134,19 @@ belongs to a separately authorized release action.
 
 ## Current controlled release
 
-The approved candidate closure passed at ten actual Qloo HTTP/ten Vertex calls; that ledger is closed. See [current execution](../migration/production-release-execution-2026-10-28.md) and [US$88.15 forecast](../migration/production-cost-review-2026-10-28.md). The production source adds td0011 and requires a new compatible rollback pair; API83ede44 requires td0010 and must not be labelled a healthy rollback. Public release remains pending actual CI, exact saved plans, sealed-config and public-browser checks.
+The public web app serves the verified `e49564c` images on final `r19p-e49564c` revisions; API invocation remains private. Schema `td0011`, genuine sealed gameplay, unauthenticated public fixed replay/search, monitoring and compatible `r19r` rollback/return checks are recorded in [current execution](../migration/production-release-execution-2026-10-28.md). That recovery rehearsal preserved stored history and enforced expiry; it did not extend evidence to replay an expired game. API83ede44 requires td0010 and is not a healthy rollback target.
+
+Both finite provider ledgers are closed: candidate ten Qloo HTTP/ten Vertex, then release seven Qloo/six Vertex. Public gameplay remains subject to shared runtime limits of 100 Qloo requests/day, 12/minute, 50 Vertex requests/day and 500,000 conservatively admitted tokens/day. These limits are not measured capacity or permission to repeat operator smoke tests. The existing [US$88.15 forecast](../migration/production-cost-review-2026-10-28.md) remains the reviewed estimate under US$90, not a spending cap.
+
+Monitoring retains numeric request metrics and sanitized execution events while excluding future web/API HTTP request-URL logs. Eighteen successful points across three checker locations passed; no incident-delivery test or external recipient is configured. The canonical URL is the actual Cloud Run service alias, not a purchased domain. All traffic/configuration changes still require full-root saved plans, exact image/source bindings and independent review. No routine resource targeting or automatic promotion is provided.
+
+## Bounded expiry maintenance
+
+Run inspection before the reviewed Taste Duel-only cleanup. Use the existing migration job and its pinned image/Secret Manager reference; no worker or scheduler is installed:
+
+```powershell
+uv run --project runtime/python --frozen python scripts/tasteduel_production_release.py --manifest infra/releases/production-2026-10-28.json --cost infra/releases/production-cost-2026-10-28.json --stage purge-expired
+uv run --project runtime/python --frozen python scripts/tasteduel_production_release.py --manifest infra/releases/production-2026-10-28.json --cost infra/releases/production-cost-2026-10-28.json --stage purge-expired --execute
+```
+
+The fixed operation is role restricted, bounded and expiry guarded. Inspect remaining eligible counts and repeat only when needed; one successful invocation is not a cleanup SLA. Operate this manually within the documented retention window. It does not rewrite backups or touch the AccessLife logical database. Execution stops after the reviewed operational horizon; extension requires a new review.

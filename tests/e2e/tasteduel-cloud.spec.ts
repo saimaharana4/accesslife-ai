@@ -12,6 +12,10 @@ import { writeFile } from "node:fs/promises";
 import type { ApiSchemas } from "../../apps/web/src/lib/api/contracts";
 import { createResponseAudit } from "../browser-contracts/cloud-response-audit.mjs";
 import { cloudBrowserAccess } from "../browser-contracts/cloud-browser-access.mjs";
+import {
+  createControlledAcceptance,
+  type ControlledMutationKind,
+} from "../browser-contracts/controlled-acceptance.mjs";
 
 const enabled = process.env.TASTEDUEL_CLOUD_BROWSER_ENABLED === "true";
 test.skip(
@@ -123,6 +127,7 @@ test("cloud: one real curated solo, accepted-response recovery and identical fri
   const audit = createResponseAudit(token);
   const responseFindings = audit.findings;
   const controlledResponses = new Map<string, Promise<void>>();
+  const acceptance = createControlledAcceptance();
   const timings: {
     operation: string;
     milliseconds: number;
@@ -281,7 +286,10 @@ test("cloud: one real curated solo, accepted-response recovery and identical fri
     // response; retries restore authoritative state, never regenerate a game.
     let lostAnswer = false,
       lostAdvance = false;
-    async function loseAcceptedResponse(route: Route) {
+    async function loseAcceptedResponse(
+      route: Route,
+      kind: ControlledMutationKind,
+    ) {
       const key = route.request().headers()["idempotency-key"];
       const work = route
         .fetch({
@@ -309,6 +317,7 @@ test("cloud: one real curated solo, accepted-response recovery and identical fri
         key,
         work.catch(() => {}),
       );
+      acceptance.track(kind, key, work);
       await work;
       await route.abort("failed");
     }
@@ -317,14 +326,14 @@ test("cloud: one real curated solo, accepted-response recovery and identical fri
         return route.fallback();
       if (lostAnswer) return route.fallback();
       lostAnswer = true;
-      await loseAcceptedResponse(route);
+      await loseAcceptedResponse(route, "answer");
     });
     await page.route("**/api/v1/games/*/advance", async (route) => {
       if (new URL(route.request().url()).origin !== origin)
         return route.fallback();
       if (lostAdvance) return route.fallback();
       lostAdvance = true;
-      await loseAcceptedResponse(route);
+      await loseAcceptedResponse(route, "advance");
     });
 
     async function recover(kind: "answer" | "advance") {
@@ -332,8 +341,10 @@ test("cloud: one real curated solo, accepted-response recovery and identical fri
         kind === "answer"
           ? page.getByTestId("reveal-panel")
           : page.getByRole("group", { name: "Round 2 of 5", exact: true });
-      // Acceptance was confirmed before aborting the response. Refresh must
-      // restore it without racing focus against an automatically removed retry.
+      // A routed fetch can start after the browser's previous network-idle.
+      // Wait for this exact mutation's audited acceptance before reloading.
+      await acceptance.wait(kind);
+      expect(audit.confirmedControlled).toBe(kind === "answer" ? 1 : 2);
       await page.waitForLoadState("networkidle");
       await Promise.all(checks);
       await page.reload({ waitUntil: "domcontentloaded", timeout: 25_000 });

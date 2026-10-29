@@ -26,6 +26,7 @@ resource "terraform_data" "tasteduel_monitoring_gate" {
 # of historical logs or a change to unrelated services/audit/system logs.
 resource "google_logging_project_exclusion" "tasteduel_request_urls" {
   count       = var.tasteduel_observability_enabled ? 1 : 0
+  project     = var.project_id
   name        = "tasteduel-private-request-urls"
   description = "Exclude only Taste Duel Cloud Run HTTP request logs; retain sanitized application events, system and audit logs."
   filter      = "resource.type=\"cloud_run_revision\" AND (resource.labels.service_name=\"tasteduel-web\" OR resource.labels.service_name=\"tasteduel-api\") AND log_id(\"run.googleapis.com/requests\")"
@@ -64,18 +65,18 @@ resource "google_monitoring_dashboard" "tasteduel" {
   dashboard_json = jsonencode({
     displayName = "Taste Duel production"
     mosaicLayout = { columns = 12, tiles = [
-      { xPos = 0, yPos = 0, width = 12, height = 3, widget = {
+      { width = 12, height = 3, widget = {
         title = "Readiness, errors and bounded admission"
         text  = { format = "MARKDOWN", content = "Canonical: ${local.tasteduel_web_origin}\n\nGeneration/request_error/provider_admission_snapshot events contain numeric execution facts only. Admitted calls are conservative reservations, not exact billed usage. No raw rankings, searches, answers, chain-of-thought or identities. Billing alerts notify; they do not cap spend. The cumulative reviewed ceiling is USD90 through 7 November 2026 04:45 UTC." }
       } },
-      { xPos = 0, yPos = 3, width = 12, height = 5, widget = {
+      { yPos = 3, width = 12, height = 5, widget = {
         title = "API request rate by response class"
         xyChart = { dataSets = [{ plotType = "LINE", timeSeriesQuery = { timeSeriesFilter = {
           filter      = "metric.type=\"run.googleapis.com/request_count\" AND resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"tasteduel-api\""
           aggregation = { alignmentPeriod = "60s", perSeriesAligner = "ALIGN_RATE", crossSeriesReducer = "REDUCE_SUM", groupByFields = ["metric.label.response_code_class"] }
         } } }] }
       } },
-      { xPos = 0, yPos = 8, width = 12, height = 6, widget = {
+      { yPos = 8, width = 12, height = 6, widget = {
         title     = "Sanitized generation, errors and admission observations"
         logsPanel = { resourceNames = ["projects/${var.project_id}"], filter = "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"tasteduel-api\" AND (jsonPayload.event=\"generation\" OR jsonPayload.event=\"request_error\" OR jsonPayload.event=\"provider_admission_snapshot\" OR textPayload=~${jsonencode(local.tasteduel_operational_event_text_pattern)})" }
       } }

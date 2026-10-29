@@ -162,6 +162,20 @@ def test_refresh_never_creates_replaces_changes_iam_or_touches_sql():
         assert audit([change(address, {}, action)], "refresh")["status"] == "BLOCKED"
 
 
+def test_provider_empty_environment_source_blocks_equal_omitted_blocks_but_never_real_bindings():
+    from copy import deepcopy
+
+    before = job()
+    after = deepcopy(before)
+    environment = after["template"][0]["template"][0]["containers"][0]["env"]
+    environment[0]["value_source"] = []
+    assert release.image_only_update(before, after, actor="migrate")
+    assert release.safe_job(after, IMAGES)
+    environment[0]["value_source"] = [{"secret_key_ref": [{"secret": "unexpected", "version": "1"}]}]
+    assert not release.image_only_update(before, after, actor="migrate")
+    assert not release.safe_job(after, IMAGES)
+
+
 def test_explicit_verification_allowance_changes_only_six_to_eight_on_api():
     from copy import deepcopy
 

@@ -182,6 +182,13 @@ def image_only_update(before: dict, after: dict, *, actor: str) -> bool:
                 template.pop("revision", None)  # generated revision identifier
             for container in template.get("containers", []):
                 if env_values(container) is not None:
+                    # Terraform represents an absent optional nested source
+                    # block as [] on newly added literal env values. Preserve
+                    # every nonempty binding; only this empty representation
+                    # is equivalent to an omitted value_source key.
+                    for item in container.get("env", []):
+                        if item.get("value_source") == []:
+                            item.pop("value_source")
                     container["env"] = sorted(container.get("env", []), key=lambda item: item["name"])
             image = template["containers"][0].pop("image")
             if not re.fullmatch(

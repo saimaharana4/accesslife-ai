@@ -1,13 +1,12 @@
 # Taste Duel
 
-**Production release in progress — 28 October 2026.** The restricted candidate passed a fresh genuine Qloo/Vertex five-round game, discovery save, exact isolated friend replay, response-loss recovery and eleven full axe scans. One cold web navigation is measured. The candidate allowance is closed at ten Qloo HTTP requests and ten Vertex calls. Public access remains restricted while the new release safeguards are verified. [Current release evidence and limitations](infra/migration/production-release-execution-2026-10-28.md).
+**Live web app:** [Play Taste Duel](https://tasteduel-web-902056825143.asia-south1.run.app). The production configuration passed genuine Qloo/Vertex five-round play, discovery saving, exact friend replay, response-loss recovery, keyboard/mobile checks and full axe scans. The API remains IAM-private. Readiness monitoring and a compatible rollback/return rehearsal passed. [Verified release evidence and limitations](infra/migration/production-release-execution-2026-10-28.md).
 
 Taste Duel is a five-round cultural prediction game. A player chooses a familiar artist or film, then predicts which of two Qloo-ranked entities appears higher for that specific seed and query. Qloo supplies the cultural ranking; deterministic code controls eligibility, winners, scoring, and replay. A correct guess measures game performance only. It is never recorded as a preference.
 
-Cloud foundation is verified: the saved plan applied, restricted keyless access
-and new database privileges passed, and shared rollback assets remain preserved.
-The refreshed conservative production forecast is US$88.15 under the approved US$90 ceiling.
-[Candidate evidence and remaining release gates](infra/migration/candidate-execution-2026-10-28.md).
+The application runs on GCP with managed SQL, server-side Secret Manager references
+and keyless identities. Existing AccessLife recovery data remains separate and
+preserved. [Deployment and recovery evidence](infra/migration/production-release-execution-2026-10-28.md).
 
 ## Product experience
 
@@ -43,26 +42,28 @@ The web application uses Next.js App Router and strict TypeScript. The API uses 
 
 The private Qloo adapter resolves seeds and ranked candidates. A bounded Vertex curator can choose among supported sources and refine an inadequate candidate strategy. Deterministic validators and transactions retain authority over every answer. Qloo and Vertex credentials remain server-side; browser DTOs omit future answers and private pools. Challenges store immutable delivered rounds rather than querying providers again.
 
-The local Compose runtime uses separate web, API, migration, and database roles, pinned dependencies, non-root application containers, and a persistent database volume. The GCP candidate uses IAM-restricted services and managed SQL connectivity; public release is a separate operation.
+The local Compose runtime uses separate web, API, migration, and database roles, pinned dependencies, non-root application containers, and a persistent database volume. GCP serves the public web app through a private API with managed SQL connectivity. No worker, ingestion service or embedding model is required.
 
 ## Verification and release status
 
-The [current production cost review](infra/migration/production-cost-review-2026-10-28.md) passes at
+The [carried-forward 28 October production forecast](infra/migration/production-cost-review-2026-10-28.md) passes at
 **US$88.15 under the user-approved US$90 ceiling**, preserving seven backups.
 It conservatively includes all unallocated gross usage and assumes no future
-credits. The independently reviewed saved foundation plan applied successfully;
+credits; no 29 October billing refresh is claimed. The independently reviewed saved foundation plan applied successfully;
 keyless [authentication passed](https://github.com/saimaharana4/taste-duel/actions/runs/40559171936).
-The repository is `saimaharana4/taste-duel`. Live database privilege checks passed. The requested public release is conditional on the reviewed application gates; services remain IAM restricted until those pass.
+The repository is `saimaharana4/taste-duel`. Live database privilege checks passed. The reviewed web-only public grant applied after the exact sealed configuration passed acceptance; unauthenticated direct API requests still return 403.
 
 A bounded live quality audit checked Radiohead and Beyoncé → films, and Inception and Spirited Away → artists. All four produced valid five-round paths with ten distinct contestants, using exactly eight Qloo requests and no model calls. Original title cards remain the approved artwork; image metadata alone does not grant reuse rights. Difficulty remains a versioned engineering heuristic, not human calibration. See the [round-quality results](ai/round-quality-validation.md).
 
 Private server-side [event accounting](ai/product-event-accounting.md) records committed gameplay, explicit saves and fixed challenge activity without search text, ranking payloads or tracking fingerprints. Tests/fixtures are excluded by default, and operational activity is never presented as verified human participation. There are **zero observed human participants**; the [willing-user protocol](ai/playtest-protocol.md) is ready and human discovery value remains unproven.
 
-The deployed application commit `83ede4499ef53ebfcafc9895835b047fbed4b5c6` passed [full remote CI](https://github.com/saimaharana4/taste-duel/actions/runs/40655258903): 827 backend tests (one separate Compose restart check skipped), 87 Node checks, strict typecheck, production build, OpenAPI drift, container smoke, secret scan, Terraform validation and 75 browser executions (21 fixture, 36 audit, 18 challenge) with full axe coverage. The final restricted candidate separately passed actual expired-challenge/reflow/axe checks without providers. Earlier genuine cloud gameplay and strict two-guest controlled-loss replay evidence apply to unchanged backend/schema/scoring/artwork; the final source change only extends bounded web forwarding deadlines.
+The deployed application source is `e49564c6c4c36840fbc7b4a101793863bd8c330c`, with immutable API/web image digests in the [release manifest](infra/releases/production-2026-10-28.json). Its [full remote CI](https://github.com/saimaharana4/taste-duel/actions/runs/40696917534) passed contracts, real PostgreSQL integration, strict typecheck, production/container builds, OpenAPI drift, secret scanning, Terraform validation and complete desktop/mobile axe journeys. Later release-tooling and documentation changes do not change the deployed application files.
 
 The recorded CI baseline additionally checked a clean database migration, generated-contract drift, production container build/smoke, tracked-source secret scanning, and backend-free Terraform validation. No cloud resource was provisioned or deployed by that run.
 
-The fresh restricted acceptance and finite allowance are documented in the [current release record](infra/migration/production-release-execution-2026-10-28.md). The new compatible release, retention operation, monitoring, public-browser verification and rollback rehearsal remain pending until explicitly recorded there. Willing-user discovery value, native screen-reader and native zoom testing remain unmeasured. The recovery rehearsal proved a scoped in-memory logical restore, not a managed Cloud SQL backup restore or a durable full export. CI and automated cloud play do not establish real-user impact.
+The [release record](infra/migration/production-release-execution-2026-10-28.md) distinguishes the genuine solo game created on the sealed production configuration from the subsequent unauthenticated public fixed replay and typed search. Twelve sealed and eight public full axe scans passed. Verification games retain their normal expiry; they are never extended to repeat a test. After an overnight pause, rollback and return checks proved health/expiry behavior, unchanged hashes across 14 history tables and unchanged provider counters; they did not replay an expired game. Cleanup has been exercised but remains a bounded manual operation. Willing-user discovery value, native screen-reader and native zoom testing remain unmeasured. The recovery rehearsal proved a scoped in-memory logical restore, not a managed Cloud SQL backup restore or a durable full export. CI and automated cloud play do not establish real-user impact.
+
+Challenge canonical URLs, share links and original-art social images use the actual Cloud Run origin. No custom domain is claimed. The landing page is intentionally `noindex` and currently has no canonical/OG SEO tags.
 
 ## Project documentation
 

@@ -112,7 +112,10 @@ invitation remain and a new guest starts the identical fixed first round. It
 removes that token/slug artifact after the check; the retained report contains
 only pass/fail facts. Qloo and Vertex remain disabled and are not contacted.
 
-The current API does not yet expose a fixture-backed persisted game generator;
-the database and API migration/readiness path can be verified locally while
-full playable live flow remains dependent on genuine provider access and later
-application gates. CI uses synthetic contracts and does not use event keys.
+The default API does not expose a fixture-backed persisted game generator.
+Genuine local play requires the server-side provider configuration above; a
+disabled provider produces an explicit unavailable state. The same application
+images passed genuine five-round cloud play and public fixed replay/search in
+the [production release](../../infra/migration/production-release-execution-2026-10-28.md).
+CI uses synthetic contracts and never event keys. Bounded expiry maintenance
+uses the existing migration job; see the [release operations guide](../../infra/terraform/RELEASE.md#bounded-expiry-maintenance).

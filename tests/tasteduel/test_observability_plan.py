@@ -162,3 +162,155 @@ def test_dashboard_matches_actual_uvicorn_text_and_structured_event_envelopes(ev
 ])
 def test_dashboard_text_branch_does_not_become_a_generic_text_log_filter(line):
     assert re.search(review.TEXT_EVENT_PATTERN, line) is None
+
+
+def replacement_plan():
+    """Actual Terraform shape: host replacement makes check ID/filter unknown."""
+    value = plan()
+    uptime = next(item["change"] for item in value["resource_changes"] if item["address"] == review.UPTIME)
+    uptime.update({"actions": ["delete", "create"], "replace_paths": [["monitored_resource", 0, "labels"]],
+        "before": {"id": review.LEGACY_CHECK_ID, "project": review.PROJECT,
+            "monitored_resource": [{"type": "uptime_url", "labels": {
+                "project_id": review.PROJECT, "host": review.LEGACY_CHECK_HOST}}]},
+        "after_unknown": {"uptime_check_id": True}})
+    uptime["after"].pop("uptime_check_id")
+    alert = next(item["change"] for item in value["resource_changes"] if item["address"] == review.ALERT)
+    alert["after"]["conditions"][0]["condition_threshold"][0].pop("filter")
+    alert["after_unknown"] = {"conditions": [{"condition_threshold": [{"filter": True}], "name": True}]}
+    value["configuration"] = {"root_module": {"resources": [{
+        "address": review.ALERT.removesuffix("[0]"), "expressions": {"conditions": [{"condition_threshold": [{
+            "filter": {"references": [review.CHECK_REFERENCE, review.UPTIME]}}]}]}}]}}
+    return value
+
+
+def change(value, address):
+    return next(item["change"] for item in value["resource_changes"] if item["address"] == address)
+
+
+def test_only_recorded_legacy_check_host_replacement_with_bound_filter_is_reviewable():
+    proposed = replacement_plan()
+    original = deepcopy(proposed)
+    result = review.audit_observability(proposed, source.manifest())
+    assert result["status"] == "REVIEWABLE"
+    assert proposed == original  # The substitute filter is audit-local only.
+    assert next(item for item in result["actions"] if item["address"] == review.UPTIME)["approved_scope"] is True
+
+
+@pytest.mark.parametrize("attack", ["id", "project", "host", "replace_path", "extra_replace_path", "reverse_order"])
+def test_no_other_monitor_replacement_is_allowed(attack):
+    proposed = replacement_plan()
+    uptime = change(proposed, review.UPTIME)
+    if attack == "id":
+        uptime["before"]["id"] = review.LEGACY_CHECK_ID + "-other"
+    elif attack == "project":
+        uptime["before"]["project"] = "other-project"
+    elif attack == "host":
+        uptime["before"]["monitored_resource"][0]["labels"]["host"] = "unrelated.example"
+    elif attack == "replace_path":
+        uptime["replace_paths"] = [["project"]]
+    elif attack == "extra_replace_path":
+        uptime["replace_paths"].append(["project"])
+    else:
+        uptime["actions"] = ["create", "delete"]
+    assert review.audit_observability(proposed, source.manifest())["status"] == "BLOCKED"
+
+
+@pytest.mark.parametrize("attack", ["missing_config", "wrong_reference", "extra_reference", "constant_value",
+    "missing_unknown_flag", "known_filter", "unknown_check_not_true", "unknown_project"])
+def test_computed_alert_filter_is_not_a_general_unknown_value_exception(attack):
+    proposed = replacement_plan()
+    alert = change(proposed, review.ALERT)
+    expression = proposed["configuration"]["root_module"]["resources"][0]["expressions"]["conditions"][0]["condition_threshold"][0]["filter"]
+    if attack == "missing_config":
+        proposed.pop("configuration")
+    elif attack == "wrong_reference":
+        expression["references"] = ["google_monitoring_uptime_check_config.unrelated.uptime_check_id", review.UPTIME]
+    elif attack == "extra_reference":
+        expression["references"].append("var.untrusted_filter")
+    elif attack == "constant_value":
+        expression["constant_value"] = "arbitrary"
+    elif attack == "missing_unknown_flag":
+        alert.pop("after_unknown")
+    elif attack == "known_filter":
+        alert["after"]["conditions"][0]["condition_threshold"][0]["filter"] = 'metric.type="unrelated"'
+    elif attack == "unknown_check_not_true":
+        change(proposed, review.UPTIME)["after_unknown"]["uptime_check_id"] = "true"
+    else:
+        after(proposed, review.EXCLUSION).pop("project")
+        change(proposed, review.EXCLUSION)["after_unknown"] = {"project": True}
+    assert review.audit_observability(proposed, source.manifest())["status"] == "BLOCKED"
+
+
+def test_references_alone_cannot_authorize_changed_filter_template(tmp_path, monkeypatch):
+    directory = tmp_path / "infra/terraform"
+    directory.mkdir(parents=True)
+    original = (review.ROOT / "infra/terraform/tasteduel-monitoring.tf").read_text(encoding="utf-8")
+    (directory / "tasteduel-monitoring.tf").write_text(
+        original.replace('metric.type=\\"monitoring.googleapis.com/uptime_check/check_passed\\"',
+            'metric.type=\\"unrelated\\"'), encoding="utf-8")
+    monkeypatch.setattr(review, "ROOT", tmp_path)
+    assert review.audit_observability(replacement_plan(), source.manifest())["status"] == "BLOCKED"
+
+
+def test_provider_canonicalized_public_iam_service_name_is_same_exact_service():
+    proposed = replacement_plan()
+    public = after(proposed, review.PUBLIC_WEB)
+    public["name"] = f"projects/{review.PROJECT}/locations/{review.REGION}/services/tasteduel-web"
+    assert review.audit_observability(proposed, source.manifest())["status"] == "REVIEWABLE"
+    public["name"] += "-other"
+    assert review.audit_observability(proposed, source.manifest())["status"] == "BLOCKED"
+
+
+def server_dashboard():
+    value = deepcopy(review.dashboard_document())
+    value.update({"name": f"projects/{review.PROJECT}/dashboards/synthetic-dashboard-123", "etag": "synthetic-etag"})
+    tiles = value["mosaicLayout"]["tiles"]
+    tiles[0]["widget"]["text"]["style"] = {}
+    tiles[1]["widget"]["xyChart"]["dataSets"][0]["targetAxis"] = "Y1"
+    return value
+
+
+def test_dashboard_observed_server_defaults_and_zero_coordinates_have_same_semantics():
+    value = server_dashboard()
+    before = deepcopy(value)
+    assert review.normalized_dashboard(value) == review.dashboard_document()
+    assert value == before
+    value["name"] = "projects/902056825143/dashboards/synthetic-dashboard-123"
+    assert review.normalized_dashboard(value) == review.dashboard_document()
+    for tile in value["mosaicLayout"]["tiles"]:
+        tile["xPos"] = 0
+    value["mosaicLayout"]["tiles"][0]["yPos"] = 0
+    assert review.normalized_dashboard(value) == review.dashboard_document()
+    assert all("xPos" not in tile for tile in review.dashboard_document()["mosaicLayout"]["tiles"])
+    assert "yPos" not in review.dashboard_document()["mosaicLayout"]["tiles"][0]
+
+
+def test_noop_dashboard_with_observed_server_defaults_is_still_exactly_allowlisted():
+    proposed = plan()
+    dashboard = change(proposed, review.DASHBOARD)
+    dashboard["actions"] = ["no-op"]
+    dashboard["after"]["dashboard_json"] = json.dumps(server_dashboard())
+    assert review.audit_observability(proposed, source.manifest())["status"] == "REVIEWABLE"
+
+
+@pytest.mark.parametrize("attack", ["name", "style", "axis", "title", "metric", "logs", "layout", "bool_coordinate"])
+def test_dashboard_normalization_cannot_hide_meaningful_changes(attack):
+    value = server_dashboard()
+    tiles = value["mosaicLayout"]["tiles"]
+    if attack == "name":
+        value["name"] = "projects/unrelated/dashboards/synthetic"
+    elif attack == "style":
+        tiles[0]["widget"]["text"]["style"] = {"fontSize": "XS"}
+    elif attack == "axis":
+        tiles[1]["widget"]["xyChart"]["dataSets"][0]["targetAxis"] = "Y2"
+    elif attack == "title":
+        tiles[0]["widget"]["title"] = "Unrelated title"
+    elif attack == "metric":
+        tiles[1]["widget"]["xyChart"]["dataSets"][0]["timeSeriesQuery"]["timeSeriesFilter"]["filter"] = 'metric.type="unrelated"'
+    elif attack == "logs":
+        tiles[2]["widget"]["logsPanel"]["filter"] = 'resource.type="cloud_run_revision"'
+    elif attack == "layout":
+        tiles[1]["yPos"] = 4
+    else:
+        tiles[0]["xPos"] = False
+    assert review.normalized_dashboard(value) != review.dashboard_document()
