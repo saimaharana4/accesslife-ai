@@ -221,10 +221,6 @@ export function ChallengeShare({
       <p role="status" aria-live="polite" className="share-notice">
         {notice}
       </p>
-      <p className="ticket-fine-print">
-        Casual play, not a cheat-proof competition. Prior knowledge, research
-        and repeated attempts exist. No global leaderboard.
-      </p>
     </section>
   );
 }

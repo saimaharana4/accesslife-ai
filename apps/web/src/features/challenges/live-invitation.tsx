@@ -102,6 +102,19 @@ export function LiveInvitation({ slug }: { slug: string }) {
         if (error instanceof ApiError && error.status === 410) {
           setStatus(error.code === "CHALLENGE_REVOKED" ? "revoked" : "expired");
           setInvitation(null);
+        } else if (error instanceof ApiError && error.code === "SELF_CHALLENGE") {
+          setNotice(
+            "This is your own poke. Send the link to a friend, or open it in a different browser or private window.",
+          );
+        } else if (
+          error instanceof ApiError &&
+          error.code === "CHALLENGE_METADATA_CONFLICT"
+        ) {
+          setNotice(
+            "This guest session has different saved details. Open the link in a fresh private window to play these five.",
+          );
+        } else if (error instanceof ApiError && error.status === 401) {
+          setNotice("Your guest session expired. Refresh this page and choose a nickname to play.");
         } else
           setNotice(
             "The replay response was interrupted or unavailable. Retry to recover the same game.",
@@ -218,7 +231,6 @@ export function LiveInvitation({ slug }: { slug: string }) {
         </p>
         <p>
           Correct predictions measure game performance, not personal taste.
-          Casual play allows prior knowledge, research and repeated attempts.
         </p>
         <ActionLink href="/how-it-works" variant="quiet">
           What are we predicting? <span aria-hidden="true">↗</span>

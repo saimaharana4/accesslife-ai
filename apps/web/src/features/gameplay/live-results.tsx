@@ -190,10 +190,6 @@ export function LiveResults({
             source={result.source}
           />
         )}
-        <p className="ticket-fine-print">
-          Saved within this guest session until its evidence expires. Share
-          links expire with their supporting evidence and can be revoked.
-        </p>
       </div>
     </section>
   );
