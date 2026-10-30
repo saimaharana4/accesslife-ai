@@ -20,5 +20,5 @@ regexTarget = "secret"
 regexes = [
   '''^tasteduel\.generation-intent\.v1$''',
   '''^synthetic-(prompt11|discovery)-save$''',
-  '''^tasteduel-api-(00005-kdm|r19c-e49564c|r19p-e49564c|r19r-e49564c|hf[cs]-[a-f0-9]{7})$''',
+  '''^tasteduel-api-(00005-kdm|r19c-e49564c|r19p-e49564c|r19r-e49564c|hf[cs]-[a-f0-9]{7}|nb[cs]-8885e31|nf[cs]-e010748)$''',
 ]
