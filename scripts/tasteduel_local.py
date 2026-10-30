@@ -205,7 +205,7 @@ def main() -> int:
             "-m",
             "pytest",
             "-c",
-            "pytest.tasteduel.ini",
+            "quality/pytest.ini",
             "--confcutdir=quality/tasteduel",
             *extra,
         ]

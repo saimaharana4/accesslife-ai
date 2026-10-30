@@ -17,7 +17,7 @@ diversity and live corrective strategy are not established by this sample.
 
 ```powershell
 uv run --no-sync python scripts/tasteduel_pool_check.py --synthetic
-uv run --no-sync python -m pytest -c pytest.tasteduel.ini --confcutdir=quality/tasteduel quality/tasteduel/duel_pool quality/tasteduel/duel_pool_review -q
+uv run --no-sync python -m pytest -c quality/pytest.ini --confcutdir=quality/tasteduel quality/tasteduel/duel_pool quality/tasteduel/duel_pool_review -q
 ```
 
 The command prints aggregate facts about invented data, never real candidate

@@ -256,7 +256,7 @@ def main():
                 "-m",
                 "pytest",
                 "-c",
-                "pytest.tasteduel.ini",
+                "quality/pytest.ini",
                 "--confcutdir=quality/tasteduel",
                 "quality/tasteduel",
                 "-q",

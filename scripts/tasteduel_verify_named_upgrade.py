@@ -56,7 +56,9 @@ def main():
             bundle.extractall(source, filter="data")
         # These are real legacy API mutations using project-owned synthetic
         # generation. Two distinct pre-upgrade attempts exercise ordinal grouping.
-        seed = source / "quality/tasteduel/gameplay/test_upgrade_seed.py"
+        # BASELINE predates the public tree cleanup, so its fixtures still live
+        # under tests/. Keep the archive paths aligned with that historical tree.
+        seed = source / "tests/tasteduel/gameplay/test_upgrade_seed.py"
         seed.write_text('''from .test_challenges import shared
 from .test_authoritative_flow import post
 
@@ -71,7 +73,7 @@ def test_seed_legacy_attempts(gameplay, owned_seed):
 ''', encoding="utf-8")
         legacy_environment = {**environment, "PYTHONPATH": str(source / "apps/api/src")}
         subprocess.run([sys.executable, "-m", "pytest", "-c", "pytest.tasteduel.ini",
-                        "--confcutdir=quality/tasteduel", "quality/tasteduel/gameplay/test_upgrade_seed.py", "-q"],
+                        "--confcutdir=tests/tasteduel", "tests/tasteduel/gameplay/test_upgrade_seed.py", "-q"],
                        cwd=source, env=legacy_environment, check=True, capture_output=True, text=True)
     with engine.connect() as db:
         original = db.execute(text("SELECT id,challenge_id,session_id,game_id,created_at FROM tasteduel.challenge_plays ORDER BY challenge_id,session_id,created_at,id")).all()

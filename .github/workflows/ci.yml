@@ -76,7 +76,7 @@ jobs:
 
       - name: Lint Python and TypeScript sources
         run: |
-          uv run --project runtime/python --frozen ruff check apps/api/src/tasteduel quality/tasteduel scripts
+          uv run --project runtime/python --frozen ruff check --config quality/ruff.toml apps/api/src/tasteduel quality/tasteduel scripts
           corepack pnpm exec prettier --check .github/workflows/ci.yml .github/workflows/cloud-release.yml apps/web/src
 
       - name: Run web contracts and isolated state checks
@@ -99,7 +99,7 @@ jobs:
         env:
           TASTEDUEL_QLOO_ENABLED: "false"
           TASTEDUEL_GENERATION_ENABLED: "false"
-        run: uv run --project runtime/python --frozen pytest -c pytest.tasteduel.ini --confcutdir=quality/tasteduel quality/tasteduel -q
+        run: uv run --project runtime/python --frozen pytest -c quality/pytest.ini --confcutdir=quality/tasteduel quality/tasteduel -q
 
       - name: Check generated OpenAPI and TypeScript contracts
         run: |
@@ -161,14 +161,14 @@ jobs:
           token = "ghp_" + "".join(secrets.choice(string.ascii_letters + string.digits) for _ in range(36))
           (Path(sys.argv[1]) / "canary.txt").write_text("GITHUB_TOKEN=" + token)
           PY
-          if docker run --rm -v "$canary_source:/canary:ro" -v "$tracked_source/.gitleaks.toml:/config.toml:ro" zricethezav/gitleaks:v8.28.0 detect --source /canary --config /config.toml --no-git --redact --exit-code 1; then
+          if docker run --rm -v "$canary_source:/canary:ro" -v "$tracked_source/.github/security/gitleaks.toml:/config.toml:ro" zricethezav/gitleaks:v8.28.0 detect --source /canary --config /config.toml --no-git --redact --exit-code 1; then
             echo 'Secret scanner missed the synthetic canary.'
             exit 1
           else
             result=$?
             if [ "$result" -ne 1 ]; then exit "$result"; fi
           fi
-          docker run --rm -v "$tracked_source:/repo:ro" zricethezav/gitleaks:v8.28.0 detect --source /repo --config /repo/.gitleaks.toml --no-git --redact --exit-code 1
+          docker run --rm -v "$tracked_source:/repo:ro" zricethezav/gitleaks:v8.28.0 detect --source /repo --config /repo/.github/security/gitleaks.toml --no-git --redact --exit-code 1
 
       - name: Validate Terraform without a backend or credentials
         uses: hashicorp/setup-terraform@v3

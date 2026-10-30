@@ -100,7 +100,7 @@ infra/
   terraform/           Cloud resources, IAM and monitoring
   releases/            Immutable release manifests
   migration/           Dated deployment and preservation evidence
-quality/                API, database and browser checks; Playwright configurations
+quality/                API, database and browser checks; test and lint policy
 scripts/                Development, verification and release tooling
 src/
   guide/                Product guides, artwork and operational documentation
