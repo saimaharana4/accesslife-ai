@@ -42,3 +42,17 @@ using the alternate service hostname may see "A LITTLE HOLD-UP" at nickname
 entry. The documented canonical origin returns the expected new-visitor
 response and creates a named session successfully. A later change can add a
 safe redirect or alternate-origin support after independent release review.
+
+Later on 2026-10-30, a copy and replay-error release from source
+`ce7971cfa4393d820cc4b5156873355f69f0546a` replaced the public API/web
+revisions with `tasteduel-api-cps-ce7971c` and
+`tasteduel-web-cps-ce7971c`. It removed two unwanted results-page paragraphs
+and replaced a misleading prototype-only 404 message. [CI run
+41032173553](https://github.com/saimaharana4/taste-duel/actions/runs/41032173553)
+passed. The saved full-root Terraform plan was independently reviewed: only
+the two immutable service images/revisions and the cleanup job's source label
+changed. Traffic is pinned 100% to the new revisions; the prior `nfs-e010748`
+revisions remain available for rollback. A refreshed full-root plan reported
+zero drift. Schema, secret grants, SQL, IAM, cleanup schedule and the approved
+US$100 ceiling were unchanged. The user confirmed the isolated friend replay
+works. Browser-visible copy removal was requested for a hard-refresh check.

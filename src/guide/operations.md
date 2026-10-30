@@ -10,7 +10,7 @@ The canonical app uses [its actual Cloud Run URL](https://tasteduel-web-90205682
 
 Build from a committed successful-CI source archive and publish immutable digests. Independently review migrations and full-root saved Terraform plans. Test controlled candidates before explicit promotion. A zero-percent tag remains reachable and is not a security boundary; new services start with real allocation under the reviewed IAM boundary.
 
-[Release/recovery tooling](../../infra/terraform/RELEASE.md), [initial execution evidence](../../infra/migration/production-release-execution-2026-10-28.md) and the [current hotfix record](../../infra/migration/production-hotfix-2026-10-29.md) record exact source, digests, schema and secret versions. A local patch or successful build does not establish deployment.
+[Release/recovery tooling](../../infra/terraform/RELEASE.md), [initial execution evidence](../../infra/migration/production-release-execution-2026-10-28.md) and the [current named-duel release record](../../infra/migration/named-challenges-release-2026-10-30.md) record exact source, revisions and schema. A local patch or successful build does not establish deployment.
 
 ## Monitoring and recovery
 

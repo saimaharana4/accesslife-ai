@@ -1,6 +1,6 @@
 # Taste Duel API
 
-FastAPI implements authoritative guest gameplay under `src/tasteduel`. Python/Pydantic owns the public contract; OpenAPI generates frontend types. PostgreSQL 16 persists games, evidence, private pools, accepted answers, discoveries and fixed challenges. The source schema head is `td0014`; the recorded deployed head remains `td0011`. See [named challenges](../../src/guide/named-challenges.md) for local behaviour and rollout.
+FastAPI implements authoritative guest gameplay under `src/tasteduel`. Python/Pydantic owns the public contract; OpenAPI generates frontend types. PostgreSQL 16 persists games, evidence, private pools, accepted answers, discoveries and fixed challenges. The source and deployed schema head is `td0014`. See [named challenges](../../src/guide/named-challenges.md) for behaviour and [the production release record](../../infra/migration/named-challenges-release-2026-10-30.md) for deployment evidence.
 
 Use the [container guide](CONTAINERS.md) for the maintained local runtime. The web app forwards same-origin `/api/v1` requests to private FastAPI `/v1` routes. Production API invocation requires IAM; public browser credentials and direct provider payloads are never exposed.
 

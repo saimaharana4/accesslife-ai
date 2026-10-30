@@ -4,7 +4,7 @@ The [release record](../../infra/migration/production-release-execution-2026-10-
 
 The four-seed quality matrix checked two artist-to-film and two film-to-artist paths, each with ten distinct contestants. This is sampled technical coverage, not universal coverage or a measured surprise rate. Difficulty bands are engineering heuristics.
 
-Tests exercise actual PostgreSQL constraints/RLS, concurrent/idempotent mutations, DTO secrecy, provider failures, contract drift and browser interactions. CI uses synthetic contracts without event keys. [Current application-source CI](https://github.com/saimaharana4/taste-duel/actions/runs/40843484745) passed for deployed source `99c23fc`; the [hotfix record](../../infra/migration/production-hotfix-2026-10-29.md) binds that source to the running image digests and external checks.
+Tests exercise actual PostgreSQL constraints/RLS, concurrent/idempotent mutations, DTO secrecy, provider failures, contract drift and browser interactions. CI uses synthetic contracts without event keys. [CI for the deployed application source](https://github.com/saimaharana4/taste-duel/actions/runs/41032173553) passed for `ce7971c`; the [named-duel release record](../../infra/migration/named-challenges-release-2026-10-30.md) identifies the running revisions and external checks.
 
 ## Measured samples
 
@@ -17,7 +17,7 @@ Tests exercise actual PostgreSQL constraints/RLS, concurrent/idempotent mutation
 
 No structured, consent-based human playtest results have been recorded; discovery value remains unmeasured. The consent-based playtest protocol measures clarity, unexpected connections, exploration interest, saves, completion and challenge value with real denominators. Agents, fixtures and successful API calls are not human playtesting.
 
-Native screen-reader/zoom testing, managed Cloud SQL backup restore and notification delivery remain unrehearsed. Physical cleanup is manual. The logical restore establishes only its recorded scoped test. Automated axe checks do not replace human accessibility evaluation.
+Native screen-reader/zoom testing, managed Cloud SQL backup restore and notification delivery remain unrehearsed. Recurring physical cleanup is enabled and its natural dispatch was observed; the logical restore establishes only its recorded scoped test. Automated axe checks do not replace human accessibility evaluation.
 
 Natural live corrective-agent value is not established merely by a tool call and a valid pool. Correction/veto/failure paths are contract-tested; do not present synthetic corrections as live autonomous improvement or human discovery.
 
