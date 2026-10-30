@@ -28,6 +28,21 @@ export const metadata: Metadata = {
   },
   description:
     "One favourite. Five Qloo-ranked cultural duels. Predict connections and discover something new.",
+  icons: {
+    icon: [
+      { url: "/icons/taste-duel-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/taste-duel-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/taste-duel-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/icons/taste-duel-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      {
+        url: "/icons/taste-duel-180.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
   robots: { index: false, follow: false },
 };
 export default async function RootLayout({

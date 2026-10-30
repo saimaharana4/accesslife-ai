@@ -264,7 +264,7 @@ export function NameGate({ children }: { children: ReactNode }) {
             id="nickname"
             name="nickname"
             autoComplete="nickname"
-            placeholder="Your main-character name"
+            placeholder="What do your friends call you?"
             required
             maxLength={96}
             value={name}
