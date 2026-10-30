@@ -9,11 +9,11 @@ export default function NotFound() {
         <span className="text-accent">THE GOOD STUFF.</span>
       </h1>
       <p>
-        This route is outside the visual prototype. No real game or challenge
-        can be opened yet.
+        This link does not match a Taste Duel page. Check the address, or start
+        a new duel.
       </p>
       <Link href="/" className="button button-primary">
-        Find a fictional favourite <span aria-hidden="true">↗</span>
+        Start a new duel <span aria-hidden="true">↗</span>
       </Link>
     </section>
   );
