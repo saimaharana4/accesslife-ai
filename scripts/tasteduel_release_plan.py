@@ -243,8 +243,8 @@ def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_
         elif safe and address in (ADDRESSES["api"], ADDRESSES["web"]):
             safe = safe_service(after, "api" if address == ADDRESSES["api"] else "web", images, origin,
                                 api_uri=api_uri, unknown=change.get("after_unknown"),
-                                vertex_limit=("50" if phase == "refresh" else VERIFICATION_ALLOWANCES.get(phase, (None, "10"))[1]),
-                                qloo_limit=("100" if phase == "refresh" else "12"), ops_through=ops_through)
+                                vertex_limit=("50" if phase == "refresh" and ops_through else VERIFICATION_ALLOWANCES.get(phase, (None, "10"))[1]),
+                                qloo_limit=("100" if phase == "refresh" and ops_through else "12"), ops_through=ops_through)
         elif safe and "_iam_member." in address:
             expected = {
                 ADDRESSES["job_deploy"]: ("tasteduel-migrate", "roles/run.developer", "serviceAccount:" + SA["deploy"]),

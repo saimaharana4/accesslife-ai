@@ -162,6 +162,39 @@ def test_refresh_never_creates_replaces_changes_iam_or_touches_sql():
         assert audit([change(address, {}, action)], "refresh")["status"] == "BLOCKED"
 
 
+def test_public_refresh_requires_exact_cutoffs_and_only_pinned_to_latest_handoff():
+    from copy import deepcopy
+
+    horizon = "2026-11-07T04:45:00Z"
+    after = service("api")
+    after["labels"] = {"app": "tasteduel", "source_ref": IMAGES["source_sha"][:12]}
+    for item in after["template"][0]["containers"][0]["env"]:
+        if item["name"] == "TASTEDUEL_VERTEX_REQUESTS_PER_DAY":
+            item["value"] = "50"
+        elif item["name"] == "TASTEDUEL_QLOO_REQUESTS_PER_DAY":
+            item["value"] = "100"
+    after["template"][0]["containers"][0]["env"] += environment({
+        "TASTEDUEL_SESSION_ADMISSION_CLOSES_AT": "2026-11-07T02:45:00Z",
+        "TASTEDUEL_SESSION_HARD_CLOSES_AT": "2026-11-07T04:15:00Z",
+    })
+    before = deepcopy(after)
+    before["labels"]["source_ref"] = "d" * 12
+    before["traffic"] = [{"type": "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION",
+                          "revision": "tasteduel-api-previous", "percent": 100}]
+    before["template"][0]["containers"][0]["image"] = publisher.immutable_reference(
+        "tasteduel-api", "sha256:" + "d" * 64)
+    update = change("api", after, ["update"])
+    update["change"]["before"] = before
+
+    def reviewed():
+        return release.audit_release({"resource_changes": [update]}, phase="refresh", images=IMAGES,
+                                     tester=TESTER, project_number="123456789012", ops_through=horizon)["status"]
+
+    assert reviewed() == "REVIEWABLE"
+    after["template"][0]["containers"][0]["env"][-1]["value"] = "2026-11-07T04:16:00Z"
+    assert reviewed() == "BLOCKED"
+
+
 def test_provider_empty_environment_source_blocks_equal_omitted_blocks_but_never_real_bindings():
     from copy import deepcopy
 

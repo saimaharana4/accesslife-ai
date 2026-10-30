@@ -177,8 +177,7 @@ def audit_production(plan: dict, manifest: dict, phase: str) -> dict:
                 revised["traffic"] = [{"type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST", "percent": 100}]
                 blocked |= (actual != target or container.get("image") != images[actor]
                     or not safe_service(revised, actor, images, ORIGIN, api_uri=api_uri,
-                                        vertex_limit=str(MODEL_LIMIT), qloo_limit=str(QLOO_LIMIT),
-                                        ops_through=manifest["reviewed_through_utc"])
+                                        vertex_limit=str(MODEL_LIMIT), qloo_limit=str(QLOO_LIMIT))
                     or container.get("command") not in (None, []) or container.get("args") not in (None, []))
             continue
         safe = False
@@ -205,8 +204,7 @@ def audit_production(plan: dict, manifest: dict, phase: str) -> dict:
             template_name = after.get("template", [{}])[0].get("revision")
             safe = (routing_match and safe_service(revised, actor, images, ORIGIN, api_uri=api_uri,
                     unknown=change.get("after_unknown"), vertex_limit=str(variables["tasteduel_vertex_requests_per_day"]),
-                    qloo_limit=str(variables["tasteduel_qloo_requests_per_day"]),
-                    ops_through=manifest["reviewed_through_utc"])
+                    qloo_limit=str(variables["tasteduel_qloo_requests_per_day"]))
                     and after.get("labels", {}).get("source_ref") == images["source_sha"][:12]
                     and (phase == "production-pin" or template_name == variables[f"tasteduel_{actor}_candidate_revision"]))
             if safe:

@@ -406,7 +406,6 @@ def audit_plan(plan: dict, manifest: dict, phase: str) -> dict:
                     unknown=change.get("after_unknown"),
                     vertex_limit="50",
                     qloo_limit="100",
-                    ops_through=old["reviewed_through_utc"],
                 )
                 and normalized["template"][0]["containers"][0].get("command") in (None, [])
                 and normalized["template"][0]["containers"][0].get("args") in (None, [])
