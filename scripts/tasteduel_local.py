@@ -206,7 +206,7 @@ def main() -> int:
             "pytest",
             "-c",
             "pytest.tasteduel.ini",
-            "--confcutdir=tests/tasteduel",
+            "--confcutdir=quality/tasteduel",
             *extra,
         ]
     else:

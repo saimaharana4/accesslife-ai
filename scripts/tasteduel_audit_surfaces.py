@@ -38,7 +38,7 @@ def main():
         raise RuntimeError("Recognized local database required")
     _, runtime = local.bootstrap()
     engine = local_engine(runtime)
-    fixture = load("surface_fixture", ROOT / "tests/tasteduel/gameplay/conftest.py")
+    fixture = load("surface_fixture", ROOT / "quality/tasteduel/gameplay/conftest.py")
     curator = fixture.SyntheticCurator()
     origin = "http://127.0.0.1:3001"
     with TestClient(

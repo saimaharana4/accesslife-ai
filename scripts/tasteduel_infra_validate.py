@@ -90,8 +90,8 @@ run "synthetic_complete_review_can_plan" {
     terraform(guards, "init", "-backend=false", "-input=false")
     terraform(guards, "test", "-no-color")
     subprocess.run([
-        "docker", "compose", "--env-file", str(ROOT / "compose.tasteduel.env"),
-        "-f", str(ROOT / "compose.yaml"), "config", "--quiet",
+        "docker", "compose", "--env-file", str(ROOT / "infra/local/compose.tasteduel.env"),
+        "-f", str(ROOT / "infra/local/compose.yaml"), "config", "--quiet",
     ], check=True, cwd=ROOT)
     print("Backend-free Terraform, six synthetic cost-gate plans and Compose validation passed; no apply or cloud plan.")
 

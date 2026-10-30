@@ -27,7 +27,7 @@ aggregate cleanup log reported `PASS` and zero expired-budget backlog.
 The separate manual cleanup rehearsal physically deleted expired sessions,
 challenges, games and dependent rows. Console alert policies exist, but
 external notification delivery has not been demonstrated. Backup and export
-retention limits are documented in [named-challenges.md](../../docs/named-challenges.md).
+retention limits are documented in [named-challenges.md](../../src/guide/named-challenges.md).
 
 The conservative release cost forecast through 2026-11-07 04:45 UTC is
 US$95.38 against the approved US$100 ceiling. This is a forecast, not an

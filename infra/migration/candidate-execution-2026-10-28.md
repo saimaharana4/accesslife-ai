@@ -80,8 +80,8 @@ Do not reset counters to retry. Authentication/startup/health do not establish
 inference success or permission to exceed the live budget.
 
 Only original title-card artwork and local licensed fonts are approved; no
-optional external artwork is required. See [capabilities/rights](../../ai/qloo-capability-matrix.md)
-and [asset manifest](../../third_party/taste-duel-assets.md). No raw Qloo response
+optional external artwork is required. See capabilities/rights
+and [asset manifest](../../src/attribution/taste-duel-assets.md). No raw Qloo response
 is committed. Local screenshots and minimal private operator references remain
 ignored, with the documented short evidence-retention policy.
 

@@ -49,7 +49,7 @@ def main():
         raise RuntimeError("Dedicated local Taste Duel database required")
     _, runtime = local.bootstrap()
     engine = local_engine(runtime)
-    fixture = load("prompt13_fixture", ROOT / "tests/tasteduel/gameplay/conftest.py")
+    fixture = load("prompt13_fixture", ROOT / "quality/tasteduel/gameplay/conftest.py")
     curator = fixture.SyntheticCurator()
     durations = []
     with TestClient(

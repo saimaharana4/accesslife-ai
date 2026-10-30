@@ -32,9 +32,9 @@ def main():
     from tasteduel.persistence import models as m
     from tasteduel.persistence.db import scoped_session
     from fastapi.testclient import TestClient
-    from tests.tasteduel.gameplay.conftest import SyntheticCurator
-    from tests.tasteduel.gameplay.test_authoritative_flow import create, post
-    from tests.tasteduel.gameplay.test_challenges import complete
+    from quality.tasteduel.gameplay.conftest import SyntheticCurator
+    from quality.tasteduel.gameplay.test_authoritative_flow import create, post
+    from quality.tasteduel.gameplay.test_challenges import complete
 
     stage, engine = "scope", None
     created_source = created_role = created_target = False

@@ -6,11 +6,12 @@
 .env
 .env.*
 !.env.example
-ai
 .data
 data
 datasets
-third_party
+quality
+src/guide
+src/attribution
 ingestion
 infra/terraform
 test-results

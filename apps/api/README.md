@@ -1,6 +1,6 @@
 # Taste Duel API
 
-FastAPI implements authoritative guest gameplay under `src/tasteduel`. Python/Pydantic owns the public contract; OpenAPI generates frontend types. PostgreSQL 16 persists games, evidence, private pools, accepted answers, discoveries and fixed challenges. The source schema head is `td0014`; the recorded deployed head remains `td0011`. See [named challenges](../../docs/named-challenges.md) for local behaviour and rollout.
+FastAPI implements authoritative guest gameplay under `src/tasteduel`. Python/Pydantic owns the public contract; OpenAPI generates frontend types. PostgreSQL 16 persists games, evidence, private pools, accepted answers, discoveries and fixed challenges. The source schema head is `td0014`; the recorded deployed head remains `td0011`. See [named challenges](../../src/guide/named-challenges.md) for local behaviour and rollout.
 
 Use the [container guide](CONTAINERS.md) for the maintained local runtime. The web app forwards same-origin `/api/v1` requests to private FastAPI `/v1` routes. Production API invocation requires IAM; public browser credentials and direct provider payloads are never exposed.
 
@@ -36,7 +36,7 @@ Only an authenticated owner can answer or advance. The playable DTO omits answer
 
 Solo adaptation uses the validated unused pool without new provider calls. Challenge replay freezes order/sides/context/rules and does not adapt or re-query Qloo. Prediction correctness is never stored as a preference; explicit discovery saves are a separate action.
 
-Runtime and migration roles are separate; forced RLS protects owned records. The runtime cannot perform schema DDL or modify immutable evidence. Private provider controls coordinate key-wide budgets across instances. [Security model](../../docs/security.md) · [Migration lineage](tasteduel_migrations/README.md).
+Runtime and migration roles are separate; forced RLS protects owned records. The runtime cannot perform schema DDL or modify immutable evidence. Private provider controls coordinate key-wide budgets across instances. [Security model](../../src/guide/security.md) · [Migration lineage](tasteduel_migrations/README.md).
 
 ## Contracts and tests
 
@@ -49,4 +49,4 @@ uv run --project runtime/python --frozen python scripts/export_contracts.py --ch
 .\scripts\tasteduel-compose.ps1 test
 ```
 
-Database tests require the isolated local stack described in the container guide. CI uses synthetic provider contracts and a clean PostgreSQL database, not production event keys. Dated component audits preserve their original implementation checkpoints; [current verification](../../docs/verification.md) and [release identities](../../infra/migration/production-release-execution-2026-10-28.md) supersede old stage-status claims.
+Database tests require the isolated local stack described in the container guide. CI uses synthetic provider contracts and a clean PostgreSQL database, not production event keys. Dated component audits preserve their original implementation checkpoints; [current verification](../../src/guide/verification.md) and [release identities](../../infra/migration/production-release-execution-2026-10-28.md) supersede old stage-status claims.

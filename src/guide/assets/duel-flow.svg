@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 264" role="img" aria-labelledby="title desc">
+  <title id="title">Taste Duel in four moves</title>
+  <desc id="desc">Pick a favourite, predict Qloo's cultural ranking, reveal the connection, then challenge a friend to the same five rounds.</desc>
+  <rect width="1200" height="264" rx="20" fill="#141318"/>
+  <rect x="12" y="12" width="1176" height="240" rx="16" fill="none" stroke="#595360"/>
+  <g font-family="Arial, sans-serif">
+    <text x="40" y="48" fill="#dfff4f" font-size="15" font-weight="700" letter-spacing="2">THE FIVE-ROUND CULTURE CLASH</text>
+    <text x="40" y="75" fill="#ffffff" font-size="20" font-weight="700">One favourite. Two egos. Actual ranking evidence.</text>
+    <g font-size="15" font-weight="700">
+      <rect x="38" y="103" width="262" height="116" rx="12" fill="#24222b" stroke="#8c8297"/>
+      <text x="56" y="131" fill="#dfff4f">01 / PICK A FAVOURITE</text>
+      <text x="56" y="159" fill="#ffffff" font-size="22">You know them.</text>
+      <text x="56" y="189" fill="#c9c3d1" font-size="14" font-weight="400">Music or film. Your call.</text>
+      <rect x="324" y="103" width="262" height="116" rx="12" fill="#24222b" stroke="#8c8297"/>
+      <text x="342" y="131" fill="#dfff4f">02 / MAKE THE CALL</text>
+      <text x="342" y="159" fill="#ffffff" font-size="22">Confidently, maybe.</text>
+      <text x="342" y="189" fill="#c9c3d1" font-size="14" font-weight="400">Pick who Qloo ranks higher.</text>
+      <rect x="610" y="103" width="262" height="116" rx="12" fill="#24222b" stroke="#8c8297"/>
+      <text x="628" y="131" fill="#c5adff">03 / GET THE RECEIPTS</text>
+      <text x="628" y="159" fill="#ffffff" font-size="22">The reveal lands.</text>
+      <text x="628" y="189" fill="#c9c3d1" font-size="14" font-weight="400">Five rounds, server-scored.</text>
+      <rect x="896" y="103" width="266" height="116" rx="12" fill="#dfff4f"/>
+      <text x="914" y="131" fill="#141318">04 / POKE A FRIEND</text>
+      <text x="914" y="159" fill="#141318" font-size="22">Same five. New ego.</text>
+      <text x="914" y="189" fill="#31352c" font-size="14" font-weight="400">Independent score. Shared verdict.</text>
+    </g>
+  </g>
+</svg>

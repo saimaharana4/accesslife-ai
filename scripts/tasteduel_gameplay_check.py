@@ -37,7 +37,7 @@ def load(name, path):
 
 def process_journey(runtime_url):
     engine = local_engine(runtime_url)
-    fixture = load("owned_gameplay_fixture", ROOT / "tests/tasteduel/gameplay/conftest.py")
+    fixture = load("owned_gameplay_fixture", ROOT / "quality/tasteduel/gameplay/conftest.py")
     curator = fixture.SyntheticCurator()
     with TestClient(
         create_app(
@@ -257,8 +257,8 @@ def main():
                 "pytest",
                 "-c",
                 "pytest.tasteduel.ini",
-                "--confcutdir=tests/tasteduel",
-                "tests/tasteduel",
+                "--confcutdir=quality/tasteduel",
+                "quality/tasteduel",
                 "-q",
                 "--junitxml=.data/tasteduel-gameplay/clean-tests.xml",
             ],

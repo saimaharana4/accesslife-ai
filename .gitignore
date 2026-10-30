@@ -1,17 +1,5 @@
-# Publish the maintained specifications, prompts and dated capability matrix; preserve references locally.
-/ai/*
-!/ai/prd.md
-!/ai/Architecture.md
-!/ai/rules.md
-!/ai/phases.md
-!/ai/design.md
-!/ai/memory.md
-!/ai/prompts.md
-!/ai/qloo-capability-matrix.md
-!/ai/round-quality-validation.md
-!/ai/playtest-protocol.md
-!/ai/product-event-accounting.md
-!/ai/prompt8-curator.md
+# Private planning notes stay in .data/private-notes; never publish an ai/ directory.
+/ai/
 
 # Credentials and local configuration. Keep the public placeholder template.
 .env
@@ -69,7 +57,7 @@ override.tf.json
 # Data, models, exports and generated test artifacts.
 /data/
 /datasets/
-# Reserved private provider capture directories (synthetic fixtures live in tests/fixtures).
+# Reserved private provider capture directories (synthetic fixtures live in quality/fixtures).
 qloo_responses/
 qloo-responses/
 provider_responses/

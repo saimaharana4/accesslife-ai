@@ -20,7 +20,7 @@ The pinned harness ignores MCP cancellation notifications, so active cancellatio
 
 The API resolves a configured Secret Manager version server-side with ADC. Production pins released numeric versions; local opt-in uses only the configured reference. No browser key, committed response capture or home-directory credential discovery is permitted. Image metadata remains unapproved until display rights are established; unverified explanation text is withheld.
 
-The real curator uses request-specific Qloo evidence, while deterministic validation decides eligibility and winners. Missing or ambiguous identity must remain visible rather than guessed. [Architecture](../../docs/architecture.md) · [Source/capability/rights record](../../ai/qloo-capability-matrix.md) · [Current release evidence](../../infra/migration/production-release-execution-2026-10-28.md).
+The real curator uses request-specific Qloo evidence, while deterministic validation decides eligibility and winners. Missing or ambiguous identity must remain visible rather than guessed. [Architecture](../../src/guide/architecture.md) · Source/capability/rights record · [Current release evidence](../../infra/migration/production-release-execution-2026-10-28.md).
 
 Install the locked runtime locally only when preparing a development environment:
 

@@ -45,7 +45,7 @@ def main():
         raise RuntimeError("Only the recognized local Taste Duel database is permitted")
     _, runtime = local.bootstrap()
     engine = local_engine(runtime)
-    fixture = load("prompt12_fixture", ROOT / "tests/tasteduel/gameplay/conftest.py")
+    fixture = load("prompt12_fixture", ROOT / "quality/tasteduel/gameplay/conftest.py")
     curator = fixture.SyntheticCurator()
     with TestClient(
         create_app(

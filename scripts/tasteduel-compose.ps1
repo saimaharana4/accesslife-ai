@@ -9,9 +9,9 @@ param(
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot -Parent
 Set-Location -LiteralPath $repo
-$baseFile = Join-Path $repo 'compose.yaml'
-$providerFile = Join-Path $repo 'compose.tasteduel.providers.yml'
-$nonsecretEnv = Join-Path $repo 'compose.tasteduel.env'
+$baseFile = Join-Path $repo 'infra/local/compose.yaml'
+$providerFile = Join-Path $repo 'infra/local/compose.tasteduel.providers.yml'
+$nonsecretEnv = Join-Path $repo 'infra/local/compose.tasteduel.env'
 $ports = if ($Action -eq 'fixture') { @(13002) } else { @(55436, 18005, 13001) }
 
 function Invoke-Docker([string[]]$Arguments, [switch]$Quiet) {
@@ -123,7 +123,7 @@ switch ($Action) {
             $env:PYTHONPATH = "$repo;$(Join-Path $repo 'apps/api/src')"
             corepack pnpm test:web-contracts
             if ($LASTEXITCODE -ne 0) { throw 'Frontend contract tests failed.' }
-            uv run --project runtime/python --frozen python -m pytest -c pytest.tasteduel.ini --confcutdir=tests/tasteduel tests/tasteduel -q
+            uv run --project runtime/python --frozen python -m pytest -c pytest.tasteduel.ini --confcutdir=quality/tasteduel quality/tasteduel -q
             if ($LASTEXITCODE -ne 0) { throw 'Taste Duel tests against the Compose database failed.' }
         } finally {
             foreach ($name in $names) { [Environment]::SetEnvironmentVariable($name, $saved[$name], 'Process') }
@@ -143,7 +143,7 @@ switch ($Action) {
             $env:TASTEDUEL_TEST_DATABASE_URL = 'postgresql+psycopg://tasteduel_runtime:local_only_tasteduel_runtime@127.0.0.1:55436/tasteduel_local'
             $env:TASTEDUEL_TEST_MIGRATION_DATABASE_URL = 'postgresql+psycopg://tasteduel_migrator:local_only_tasteduel_migrator@127.0.0.1:55436/tasteduel_local'
             $env:TASTEDUEL_PERSISTENCE_STATE_FILE = $stateFile
-            uv run --project runtime/python --frozen python -m pytest -c pytest.tasteduel.ini --confcutdir=tests/tasteduel tests/tasteduel/gameplay/test_compose_restart_persistence.py -q
+            uv run --project runtime/python --frozen python -m pytest -c pytest.tasteduel.ini --confcutdir=quality/tasteduel quality/tasteduel/gameplay/test_compose_restart_persistence.py -q
             if ($LASTEXITCODE -ne 0) { throw 'Synthetic game/challenge preparation against the Compose database failed.' }
             Invoke-Docker -Arguments ($composeArgs + @('restart', 'api'))
             $ready = $false

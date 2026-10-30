@@ -7,7 +7,7 @@ is a plain pinned PostgreSQL 16 image; this
 product needs no PostGIS, pgvector, embedding model,
 ingestion job, or background worker.
 
-The committed `compose.tasteduel.env` contains nonsecret project/port settings.
+The committed `infra/local/compose.tasteduel.env` contains nonsecret project/port settings.
 The PowerShell entry point always passes it explicitly; it never loads a root
 `.env` that may belong to another project. Default provider settings are off.
 The database passwords in the Compose file are public, development-only values
@@ -50,7 +50,7 @@ Run from the repository root in PowerShell:
 the one-shot `migrate` service exits successfully before starting; the helper
 adds the explicit project and nonsecret env file to that standard operation.
 The standalone migration operation is `docker compose --project-name taste-duel
---env-file compose.tasteduel.env -f compose.yaml run --rm migrate`. Both use
+--env-file infra/local/compose.tasteduel.env -f infra/local/compose.yaml run --rm migrate`. Both use
 the dedicated `tasteduel_migrator` role; API uses the
 separate restricted `tasteduel_runtime` role. The API and Alembic accept only
 the dedicated local `tasteduel_local` database on loopback port 55435/55436 or the exact
@@ -75,7 +75,7 @@ does not silently substitute generated rounds. The separate browser fixture
 prototype can also run as a separate profiled development container:
 
 ```powershell
-docker compose --project-name taste-duel --env-file compose.tasteduel.env -f compose.yaml --profile fixture up --build -d fixture-demo
+docker compose --project-name taste-duel --env-file infra/local/compose.tasteduel.env -f infra/local/compose.yaml --profile fixture up --build -d fixture-demo
 # http://127.0.0.1:13002
 ```
 
@@ -99,7 +99,7 @@ maintenance and hash-only expired-link tombstones after private activity
 accounting in `td0010`. Rebuild the migration/API image and run the explicit migration action
 when upgrading an existing local volume; never remove the volume to update it.
 Accounting defaults to excluded test activity. See the
-[event definitions, retention and local report/purge commands](../../ai/product-event-accounting.md)
+event definitions, retention and local report/purge commands
 before any operational opt-in.
 The persistence action uses the test-only `SyntheticCurator`, records one
 short-lived guest token/slug and expected public first-round choices under the

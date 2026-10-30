@@ -76,7 +76,7 @@ jobs:
 
       - name: Lint Python and TypeScript sources
         run: |
-          uv run --project runtime/python --frozen ruff check apps/api/src/tasteduel tests/tasteduel scripts
+          uv run --project runtime/python --frozen ruff check apps/api/src/tasteduel quality/tasteduel scripts
           corepack pnpm exec prettier --check .github/workflows/ci.yml .github/workflows/cloud-release.yml apps/web/src
 
       - name: Run web contracts and isolated state checks
@@ -84,22 +84,22 @@ jobs:
           corepack pnpm test:web-contracts
           corepack pnpm test:fixture-state
           node --test runtime/qloo/typed-response.test.mjs
-          node --test tests/browser-contracts/*.test.mjs
+          node --test quality/browser-contracts/*.test.mjs
 
       - name: Start isolated Taste Duel PostgreSQL
-        run: docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml up --detach --wait database
+        run: docker compose -p taste-duel --env-file infra/local/compose.tasteduel.env -f infra/local/compose.yaml up --detach --wait database
 
       - name: Verify populated legacy replay upgrade and transactional rollback
         run: uv run --project runtime/python --frozen python scripts/tasteduel_verify_named_upgrade.py
 
       - name: Apply the immutable Taste Duel migrations
-        run: docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml run --rm migrate
+        run: docker compose -p taste-duel --env-file infra/local/compose.tasteduel.env -f infra/local/compose.yaml run --rm migrate
 
       - name: Run provider contracts and real PostgreSQL integration tests
         env:
           TASTEDUEL_QLOO_ENABLED: "false"
           TASTEDUEL_GENERATION_ENABLED: "false"
-        run: uv run --project runtime/python --frozen pytest -c pytest.tasteduel.ini --confcutdir=tests/tasteduel tests/tasteduel -q
+        run: uv run --project runtime/python --frozen pytest -c pytest.tasteduel.ini --confcutdir=quality/tasteduel quality/tasteduel -q
 
       - name: Check generated OpenAPI and TypeScript contracts
         run: |
@@ -113,12 +113,12 @@ jobs:
           corepack pnpm typecheck
           corepack pnpm build
           corepack pnpm check:fixture-production
-          corepack pnpm exec tsc --noEmit --skipLibCheck --esModuleInterop --moduleResolution bundler --module esnext --target es2022 --typeRoots apps/web/node_modules/@types --types node tests/e2e/tasteduel-cloud.spec.ts tests/e2e/tasteduel-cloud-replay.spec.ts tests/e2e/tasteduel-cloud-postchecks.spec.ts playwright.cloud.config.ts
+          corepack pnpm exec tsc --noEmit --skipLibCheck --esModuleInterop --moduleResolution bundler --module esnext --target es2022 --typeRoots apps/web/node_modules/@types --types node quality/e2e/tasteduel-cloud.spec.ts quality/e2e/tasteduel-cloud-replay.spec.ts quality/e2e/tasteduel-cloud-postchecks.spec.ts quality/playwright.cloud.config.ts
 
       - name: Build and smoke test immutable local containers
         run: |
-          docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml build api web
-          docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml up --detach --wait api web
+          docker compose -p taste-duel --env-file infra/local/compose.tasteduel.env -f infra/local/compose.yaml build api web
+          docker compose -p taste-duel --env-file infra/local/compose.tasteduel.env -f infra/local/compose.yaml up --detach --wait api web
           curl --fail --silent --show-error http://127.0.0.1:18005/v1/health/live
           curl --fail --silent --show-error http://127.0.0.1:13001/ --output /dev/null
           curl --fail --silent --show-error http://127.0.0.1:13001/art/afterlight.svg --output /dev/null
@@ -142,7 +142,7 @@ jobs:
           # real production-mode web shell, not the separate fictional demo.
           TASTEDUEL_TEST_WEB_URL=http://127.0.0.1:13001 corepack pnpm test:audit
           TASTEDUEL_TEST_WEB_URL=http://127.0.0.1:13001 corepack pnpm test:challenges
-          TASTEDUEL_LIVE_WEB_URL=http://127.0.0.1:13001 corepack pnpm exec playwright test --config playwright.live.config.ts --grep "preparation failure|insufficient coverage"
+          TASTEDUEL_LIVE_WEB_URL=http://127.0.0.1:13001 corepack pnpm exec playwright test --config quality/playwright.live.config.ts --grep "preparation failure|insufficient coverage"
 
       - name: Scan tracked source for secrets
         shell: bash
@@ -197,4 +197,4 @@ jobs:
 
       - name: Stop containers and retain the project volume
         if: always()
-        run: docker compose -p taste-duel --env-file compose.tasteduel.env -f compose.yaml down
+        run: docker compose -p taste-duel --env-file infra/local/compose.tasteduel.env -f infra/local/compose.yaml down

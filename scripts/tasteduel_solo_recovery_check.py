@@ -42,7 +42,7 @@ def main():
     # This helper validates loopback address, logical database and runtime role.
     _, runtime = local.bootstrap()
     engine = local_engine(runtime)
-    fixture = load("prompt11_owned_fixture", ROOT / "tests/tasteduel/gameplay/conftest.py")
+    fixture = load("prompt11_owned_fixture", ROOT / "quality/tasteduel/gameplay/conftest.py")
     curator = fixture.SyntheticCurator()
     with TestClient(
         create_app(

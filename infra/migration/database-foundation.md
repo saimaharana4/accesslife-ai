@@ -93,7 +93,7 @@ PUBLIC grants would affect retained recovery readers and needs separate review.
 
 ## Verification status
 
-Synthetic tests in `tests/tasteduel/test_database_foundation.py` cover wrong
+Synthetic tests in `quality/tasteduel/test_database_foundation.py` cover wrong
 database/principal rejection before writes, unknown inherited roles, nonempty
 database, exact new scope, sanitized rollback on failure and separate-login/
 rolled-back probe contracts. They are executor guard tests; the separate live execution record supplies actual
