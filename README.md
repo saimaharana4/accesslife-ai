@@ -1,69 +1,121 @@
-# Taste Duel
+<p align="center">
+  <img src="docs/assets/hero.png" alt="Taste Duel — One favourite. Five duels. Cultural discovery powered by Qloo." width="100%" />
+</p>
 
-[![Verification](https://github.com/saimaharana4/taste-duel/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/saimaharana4/taste-duel/actions/workflows/ci.yml)
+<h1 align="center">Taste Duel</h1>
+<p align="center"><strong>One favourite. Five duels. Your move.</strong></p>
+<p align="center">
+  <a href="https://tasteduel-web-902056825143.asia-south1.run.app"><strong>Play Taste Duel ↗</strong></a> ·
+  <a href="docs/playing.md">How to play</a> ·
+  <a href="docs/architecture.md">Architecture</a> ·
+  <a href="docs/README.md">Documentation</a>
+</p>
+<p align="center">
+  <a href="https://github.com/saimaharana4/taste-duel/actions/workflows/ci.yml"><img src="https://github.com/saimaharana4/taste-duel/actions/workflows/ci.yml/badge.svg?branch=main" alt="Taste Duel verification" /></a>
+  <img src="https://img.shields.io/badge/Cultural_intelligence-Qloo-b8a0ff" alt="Qloo cultural intelligence" />
+  <img src="https://img.shields.io/badge/Curated_with-Vertex_AI-dfff4f" alt="Curated with Vertex AI" />
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-white" alt="MIT licence" /></a>
+</p>
 
-**One favourite. Five duels. Can you predict Qloo’s cultural connections?**
+Choose a music artist or film you love. Predict which of two contenders Qloo ranks higher for that favourite. Reveal the connection, save something unexpected, and send a friend the same five rounds.
 
-[Play the web app](https://tasteduel-web-902056825143.asia-south1.run.app) · [How to play](docs/playing.md) · [Architecture](docs/architecture.md) · [Wiki](https://github.com/saimaharana4/taste-duel/wiki) · [MIT licence](LICENSE)
+**Your score measures prediction performance. Your taste is yours.**
 
-Choose a familiar music artist or film, predict which of two cultural entities Qloo ranked higher for that seed, reveal the answer, and save something worth exploring. Send a friend the exact same five comparisons with an independent score.
+## Five rounds. A few new favourites.
 
-Your score measures prediction performance. It never becomes a judgement of your personal taste.
+| | Your move |
+|---|---|
+| **Say hello** | Choose a nickname for this guest session. Friends can see it on invitations and results. |
+| **Pick a favourite** | Search for a music artist or film and choose a supported cross-domain journey. |
+| **Make the call** | Predict the higher-ranked contender, reveal the accepted answer, then continue. |
+| **Keep the discovery** | Save a contender you want to explore. Saves are your choice, separate from correct answers. |
+| **Poke a friend** | Share an invitation to the exact same five rounds. Compare independent scores and a lightly sarcastic verdict. |
 
-## Why Qloo matters
+Friend challenges freeze the round order and sides. Sharing uses native sharing where available, with clipboard and manual-copy fallbacks. Both players can return to the verdict while their sessions and challenge remain valid.
 
-Qloo supplies request-specific cross-domain ranking evidence. A bounded Vertex AI curator chooses a supported candidate strategy and inspects deterministic pool feedback. Deterministic services retain authority over eligibility, winners, scoring and replay. An LLM can suggest plausible connections; it cannot establish the Qloo ordering frozen behind these answers.
+## Cultural discovery with evidence
 
-Artist-to-film and film-to-artist paths have passed a small live technical matrix. Coverage varies by seed: finding a name does not guarantee ten eligible contestants or five valid rounds. Missing evidence produces an explicit unavailable or insufficient-coverage state rather than an invented answer.
+**Qloo supplies the ranking. Vertex AI curates the journey. The server owns the score.**
 
-## The experience
+Qloo provides request-specific cultural ranking evidence across music and film. A bounded Vertex AI curator proposes a supported strategy; deterministic validation checks the candidate pool before any round is delivered. An LLM cannot invent the answers or change a completed game.
 
-- Five rounds with accepted-answer reveals and an explicit Next action.
-- Adaptive solo selection from the validated stored pool; no provider calls on answer or Next.
-- Explicit discovery saves, separate from correct and incorrect predictions.
-- Friend challenges with exactly the same delivered rounds, sides and order.
-- Keyboard access, reduced motion, mobile layouts and original title-card artwork.
-- Anonymous sessions with no account or forced sound.
+Coverage varies by seed. When there is not enough evidence for five valid rounds, Taste Duel explains the limitation. Answering, saving, sharing, replaying and comparing scores do not trigger additional Qloo or model calls.
+
+```mermaid
+flowchart LR
+    Browser["Next.js browser"] --> BFF["Same-origin gateway"]
+    BFF --> API["IAM-private FastAPI"]
+    API --> DB[("PostgreSQL · isolated guest state")]
+    API --> Curator["Bounded Vertex AI curator"]
+    Curator --> Qloo["Typed Qloo tools"]
+    Curator --> Validator["Deterministic pool validation"]
+    Validator --> DB
+```
+
+## Built for a proper duel
+
+- **Authoritative gameplay:** five rounds, accepted-answer recovery and server-calculated scores.
+- **A fair rematch:** frozen challenge replay with independent answers and scores.
+- **Guest privacy:** no account required; nicknames are labels, not login identities. Secure cookies identify sessions.
+- **Designed to play:** keyboard controls, reduced motion, responsive layouts, original title cards and locally hosted fonts.
+- **Short-lived state:** inactivity expiry blocks access immediately. Recurring bounded cleanup removes expired records; backups follow a separate retention policy.
+
+[Gameplay details](docs/playing.md) · [Friend challenges and retention](docs/named-challenges.md) · [Security and privacy](docs/security.md)
 
 ## Run locally
 
-Requires Docker Desktop. In PowerShell at the repository root:
+Requires Docker Desktop. From the repository root in PowerShell:
 
 ```powershell
 .\scripts\tasteduel-compose.ps1 preflight
 .\scripts\tasteduel-compose.ps1 up
 .\scripts\tasteduel-compose.ps1 health
-# Web: http://127.0.0.1:13001
-# API docs: http://127.0.0.1:18005/docs
+```
+
+Open [the web app](http://127.0.0.1:13001) or [API documentation](http://127.0.0.1:18005/docs).
+
+Default startup disables external providers and reports that state honestly. Use the [container guide](apps/api/CONTAINERS.md) for the labelled fixture demo or genuine provider configuration.
+
+```powershell
 .\scripts\tasteduel-compose.ps1 down
 ```
 
-Stopping preserves the `taste-duel-data` volume. Default local startup disables external providers and reports that state honestly. A separately labelled fixture demo is available; genuine local play requires server-side ADC/Secret Manager configuration. See [local setup and operations](apps/api/CONTAINERS.md).
+Stopping preserves the local database volume.
 
-## Implementation and verification
+## Find your way around
 
-The working source adds named guest entry, “Poke a friend”, participant-only
-verdicts and inactivity/completion cleanup. This feature has local verification;
-it is **not deployed**. See [behaviour, cleanup and rollout](docs/named-challenges.md).
+```text
+apps/
+  api/                 FastAPI, domain rules, provider adapters and migrations
+  web/                 Next.js interface and same-origin API gateway
+packages/contracts/    Exported OpenAPI and generated wire contracts
+runtime/               Locked Python and Qloo runtime dependencies
+infra/
+  containers/          Production image definitions
+  terraform/           Cloud resources, IAM and monitoring
+  releases/            Immutable release manifests
+  migration/           Dated deployment and preservation evidence
+docs/                  Product guides and operational documentation
+scripts/               Development, verification and release tooling
+tests/                 API, database and browser verification
+third_party/           Font and artwork notices
+ai/                    Design specifications and historical engineering records
+```
 
-Next.js App Router and TypeScript provide the web interface. FastAPI/Pydantic owns the API contracts, generated into frontend types. PostgreSQL 16 persists guest-owned games, immutable evidence, accepted answers and fixed challenges. GCP runs a public web service, an IAM-private API and one migration job on the existing dedicated SQL instance. No embedding model, ingestion pipeline or background worker is required.
+**Stack:** Next.js · React · TypeScript · FastAPI · PostgreSQL · Qloo · Vertex AI · Cloud Run · Terraform.
 
-The recorded release passed genuine Qloo/Vertex five-round play on its sealed production configuration, followed by unauthenticated public fixed replay and typed search. Checks cover response-loss recovery, isolated sessions, discovery persistence, keyboard/mobile/reduced-motion behavior, full axe scans and inspected answer/credential secrecy. Compatible revision recovery preserved stored history and enforced normal expiry. [Exact deployed identities and release evidence](infra/migration/production-release-execution-2026-10-28.md).
+## Explore further
 
-The 29 October hotfix is deployed from source `99c23fc`. It keeps a deterministically validated Qloo pool when the final curator response contains one of a small allowlisted set of model/tool mistakes, and otherwise returns a safe retry or coverage error. The original intermittent 503 cause was not captured, so this is a verified recovery-path fix rather than a claimed root-cause diagnosis. CI uses synthetic provider contracts, never event keys. [Hotfix evidence](infra/migration/production-hotfix-2026-10-29.md).
-
-No structured, consent-based human playtest results have been recorded; discovery value remains unmeasured. Native screen-reader/zoom testing, managed Cloud SQL backup restore and notification-delivery rehearsal remain open. Original artwork and locally licensed fonts avoid unverified poster/photo reuse. [Validation boundaries](docs/verification.md) · [Asset licences](third_party/README.md).
-
-## Explore the project
-
-| Guide | Contents |
+| Guide | What you will find |
 |---|---|
-| [Documentation](docs/README.md) | Product, architecture, security and operations |
-| [Playing](docs/playing.md) | Solo play, discoveries, challenges and expiry |
-| [Architecture](docs/architecture.md) | Modules, curator and authoritative gameplay |
-| [Security](docs/security.md) | API secrecy, isolation, provider limits and rights |
-| [Operations](docs/operations.md) | Local runtime, deployment and recovery |
-| [API](apps/api/README.md) | Implemented endpoints and generated contracts |
-| [Verification](docs/verification.md) | Technical evidence and unresolved human checks |
+| [How to play](docs/playing.md) | Predictions, reveals, discoveries and friend challenges |
+| [Architecture](docs/architecture.md) | Provider boundaries, contracts and authoritative transactions |
+| [Operations](docs/operations.md) | Local setup, production releases, monitoring and recovery |
+| [Verification](docs/verification.md) | Recorded checks and the limits of the evidence |
+| [Security](docs/security.md) | Private answers, session isolation and secret handling |
 
-The maintained `ai/` specifications and dated memory preserve the development record. Historical checkpoints are not current product status. Credentials, raw provider responses, state and local browser artifacts are excluded from source and container contexts.
+Automated checks cover database isolation, response-loss recovery, exact replay, keyboard and mobile layouts, privacy and accessibility scans. These checks do not replace native-device sharing, screen-reader testing or human feedback; see the verification guide for current boundaries.
+
+## Licence
+
+Source is [MIT licensed](LICENSE). Fonts and artwork retain their [separate notices](third_party/README.md).
