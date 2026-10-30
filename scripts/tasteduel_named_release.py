@@ -36,6 +36,7 @@ PHASES = (
     "bridge-candidate", "bridge-seal", "bridge-promote", "migration-pin",
     "feature-candidate", "feature-seal", "feature-promote", "cleanup-paused",
     "cleanup-resume", "feature-rollback", "feature-rollforward", "final-check",
+    "feature-recheck-candidate",
 )
 PREVIOUS = {
     "bridge-candidate": None, "bridge-seal": "bridge-candidate",
@@ -45,6 +46,7 @@ PREVIOUS = {
     "cleanup-resume": "cleanup-paused", "feature-rollback": "cleanup-resume",
     "feature-rollforward": "feature-rollback",
     "final-check": "feature-rollforward",
+    "feature-recheck-candidate": "feature-seal",
 }
 CLEANUP = {
     "sa": "google_service_account.tasteduel_cleanup_invoker[0]",
@@ -124,7 +126,7 @@ def phase_variables(manifest, phase):
     candidate = selected["candidate"] if phase.endswith("-candidate") else None
     template = candidate or selected["release"]
     target = (manifest["baseline"] if phase in {"bridge-candidate", "bridge-seal"}
-              else manifest["bridge"]["release"] if phase in {"bridge-promote", "migration-pin", "feature-candidate", "feature-seal", "feature-rollback"}
+              else manifest["bridge"]["release"] if phase in {"bridge-promote", "migration-pin", "feature-candidate", "feature-recheck-candidate", "feature-seal", "feature-rollback"}
               else manifest["feature"]["release"])
     migration = images_input(manifest["feature"]["images"])
     # Before migration-pin preserve the exact existing migration job image/source.
@@ -223,7 +225,7 @@ def service_change_safe(before, after, actor, manifest, phase):
         container = value["template"][0]["containers"][0]
         container["env"] = [row for row in container["env"] if row["name"] not in {
             "TASTEDUEL_ALLOWED_ORIGINS", "TASTEDUEL_WEB_ORIGINS", "TASTEDUEL_API_URL", *expected_cutoffs(manifest)}]
-    if phase not in {"bridge-candidate", "bridge-seal", "feature-candidate", "feature-seal"}:
+    if phase not in {"bridge-candidate", "bridge-seal", "feature-candidate", "feature-recheck-candidate", "feature-seal"}:
         left.pop("traffic", None)
         right.pop("traffic", None)
         return left == right
@@ -285,8 +287,18 @@ def cleanup_safe(key, after, manifest, phase):
                     and len(strategy) == 1 and strategy[0].get("auto_close") == "3600s"
                     and strategy[0].get("notification_rate_limit") == [{"period": "1800s"}])
         absent = conditions[0].get("condition_absent", [])
+        aggregations = absent[0].get("aggregations", []) if len(absent) == 1 else []
+        # The pinned provider emits null for omitted grouping/reducer in a
+        # create plan, then []/"" after refresh. These observed empty values
+        # apply no grouping/reduction; never accept a nonempty setting.
+        aggregation_safe = (len(aggregations) == 1
+            and set(aggregations[0]) == {"alignment_period", "per_series_aligner", "cross_series_reducer", "group_by_fields"}
+            and aggregations[0].get("alignment_period") == "600s"
+            and aggregations[0].get("per_series_aligner") == "ALIGN_SUM"
+            and aggregations[0].get("cross_series_reducer") in (None, "")
+            and aggregations[0].get("group_by_fields") in (None, []))
         return (len(absent) == 1 and absent[0].get("filter") == 'resource.type="cloud_run_job" metric.type="logging.googleapis.com/user/tasteduel_cleanup_completed"'
-                and absent[0].get("duration") == "1800s" and absent[0].get("aggregations") == [{"alignment_period": "600s", "per_series_aligner": "ALIGN_SUM", "cross_series_reducer": None, "group_by_fields": []}])
+                and absent[0].get("duration") == "1800s" and aggregation_safe)
     return False
 
 

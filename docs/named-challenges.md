@@ -34,7 +34,7 @@ its cookie.
 
 ## Lifecycle and physical cleanup
 
-- Committed game actions, challenge creation/opening and discovery saves update
+- Committed game actions, creating challenges, starting replays and discovery saves update
   activity. GETs, metadata and background polling never do.
 - Unlinked sessions and unanswered invitations expire after one idle hour.
 - A linked friend's activity protects the source data needed for their replay.
@@ -60,8 +60,14 @@ Logs contain aggregate counts/status, never names/tokens. Terraform defines
 failure/backlog and 30-minute missing-completion console alerts. External
 notification delivery is a separate unverified operator configuration.
 
-Seven automatic SQL backups and existing export retention remain. Live deletion
-does not rewrite backups/previews or automatically shrink provisioned SQL disk.
+SQL retains seven successful automatic backups, scheduled daily at 20:00 UTC.
+This is a count limit: a backup can survive more than seven calendar days if
+later backups fail. Live deletion does not rewrite backups/previews or
+automatically shrink provisioned SQL disk. Existing versioned backup exports
+delete archived object versions once their creation age reaches seven days; live export objects have no
+automatic age limit. This feature creates no exports. Do not claim a universal
+seven-day erasure deadline; any later export or restore needs its own retention
+review and must reapply expiry before serving restored data.
 
 ## Local commands and evidence
 
@@ -124,8 +130,8 @@ manifest or widen its guards. Preserve unrelated SQL, secrets and infrastructure
 After the final verified purge, the operator must pause and inspect the schedule:
 
 ```powershell
-gcloud scheduler jobs pause tasteduel-cleanup --project project-bb13ecd8-9d67-408d-9a7 --location asia-south1
-gcloud scheduler jobs describe tasteduel-cleanup --project project-bb13ecd8-9d67-408d-9a7 --location asia-south1 --format='value(state)'
+gcloud.cmd scheduler jobs pause tasteduel-cleanup --project project-bb13ecd8-9d67-408d-9a7 --location asia-south1
+gcloud.cmd scheduler jobs describe tasteduel-cleanup --project project-bb13ecd8-9d67-408d-9a7 --location asia-south1 --format='value(state)'
 ```
 
 Confirm `PAUSED` and disable the expected missing-heartbeat alert after the demo.

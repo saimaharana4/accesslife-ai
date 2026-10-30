@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "kind": "named-duels-schema-release",
+  "project": "project-bb13ecd8-9d67-408d-9a7",
+  "region": "asia-south1",
+  "origin": "https://tasteduel-web-902056825143.asia-south1.run.app",
+  "baseline_manifest_sha256": "bc985630d27934489bc15646f97e7682f5c676d95158cb2afba52845f52279fc",
+  "baseline": {
+    "source_sha": "99c23fc8824e8588af4e4c794e7683607e18e53c",
+    "api_revision": "tasteduel-api-hfs-99c23fc",
+    "web_revision": "tasteduel-web-hfs-99c23fc",
+    "api_image": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-api@sha256:86351d5e904cfc37e8f8b9ab8cd5892a8fd774111001b6d3b6d9765676e7ea94",
+    "web_image": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-web@sha256:af8e8fff8e6a9d541c09def47992c3b2afa0f78211c6c06fb957af22025019ad"
+  },
+  "bridge": {
+    "images": {
+      "source_sha": "8885e316f0e6802f4fcf7306c8417f01e08e3fab",
+      "ci": {
+        "id": 40897057433,
+        "html_url": "https://github.com/saimaharana4/taste-duel/actions/runs/40897057433",
+        "head_sha": "8885e316f0e6802f4fcf7306c8417f01e08e3fab",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "source_archive_sha256": "b83f87ff6e71805be6e5230a73a3f1feff80a7894ad7d9af6167d5e8136628b2",
+      "images": {
+        "api": {
+          "reference": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-api@sha256:e305b957ccb9646f10caa9404560c15a5aaeb5b4e049f0b5b8efc6f65ec7edc7",
+          "digest": "sha256:e305b957ccb9646f10caa9404560c15a5aaeb5b4e049f0b5b8efc6f65ec7edc7"
+        },
+        "web": {
+          "reference": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-web@sha256:8a4e963df06d72909a8f1cd9637a5ff267e16048a79c29f58340b05283e3ee82",
+          "digest": "sha256:8a4e963df06d72909a8f1cd9637a5ff267e16048a79c29f58340b05283e3ee82"
+        }
+      },
+      "platform": "linux/amd64",
+      "deployed": false,
+      "cost_reviewed_total_usd": 95.38,
+      "cost_ceiling_usd": 100
+    },
+    "candidate": {
+      "api_revision": "tasteduel-api-nbc-8885e31",
+      "web_revision": "tasteduel-web-nbc-8885e31",
+      "tag": "named-bridge",
+      "origin": "https://named-bridge---tasteduel-web-dfthmgvvaa-el.a.run.app",
+      "api_url": "https://named-bridge---tasteduel-api-dfthmgvvaa-el.a.run.app"
+    },
+    "release": {
+      "api_revision": "tasteduel-api-nbs-8885e31",
+      "web_revision": "tasteduel-web-nbs-8885e31"
+    }
+  },
+  "feature": {
+    "images": {
+      "source_sha": "e0107488ebdd209b9af4cbb535f07afaf093bed9",
+      "ci": {
+        "id": 40900049806,
+        "html_url": "https://github.com/saimaharana4/taste-duel/actions/runs/40900049806",
+        "head_sha": "e0107488ebdd209b9af4cbb535f07afaf093bed9",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "source_archive_sha256": "671b208570bcb34f810c45201ced9f5bb10faa0c258f76fb849ee8f933054563",
+      "images": {
+        "api": {
+          "reference": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-api@sha256:66ee6cd251caa3e6e386302e5acd35cee4921a11c1f0c57f11ba923a3fceea14",
+          "digest": "sha256:66ee6cd251caa3e6e386302e5acd35cee4921a11c1f0c57f11ba923a3fceea14"
+        },
+        "web": {
+          "reference": "asia-south1-docker.pkg.dev/project-bb13ecd8-9d67-408d-9a7/accesslife/tasteduel-web@sha256:a67f65cab4a94a0ddeae747ccc3af400c96e3deaa911bb488dda45e8590300f7",
+          "digest": "sha256:a67f65cab4a94a0ddeae747ccc3af400c96e3deaa911bb488dda45e8590300f7"
+        }
+      },
+      "platform": "linux/amd64",
+      "deployed": false,
+      "cost_reviewed_total_usd": 95.38,
+      "cost_ceiling_usd": 100
+    },
+    "candidate": {
+      "api_revision": "tasteduel-api-nfc-e010748",
+      "web_revision": "tasteduel-web-nfc-e010748",
+      "tag": "named-feature",
+      "origin": "https://named-feature---tasteduel-web-dfthmgvvaa-el.a.run.app",
+      "api_url": "https://named-feature---tasteduel-api-dfthmgvvaa-el.a.run.app"
+    },
+    "release": {
+      "api_revision": "tasteduel-api-nfs-e010748",
+      "web_revision": "tasteduel-web-nfs-e010748"
+    }
+  },
+  "schema": {
+    "from": "td0011",
+    "to": "td0014",
+    "backward_compatible": true
+  },
+  "cost_sha256": "c051c57075edaec6856531d77b2ec8ec117c912993aa8fbc02dbf927ceae7963",
+  "reviewed_through_utc": "2026-11-07T04:45:00Z",
+  "preview_exposure": "public-tag-intentionally-reachable"
+}

@@ -272,3 +272,50 @@ def test_live_source_review_rejects_forged_green_manifest_before_cloud_credentia
 
     with pytest.raises(release.PlanBlocked):
         release.verify_sources(record, forged)
+
+
+def test_cleanup_missing_alert_accepts_observed_null_empty_group_equivalence_only():
+    record = manifest()
+    value = cleanup("missing", record, "bridge-candidate")
+    aggregate = value["conditions"][0]["condition_absent"][0]["aggregations"][0]
+    aggregate["group_by_fields"] = None  # Actual Google 6.50 create-plan shape.
+    assert release.cleanup_safe("missing", value, record, "bridge-candidate")
+    refreshed = deepcopy(value)
+    refreshed_aggregate = refreshed["conditions"][0]["condition_absent"][0]["aggregations"][0]
+    refreshed_aggregate.update(group_by_fields=[], cross_series_reducer="")
+    assert release.cleanup_safe("missing", refreshed, record, "bridge-seal")
+    for key, changed in (("group_by_fields", ["resource.label.job_name"]),
+                         ("cross_series_reducer", "REDUCE_SUM"),
+                         ("alignment_period", "1800s"),
+                         ("per_series_aligner", "ALIGN_COUNT")):
+        altered = deepcopy(value)
+        altered["conditions"][0]["condition_absent"][0]["aggregations"][0][key] = changed
+        assert not release.cleanup_safe("missing", altered, record, "bridge-candidate")
+    altered = deepcopy(value)
+    altered["conditions"][0]["condition_absent"][0]["aggregations"][0]["unknown_setting"] = None
+    assert not release.cleanup_safe("missing", altered, record, "bridge-candidate")
+
+
+def test_recheck_restores_only_exact_existing_candidate_without_promoting_or_repinning_jobs():
+    record = manifest()
+    proposed = plan("feature-recheck-candidate")
+    changed = [row for row in proposed["resource_changes"] if row["change"]["actions"] != ["no-op"]]
+    assert {row["address"] for row in changed} == {release.ADDRESSES["api"], release.ADDRESSES["web"]}
+    values = release.phase_variables(record, "feature-recheck-candidate")
+    assert values == release.phase_variables(record, "feature-candidate")
+    for actor in ("api", "web"):
+        row = next(row for row in changed if row["address"] == release.ADDRESSES[actor])
+        before, after = row["change"]["before"], row["change"]["after"]
+        assert before["template"][0]["revision"] == record["feature"]["release"][actor + "_revision"]
+        assert after["template"][0]["revision"] == record["feature"]["candidate"][actor + "_revision"]
+        assert release.clean_routes(after["traffic"])[0]["revision"] == record["bridge"]["release"][actor + "_revision"]
+        assert release.clean_routes(after["traffic"])[0]["percent"] == 100
+        assert release.clean_routes(after["traffic"])[1]["percent"] == 0
+        assert before["template"][0]["containers"][0]["image"] == after["template"][0]["containers"][0]["image"]
+    assert values["tasteduel_cleanup_paused"] is True
+    # A premature feature promotion or a changed candidate identifier is outside
+    # this phase even though the image and source remain unchanged.
+    altered = deepcopy(proposed)
+    row = next(row for row in altered["resource_changes"] if row["address"] == release.ADDRESSES["api"])
+    row["change"]["after"]["traffic"] = release.routes(record, "feature-promote", "api")
+    assert release.audit_plan(altered, record, "feature-recheck-candidate")["status"] == "BLOCKED"
