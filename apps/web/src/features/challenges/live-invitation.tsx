@@ -102,7 +102,10 @@ export function LiveInvitation({ slug }: { slug: string }) {
         if (error instanceof ApiError && error.status === 410) {
           setStatus(error.code === "CHALLENGE_REVOKED" ? "revoked" : "expired");
           setInvitation(null);
-        } else if (error instanceof ApiError && error.code === "SELF_CHALLENGE") {
+        } else if (
+          error instanceof ApiError &&
+          error.code === "SELF_CHALLENGE"
+        ) {
           setNotice(
             "This is your own poke. Send the link to a friend, or open it in a different browser or private window.",
           );
@@ -114,7 +117,9 @@ export function LiveInvitation({ slug }: { slug: string }) {
             "This guest session has different saved details. Open the link in a fresh private window to play these five.",
           );
         } else if (error instanceof ApiError && error.status === 401) {
-          setNotice("Your guest session expired. Refresh this page and choose a nickname to play.");
+          setNotice(
+            "Your guest session expired. Refresh this page and choose a nickname to play.",
+          );
         } else
           setNotice(
             "The replay response was interrupted or unavailable. Retry to recover the same game.",
@@ -229,9 +234,7 @@ export function LiveInvitation({ slug }: { slug: string }) {
           Exactly the creator's played comparisons, order and sides. Your replay
           does not adapt or ask Qloo for a new answer.
         </p>
-        <p>
-          Correct predictions measure game performance, not personal taste.
-        </p>
+        <p>Correct predictions measure game performance, not personal taste.</p>
         <ActionLink href="/how-it-works" variant="quiet">
           What are we predicting? <span aria-hidden="true">↗</span>
         </ActionLink>
