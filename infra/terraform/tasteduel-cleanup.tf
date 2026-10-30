@@ -28,6 +28,8 @@ resource "google_cloud_run_v2_job" "tasteduel_cleanup" {
   deletion_protection = true
   labels              = local.tasteduel_release_labels
   lifecycle {
+    # Application-only releases leave the cleanup job's pinned image intact.
+    ignore_changes = [labels["source_ref"]]
     precondition {
       condition     = var.tasteduel_release_migration_enabled && var.tasteduel_ops_cost_review_hash != null
       error_message = "Cleanup requires the reviewed migration configuration and refreshed cost hash."

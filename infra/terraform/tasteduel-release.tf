@@ -10,6 +10,11 @@ variable "tasteduel_release_services_enabled" {
   type    = bool
   default = false
 }
+variable "tasteduel_image_refresh" {
+  type        = bool
+  default     = false
+  description = "Allow a reviewed image-only refresh to keep the public service's latest-revision traffic target."
+}
 variable "tasteduel_release_api_image" {
   type     = string
   default  = null
@@ -190,7 +195,8 @@ resource "terraform_data" "tasteduel_release_gate" {
     precondition {
       condition = (!var.tasteduel_public_enabled || (
         ((var.tasteduel_candidate_tag == null && var.tasteduel_candidate_origin == null && var.tasteduel_candidate_api_url == null) || var.tasteduel_public_hotfix_preview) &&
-        var.tasteduel_api_traffic_revision != null && var.tasteduel_web_traffic_revision != null &&
+        (var.tasteduel_image_refresh ? (var.tasteduel_api_traffic_revision == null && var.tasteduel_web_traffic_revision == null) :
+          (var.tasteduel_api_traffic_revision != null && var.tasteduel_web_traffic_revision != null)) &&
       var.tasteduel_vertex_requests_per_day == 50 && var.tasteduel_qloo_requests_per_day == 100))
       error_message = "Public release requires compatible revision pins, reviewed quota limits and no tags except an explicitly reviewed publicly reachable hotfix preview."
     }

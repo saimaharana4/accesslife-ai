@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import argparse
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -106,7 +106,8 @@ def safe_job(after: dict, images: dict, *, ops_cost_hash: str | None = None, ops
 
 
 def safe_service(after: dict, actor: str, images: dict, origin: str, *, api_uri: str | None = None,
-                 unknown: dict | None = None, vertex_limit: str = "10", qloo_limit: str = "12") -> bool:
+                 unknown: dict | None = None, vertex_limit: str = "10", qloo_limit: str = "12",
+                 ops_through: str | None = None) -> bool:
     try:
         template = after["template"][0]
         container = template["containers"][0]
@@ -129,6 +130,13 @@ def safe_service(after: dict, actor: str, images: dict, origin: str, *, api_uri:
         if environment is None:
             return False
         if actor == "api":
+            cutoffs = {}
+            if ops_through:
+                end = datetime.fromisoformat(ops_through.replace("Z", "+00:00"))
+                cutoffs = {
+                    "TASTEDUEL_SESSION_ADMISSION_CLOSES_AT": (end - timedelta(hours=2)).isoformat().replace("+00:00", "Z"),
+                    "TASTEDUEL_SESSION_HARD_CLOSES_AT": (end - timedelta(minutes=30)).isoformat().replace("+00:00", "Z"),
+                }
             return socket_mount(container, template) and environment == {
                 "TASTEDUEL_DATABASE_MODE": "cloud_sql", "TASTEDUEL_CLOUD_SQL_CONNECTION_NAME": CONNECTION,
                 "TASTEDUEL_DATABASE_SECRET_VERSION": secret_reference("api"), "TASTEDUEL_COOKIE_SECURE": "true",
@@ -139,6 +147,7 @@ def safe_service(after: dict, actor: str, images: dict, origin: str, *, api_uri:
                 "TASTEDUEL_GENERATION_ENABLED": "true", "TASTEDUEL_VERTEX_PROJECT": PROJECT,
                 "TASTEDUEL_VERTEX_REQUESTS_PER_DAY": vertex_limit, "TASTEDUEL_VERTEX_TOKENS_PER_DAY": "500000",
                 "TASTEDUEL_QLOO_REQUESTS_PER_DAY": qloo_limit, "TASTEDUEL_QLOO_REQUESTS_PER_MINUTE": "12",
+                **cutoffs,
             }
         expected_keys = {"TASTEDUEL_API_URL", "TASTEDUEL_API_AUDIENCE", "TASTEDUEL_API_IAM", "TASTEDUEL_WEB_ORIGINS",
                          "TASTEDUEL_CANONICAL_ORIGIN", "TASTEDUEL_ALLOW_LOCAL_HTTP"}
@@ -159,7 +168,7 @@ def safe_service(after: dict, actor: str, images: dict, origin: str, *, api_uri:
         return False
 
 
-def image_only_update(before: dict, after: dict, *, actor: str) -> bool:
+def image_only_update(before: dict, after: dict, *, actor: str, allow_latest_handoff: bool = False) -> bool:
     """Permit reviewed candidate digest/source labels only, never policy drift."""
     old, new = deepcopy(before), deepcopy(after)
     # Provider-computed output metadata changes as a revision reconciles.
@@ -168,6 +177,17 @@ def image_only_update(before: dict, after: dict, *, actor: str) -> bool:
                 "terminal_condition", "conditions", "latest_created_revision", "latest_ready_revision",
                 "traffic_statuses", "urls"}
     try:
+        if allow_latest_handoff and actor in {"api", "web"}:
+            old_routes = old.get("traffic", [])
+            new_routes = new.get("traffic", [])
+            if old_routes != new_routes:
+                if (len(old_routes) != 1 or old_routes[0].get("percent") != 100
+                        or old_routes[0].get("type") != "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION"
+                        or not old_routes[0].get("revision") or old_routes[0].get("tag")
+                        or len(new_routes) != 1 or new_routes[0].get("percent") != 100
+                        or new_routes[0].get("type") != "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"):
+                    return False
+                old["traffic"] = deepcopy(new_routes)
         for value in (old, new):
             for key in computed:
                 value.pop(key, None)
@@ -201,7 +221,8 @@ def image_only_update(before: dict, after: dict, *, actor: str) -> bool:
         return False
 
 
-def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_number: str) -> dict:
+def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_number: str,
+                  ops_through: str | None = None) -> dict:
     origin = f"https://tasteduel-web-{project_number}.{REGION}.run.app"
     keys = (("gate", "migrate", "job_deploy") if phase == "migration" else
             ("migrate", "api", "web") if phase == "refresh" else
@@ -222,7 +243,8 @@ def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_
         elif safe and address in (ADDRESSES["api"], ADDRESSES["web"]):
             safe = safe_service(after, "api" if address == ADDRESSES["api"] else "web", images, origin,
                                 api_uri=api_uri, unknown=change.get("after_unknown"),
-                                vertex_limit=VERIFICATION_ALLOWANCES.get(phase, (None, "10"))[1])
+                                vertex_limit=("50" if phase == "refresh" else VERIFICATION_ALLOWANCES.get(phase, (None, "10"))[1]),
+                                qloo_limit=("100" if phase == "refresh" else "12"), ops_through=ops_through)
         elif safe and "_iam_member." in address:
             expected = {
                 ADDRESSES["job_deploy"]: ("tasteduel-migrate", "roles/run.developer", "serviceAccount:" + SA["deploy"]),
@@ -236,7 +258,8 @@ def audit_release(plan: dict, *, phase: str, images: dict, tester: str, project_
         if safe and phase == "refresh":
             actor = "migrate" if address == ADDRESSES["migrate"] else "api" if address == ADDRESSES["api"] else "web"
             safe = (after.get("labels", {}).get("source_ref") == images["source_sha"][:12]
-                    and image_only_update(change.get("before") or {}, after, actor=actor))
+                    and image_only_update(change.get("before") or {}, after, actor=actor,
+                                          allow_latest_handoff=actor in {"api", "web"}))
         if safe and phase in VERIFICATION_ALLOWANCES:
             before = deepcopy(change.get("before") or {})
             try:
@@ -311,6 +334,23 @@ def main() -> int:
         variables.update({"tasteduel_release_migration_enabled": True, "tasteduel_release_services_enabled": args.phase != "migration",
                           "tasteduel_release_api_image": images["api"], "tasteduel_release_web_image": images["web"],
                           "tasteduel_release_source_sha": images["source_sha"], "tasteduel_candidate_tester": args.tester})
+        if args.phase == "refresh":
+            from tasteduel_production_release import digest
+
+            named = json.loads((ROOT / "infra/releases/named-challenges-2026-10-29.json").read_text(encoding="utf-8"))
+            legacy_api = named["feature"]["images"]["images"]["api"]["reference"]
+            variables.update({
+                "tasteduel_image_refresh": True,
+                "tasteduel_public_enabled": True,
+                "tasteduel_observability_enabled": True,
+                "tasteduel_cleanup_enabled": True,
+                "tasteduel_cleanup_paused": False,
+                "tasteduel_vertex_requests_per_day": 50,
+                "tasteduel_qloo_requests_per_day": 100,
+                "tasteduel_ops_cost_review_hash": digest(review),
+                "tasteduel_release_migration_image": legacy_api,
+                "tasteduel_release_migration_source_sha": named["feature"]["images"]["source_sha"],
+            })
         manifest = None
         if args.phase in PRODUCTION_PHASES:
             from tasteduel_production_release import check_evidence, digest, phase_images, phase_variables, validate_manifest
@@ -350,7 +390,8 @@ def main() -> int:
             if args.smoke_evidence:
                 (directory / "smoke-evidence.json").write_text(args.smoke_evidence.read_text(encoding="utf-8"), encoding="utf-8")
         else:
-            result = audit_release(plan, phase=args.phase, images=images, tester=args.tester, project_number=args.project_number)
+            result = audit_release(plan, phase=args.phase, images=images, tester=args.tester, project_number=args.project_number,
+                                   ops_through=review.get("reviewed_through_utc"))
         result.update({"source_sha256": source_hash, "plan_sha256": hashlib.sha256((directory / "release.tfplan").read_bytes()).hexdigest(),
                        "image_source_sha": images["source_sha"], "reviewed_total_usd": review["reviewed_total_usd"],
                        "created_at_utc": datetime.now(timezone.utc).isoformat(), "applied": False})

@@ -124,7 +124,8 @@ def main() -> int:
             else:
                 audited = audit_production(plan, manifest, review["phase"])
         else:
-            audited = audit_release(plan, phase=review["phase"], images=images, tester=args.tester, project_number=args.project_number)
+            audited = audit_release(plan, phase=review["phase"], images=images, tester=args.tester,
+                                   project_number=args.project_number, ops_through=cost.get("reviewed_through_utc"))
         if audited["status"] != "REVIEWABLE":
             raise foundation.PlanBlocked("RELEASE_SAVED_PLAN_SCOPE_FAILED")
         # Preserve actual established SQL passwords from pinned SM URLs. Never
